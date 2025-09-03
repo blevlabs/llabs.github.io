@@ -1,0 +1,1860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLABS Cognitive Architecture for O9 Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .diagram-section {
+            margin-bottom: 60px;
+        }
+        
+        h2 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .architecture-diagram {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .component {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .component:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        
+        .component-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .component-desc {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        
+        .proprietary {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-color: #fdcb6e;
+        }
+        
+        .proprietary::after {
+            content: "🔒 Proprietary";
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 0.8em;
+            color: #d63031;
+            font-weight: 600;
+        }
+        
+        .core-layer {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .flow-diagram {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 40px;
+        }
+        
+        .flow-step {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .flow-step:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .flow-step::after {
+            content: "↓";
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5em;
+            color: #667eea;
+        }
+        
+        .flow-step:last-child::after {
+            display: none;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 15px;
+            font-weight: 600;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .step-desc {
+            color: #666;
+            margin-left: 45px;
+            line-height: 1.5;
+        }
+        
+        .key-points {
+            background: #e8f4fd;
+            border-left: 4px solid #0984e3;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 5px;
+        }
+        
+        .key-points h3 {
+            color: #0984e3;
+            margin-bottom: 10px;
+        }
+        
+        .key-points ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .key-points li {
+            padding: 5px 0;
+            color: #555;
+        }
+        
+        .key-points li::before {
+            content: "✓";
+            color: #00b894;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 40px;
+            text-align: center;
+            color: #667eea;
+            border-top: 2px solid rgba(102, 126, 234, 0.2);
+            margin-top: 40px;
+        }
+        
+        .footer p {
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .footer p:last-child {
+            color: #9b59b6;
+            font-style: italic;
+        }
+        
+        .connection-line {
+            position: absolute;
+            background: #667eea;
+            height: 2px;
+            opacity: 0.3;
+        }
+        
+        @media (max-width: 768px) {
+            .platform-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LLABS Cognitive Architecture</h1>
+            <div class="subtitle">Transformational AI Agents for O9 Solutions</div>
+            <div style="margin-top: 20px; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; max-width: 900px; margin-left: auto; margin-right: auto;">
+                <h3 style="color: white; margin-bottom: 15px; font-size: 1.3em;">📖 How to Read This Document</h3>
+                <div style="font-size: 1em; opacity: 0.95; line-height: 1.6;">
+                    <p style="margin-bottom: 12px;"><strong>Why We Created This:</strong> Following our discussion, you asked to see the actual architectural components that power our AI agents, not just the problems they solve. This interactive document addresses that request directly.</p>
+                    
+                    <p style="margin-bottom: 12px;"><strong>What You'll Find Here:</strong></p>
+                    <ul style="list-style: none; padding-left: 20px; margin-bottom: 12px;">
+                        <li style="margin-bottom: 8px;">📊 <strong>Level 1:</strong> Our complete platform architecture with all components clearly labeled and organized</li>
+                        <li style="margin-bottom: 8px;">🔄 <strong>Interactive Flows:</strong> Visual diagrams showing how data moves through the system</li>
+                        <li style="margin-bottom: 8px;">🎯 <strong>Level 2:</strong> The ASC (Automated Stakeholder Consensus) agent as a concrete example for O9</li>
+                        <li style="margin-bottom: 8px;">💡 <strong>Hover for Details:</strong> Each component has tooltips explaining what it does (not proprietary "how")</li>
+                    </ul>
+                    
+                    <p style="margin-bottom: 0;"><strong>Key Insight:</strong> We've separated proprietary components (marked with 🔒) from standard tooling, showing you the architecture while protecting our IP. This demonstrates how we would build transformational agents specifically for O9 Solutions' implementation challenges.</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="content">
+            <!-- Context Section -->
+            <div class="diagram-section" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); padding: 30px; border-radius: 15px; margin-bottom: 40px;">
+                <h2 style="color: #667eea; border-bottom: none;">📋 Context: Why This Architecture Exists</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                    <div style="background: white; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea;">
+                        <h3 style="color: #333; margin-bottom: 10px;">🏢 The Client: O9 Solutions</h3>
+                        <p style="color: #666; line-height: 1.6;">
+                            O9 Solutions is an enterprise planning platform company seeking to enhance their 
+                            requirements gathering process. Their challenge: improving stakeholder alignment across 
+                            complex organizations where different perspectives and priorities need to be understood and reconciled.
+                        </p>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 10px; border-left: 4px solid #e74c3c;">
+                        <h3 style="color: #333; margin-bottom: 10px;">🤖 The Solution: ASC Agent</h3>
+                        <p style="color: #666; line-height: 1.6;">
+                            LLABS has conceptualized the Automated Stakeholder Consensus (ASC) agent - an AI system designed to autonomously 
+                            conduct interviews, identify potential contradictions, and help build consensus through extended operation. 
+                            The agent would maintain comprehensive context and continuously refine its understanding throughout the process.
+                        </p>
+                    </div>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #2ecc71;">
+                    <h3 style="color: #333; margin-bottom: 10px;">🎯 The Impact</h3>
+                    <p style="color: #666; line-height: 1.6;">
+                        This architecture demonstrates how LLABS cognitive agents address enterprise challenges. The ASC agent aims to 
+                        streamline discovery phases, help identify potential contradictions, and assist in producing comprehensive requirements 
+                        documentation that better reflects stakeholder perspectives. It represents a new approach to leveraging AI for business transformation.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Platform Architecture Section -->
+            <div class="diagram-section">
+                <h2>Level 1: LLABS Platform Architecture</h2>
+                <p class="description">
+                    The foundational infrastructure designed to power LLABS cognitive agents, including the proposed ASC agent for O9 Solutions. 
+                    This consistent platform layer provides the core capabilities that enable autonomous, long-duration AI operations 
+                    with persistent context maintenance - a valuable capability for complex enterprise implementations.
+                </p>
+                
+                <div class="architecture-diagram">
+                    <div class="core-layer">
+                        <h3 style="margin-bottom: 10px;">🧠 LLABS Cognitive Platform</h3>
+                        <p style="opacity: 0.95;">Unified Infrastructure for Autonomous AI Agents</p>
+                    </div>
+
+            
+            <!-- Visual Flow Graph Section -->
+            <div class="diagram-section">
+                <h2>Platform Component Flow Graph</h2>
+                <p class="description">
+                    Visual representation of how data and control flows through the LLABS platform components during agent operations.
+                </p>
+                
+                <div class="architecture-diagram" style="background: white; padding: 20px;">
+                    <!-- Enhanced SVG with custom tooltips -->
+                    <style>
+                        .component-group { cursor: pointer; position: relative; }
+                        .component-group:hover rect { filter: brightness(1.1); stroke-width: 3; }
+                        
+                        /* Custom Tooltip Styles */
+                        .custom-tooltip {
+                            position: absolute;
+                            display: none;
+                            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,249,250,0.98) 100%);
+                            color: #333;
+                            padding: 15px;
+                            border-radius: 12px;
+                            font-size: 13px;
+                            min-width: 280px;
+                            max-width: 350px;
+                            z-index: 10000;
+                            box-shadow: 0 10px 40px rgba(0,0,0,0.2), 0 0 0 1px rgba(102,126,234,0.1);
+                            backdrop-filter: blur(10px);
+                            animation: tooltipFadeIn 0.3s ease;
+                            pointer-events: none;
+                        }
+                        
+                        .custom-tooltip.show {
+                            display: block;
+                        }
+                        
+                        .custom-tooltip h4 {
+                            margin: 0 0 8px 0;
+                            color: #667eea;
+                            font-size: 15px;
+                            font-weight: 600;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        }
+                        
+                        .custom-tooltip .logo-img {
+                            height: 20px;
+                            width: auto;
+                        }
+                        
+                        .custom-tooltip .tooltip-content {
+                            line-height: 1.6;
+                            color: #555;
+                        }
+                        
+                        .custom-tooltip ul {
+                            margin: 8px 0;
+                            padding-left: 20px;
+                        }
+                        
+                        .custom-tooltip li {
+                            margin: 4px 0;
+                            color: #666;
+                        }
+                        
+                        .custom-tooltip .proprietary-badge {
+                            display: inline-block;
+                            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+                            color: #d63031;
+                            padding: 2px 8px;
+                            border-radius: 4px;
+                            font-size: 11px;
+                            font-weight: 600;
+                            margin-left: 8px;
+                        }
+                        
+                        .custom-tooltip .tech-stack {
+                            margin-top: 10px;
+                            padding-top: 10px;
+                            border-top: 1px solid #e0e0e0;
+                            font-size: 12px;
+                            color: #7f8c8d;
+                        }
+                        
+                        @keyframes tooltipFadeIn {
+                            from { opacity: 0; transform: translateY(-5px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+                    </style>
+                    
+                    <!-- Tooltip Container -->
+                    <div id="tooltip-container" style="position: relative;">
+                        <div id="custom-tooltip" class="custom-tooltip"></div>
+                    </div>
+                    
+                    <script>
+                        // Tooltip content for each component
+                        const tooltipContent = {
+                            'user-request': {
+                                title: 'User Request',
+                                content: `
+                                    <div class="tooltip-content">
+                                        <strong>Entry Point:</strong> Where all interactions begin<br><br>
+                                        <ul>
+                                            <li>Natural language commands</li>
+                                            <li>API calls from external systems</li>
+                                            <li>Scheduled automated tasks</li>
+                                        </ul>
+                                        The request defines the agent's mission and objectives.
+                                    </div>
+                                `
+                            },
+                            'agent-management': {
+                                title: 'Agent Management System',
+                                content: `
+                                    <div class="tooltip-content">
+                                        <strong>Intelligent Agent Selection & Lifecycle</strong><br><br>
+                                        <ul>
+                                            <li>Selects specialized agent based on request type</li>
+                                            <li>Manages resource allocation</li>
+                                            <li>Maintains agent registry</li>
+                                            <li>Each agent is purpose-built with unique behaviors</li>
+                                        </ul>
+                                        <div class="tech-stack">Created by: Agent Creation Agent</div>
+                                    </div>
+                                `
+                            },
+                            'cognitive-loop': {
+                                title: 'Cognitive Loop Engine',
+                                proprietary: true,
+                                content: `
+                                    <div class="tooltip-content">
+                                        <strong>The "Consciousness" of LLABS</strong><br><br>
+                                        <ul>
+                                            <li>Enables genuine autonomous reasoning</li>
+                                            <li>Maintains continuous thought processes</li>
+                                            <li>Self-directs toward complex goals</li>
+                                            <li>Orchestrates all other components</li>
+                                        </ul>
+                                        <strong>Key Innovation:</strong> Allows agents to work for MONTHS without losing context or objectives.
+                                    </div>
+                                `
+                            },
+                            'state-persistence': {
+                                title: 'State Persistence Engine',
+                                proprietary: true,
+                                content: `
+                                    <div class="tooltip-content">
+                                        <strong>Month-Long Memory System</strong><br><br>
+                                        <ul>
+                                            <li>Maintains complete cognitive state</li>
+                                            <li>Saves continuously to Weaviate</li>
+                                            <li>Enables resume from any point</li>
+                                            <li>Stores objectives, decisions, patterns</li>
+                                        </ul>
+                                        <strong>Breakthrough:</strong> Unlike single-session agents, our agents persist important context over any period of time.
+                                    </div>
+                                `
+                            },
+                            'llm-router': {
+                                title: 'LLM Inference Layer',
+                                logos: ['openai', 'anthropic'],
+                                content: `
+                                    <div class="tooltip-content">
+                                        <strong>Intelligent Model Orchestration</strong><br><br>
+                                        <ul>
+                                            <li>Routes to optimal model (Claude/GPT/Grok)</li>
+                                            <li>Handles model-specific formatting</li>
+                                            <li>Manages rate limits & fallbacks</li>
+                                            <li>Optimizes for cost/performance</li>
+                                        </ul>
+                                        <div class="tech-stack">Models: Anthropic Claude, OpenAI GPT-4, Grok</div>
+                                    </div>
+                                `
+                            },
+                            'episodic-memory': {
+                                title: 'Episodic Memory System',
+                                proprietary: true,
+                                content: `
+                                    <div class="tooltip-content">
+                                        <strong>Narrative Intelligence Storage</strong><br><br>
+                                        <ul>
+                                            <li>Stores complete conversation narratives</li>
+                                            <li>Preserves causal relationships</li>
+                                            <li>Captures emotional context</li>
+                                            <li>Enables learning from experiences</li>
+                                        </ul>
+                                        <strong>Unique:</strong> Not just facts, but entire problem-solving stories with context.
+                                    </div>
+                                `
+                            },
+                            'weaviate-db': {
+                                title: 'Weaviate Vector Database',
+                                logos: ['weaviate'],
+                                content: `
+                                    <div class="tooltip-content">
+                                        <strong>Semantic Search & Knowledge Infrastructure</strong><br><br>
+                                        <ul>
+                                            <li>Vector embeddings for all experiences</li>
+                                            <li>Sub-second similarity search</li>
+                                            <li>Scales to millions of episodes</li>
+                                            <li>Powers pattern matching</li>
+                                        </ul>
+                                        <div class="tech-stack">Technology: Weaviate Open-Source Vector DB</div>
+                                    </div>
+                                `
+                            },
+                            'pattern-recognition': {
+                                title: 'Pattern Recognition Module',
+                                content: `
+                                    <div class="tooltip-content">
+                                        <strong>Learning Without Retraining</strong><br><br>
+                                        <ul>
+                                            <li>Identifies recurring patterns</li>
+                                            <li>Detects anomalies & contradictions</li>
+                                            <li>Builds success pattern library</li>
+                                            <li>Predicts likely outcomes</li>
+                                        </ul>
+                                        <strong>Result:</strong> Each implementation makes the next one smarter.
+                                    </div>
+                                `
+                            },
+                            'tool-integration': {
+                                title: 'Tool Integration Framework',
+                                content: `
+                                    <div class="tooltip-content">
+                                        <strong>Dynamic External API Router</strong><br><br>
+                                        <ul>
+                                            <li>Each agent selects unique tools</li>
+                                            <li>Calendar APIs for scheduling</li>
+                                            <li>Data sources for analysis</li>
+                                            <li>Communication platforms</li>
+                                        </ul>
+                                        <strong>Flexibility:</strong> Adapts to any API, agents learn optimal usage patterns.
+                                    </div>
+                                `
+                            },
+                            'output': {
+                                title: 'Synthesized Output',
+                                content: `
+                                    <div class="tooltip-content">
+                                        <strong>Final Deliverable Generation</strong><br><br>
+                                        For ASC Agent:
+                                        <ul>
+                                            <li>Complete requirements document</li>
+                                            <li>Identified contradictions & gaps</li>
+                                            <li>Stakeholder alignment matrix</li>
+                                            <li>Implementation roadmap</li>
+                                        </ul>
+                                        <strong>Quality:</strong> Improves with each implementation as system learns.
+                                    </div>
+                                `
+                            }
+                        };
+                        
+                        // Logo URLs
+                        const logos = {
+                            weaviate: 'https://weaviate.io/img/site/weaviate-logo-w.png',
+                            openai: 'https://images.seeklogo.com/logo-png/42/1/open-ai-logo-png_seeklogo-428036.png',
+                            anthropic: 'https://registry.npmmirror.com/@lobehub/icons-static-png/1.64.0/files/light/anthropic.png'
+                        };
+                        
+                        // Function to show tooltip with smart positioning
+                        function showTooltip(event, componentId) {
+                            const tooltip = document.getElementById('custom-tooltip');
+                            const data = tooltipContent[componentId];
+                            
+                            if (!data) return;
+                            
+                            let html = '<h4>';
+                            
+                            // Add logos if specified
+                            if (data.logos) {
+                                data.logos.forEach(logoKey => {
+                                    if (logos[logoKey]) {
+                                        html += `<img src="${logos[logoKey]}" class="logo-img" alt="${logoKey}">`;
+                                    }
+                                });
+                            }
+                            
+                            html += data.title;
+                            
+                            // Add proprietary badge if needed
+                            if (data.proprietary) {
+                                html += '<span class="proprietary-badge">🔒 PROPRIETARY</span>';
+                            }
+                            
+                            html += '</h4>' + data.content;
+                            
+                            tooltip.innerHTML = html;
+                            tooltip.classList.add('show');
+                            
+                            // Smart positioning to avoid cutoff
+                            const rect = event.target.getBoundingClientRect();
+                            const containerRect = event.target.closest('.architecture-diagram').getBoundingClientRect();
+                            
+                            // Calculate initial position
+                            let left = rect.left - containerRect.left + rect.width/2 - 150;
+                            let top = rect.top - containerRect.top + rect.height + 10;
+                            
+                            // Get tooltip dimensions (need to measure after content is set)
+                            setTimeout(() => {
+                                const tooltipRect = tooltip.getBoundingClientRect();
+                                const containerBottom = containerRect.bottom;
+                                
+                                // Check if tooltip would go below container
+                                if (rect.bottom + tooltipRect.height + 10 > containerBottom) {
+                                    // Position above the element instead
+                                    top = rect.top - containerRect.top - tooltipRect.height - 10;
+                                }
+                                
+                                // Check horizontal bounds
+                                if (left < 10) left = 10;
+                                if (left + 350 > containerRect.width) {
+                                    left = containerRect.width - 360;
+                                }
+                                
+                                tooltip.style.left = left + 'px';
+                                tooltip.style.top = top + 'px';
+                            }, 0);
+                        }
+                        
+                        // Function to hide tooltip
+                        function hideTooltip() {
+                            const tooltip = document.getElementById('custom-tooltip');
+                            tooltip.classList.remove('show');
+                        }
+                        
+                        // Add event listeners when document loads
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Map component groups to IDs
+                            const componentMappings = [
+                                {selector: 'text:contains("User Request")', id: 'user-request'},
+                                {selector: 'text:contains("Agent Management")', id: 'agent-management'},
+                                {selector: 'text:contains("Cognitive Loop")', id: 'cognitive-loop'},
+                                {selector: 'text:contains("State Persistence")', id: 'state-persistence'},
+                                {selector: 'text:contains("LLM Router")', id: 'llm-router'},
+                                {selector: 'text:contains("Episodic Memory")', id: 'episodic-memory'},
+                                {selector: 'text:contains("Weaviate DB")', id: 'weaviate-db'},
+                                {selector: 'text:contains("Pattern Recognition")', id: 'pattern-recognition'},
+                                {selector: 'text:contains("Tool Integration")', id: 'tool-integration'},
+                                {selector: 'text:contains("Requirements Doc")', id: 'output'}
+                            ];
+                            
+                            // Attach listeners to component groups
+                            document.querySelectorAll('.component-group').forEach((group, index) => {
+                                if (index < componentMappings.length) {
+                                    group.addEventListener('mouseenter', (e) => showTooltip(e, componentMappings[index].id));
+                                    group.addEventListener('mouseleave', hideTooltip);
+                                }
+                            });
+                        });
+                    </script>
+                    <svg width="100%" height="600" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Define arrow markers -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#667eea" />
+                            </marker>
+                            <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#e74c3c" />
+                            </marker>
+                            <marker id="arrowhead-start" markerWidth="10" markerHeight="7" refX="1" refY="3.5" orient="auto">
+                                <polygon points="10 0, 0 3.5, 10 7" fill="#667eea" />
+                            </marker>
+                        </defs>
+                        
+                        <!-- User Input -->
+                        <g class="component-group">
+                            <rect x="50" y="50" width="180" height="60" rx="10" fill="#3498db" stroke="#2980b9" stroke-width="2"/>
+                            <text x="140" y="85" text-anchor="middle" fill="white" font-size="16" font-weight="bold">User Request</text>
+                            <text x="140" y="100" text-anchor="middle" fill="white" font-size="12">"Conduct O9 Discovery"</text>
+                        </g>
+                        
+                        <!-- Agent Management System -->
+                        <g class="component-group">
+                            <rect x="350" y="50" width="180" height="60" rx="10" fill="#9b59b6" stroke="#8e44ad" stroke-width="2"/>
+                            <text x="440" y="85" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Agent Management</text>
+                            <text x="440" y="100" text-anchor="middle" fill="white" font-size="12">Activates ASC Agent</text>
+                        </g>
+                        
+                        <!-- Cognitive Loop Engine -->
+                        <g class="component-group">
+                            <rect x="650" y="50" width="180" height="60" rx="10" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+                            <text x="740" y="85" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Cognitive Loop</text>
+                            <text x="740" y="100" text-anchor="middle" fill="white" font-size="12">🔒 Proprietary</text>
+                        </g>
+                        
+                        <!-- State Persistence -->
+                        <g class="component-group">
+                            <rect x="950" y="50" width="180" height="60" rx="10" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+                            <text x="1040" y="85" text-anchor="middle" fill="white" font-size="16" font-weight="bold">State Persistence</text>
+                            <text x="1040" y="100" text-anchor="middle" fill="white" font-size="12">🔒 Months of Context</text>
+                        </g>
+                        
+                        <!-- LLM Inference Layer -->
+                        <g class="component-group">
+                            <rect x="350" y="200" width="180" height="60" rx="10" fill="#2ecc71" stroke="#27ae60" stroke-width="2"/>
+                            <text x="440" y="235" text-anchor="middle" fill="white" font-size="16" font-weight="bold">LLM Router</text>
+                            <text x="440" y="250" text-anchor="middle" fill="white" font-size="12">Claude/GPT/Grok</text>
+                        </g>
+                        
+                        <!-- Episodic Memory -->
+                        <g class="component-group">
+                            <rect x="650" y="200" width="180" height="60" rx="10" fill="#f39c12" stroke="#e67e22" stroke-width="2"/>
+                            <text x="740" y="235" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Episodic Memory</text>
+                            <text x="740" y="250" text-anchor="middle" fill="white" font-size="12">🔒 Narrative Storage</text>
+                        </g>
+                        
+                        <!-- Weaviate Database -->
+                        <g class="component-group">
+                            <rect x="950" y="200" width="180" height="60" rx="10" fill="#1abc9c" stroke="#16a085" stroke-width="2"/>
+                            <text x="1040" y="235" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Weaviate DB</text>
+                            <text x="1040" y="250" text-anchor="middle" fill="white" font-size="12">Vector Storage</text>
+                        </g>
+                        
+                        <!-- Pattern Recognition -->
+                        <g class="component-group">
+                            <rect x="350" y="350" width="180" height="60" rx="10" fill="#34495e" stroke="#2c3e50" stroke-width="2"/>
+                            <text x="440" y="385" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Pattern Recognition</text>
+                            <text x="440" y="400" text-anchor="middle" fill="white" font-size="12">Learning Module</text>
+                        </g>
+                        
+                        <!-- Tool Integration -->
+                        <g class="component-group">
+                            <rect x="650" y="350" width="180" height="60" rx="10" fill="#95a5a6" stroke="#7f8c8d" stroke-width="2"/>
+                            <text x="740" y="385" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Tool Integration</text>
+                            <text x="740" y="400" text-anchor="middle" fill="white" font-size="12">External APIs</text>
+                        </g>
+                        
+                        <!-- Output -->
+                        <g class="component-group">
+                            <rect x="500" y="480" width="200" height="60" rx="10" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/>
+                            <text x="600" y="515" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Requirements Doc</text>
+                            <text x="600" y="530" text-anchor="middle" fill="white" font-size="12">Complete Analysis</text>
+                        </g>
+                        
+                        <!-- Arrows showing flow -->
+                        <!-- User to Agent Management -->
+                        <line x1="230" y1="80" x2="350" y2="80" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Agent Management to Cognitive Loop -->
+                        <line x1="530" y1="80" x2="650" y2="80" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Cognitive Loop to State Persistence -->
+                        <line x1="830" y1="80" x2="950" y2="80" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Cognitive Loop to LLM -->
+                        <line x1="740" y1="110" x2="440" y2="200" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Cognitive Loop to Episodic Memory -->
+                        <line x1="740" y1="110" x2="740" y2="200" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- State Persistence to Weaviate (bidirectional) -->
+                        <line x1="1040" y1="110" x2="1040" y2="200" stroke="#667eea" stroke-width="2" marker-start="url(#arrowhead-start)" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- State Persistence to Episodic Memory (bidirectional) -->
+                        <line x1="950" y1="80" x2="830" y2="230" stroke="#667eea" stroke-width="2" marker-start="url(#arrowhead-start)" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Episodic Memory to Weaviate (bidirectional) -->
+                        <line x1="830" y1="230" x2="950" y2="230" stroke="#667eea" stroke-width="2" marker-start="url(#arrowhead-start)" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- LLM to Pattern Recognition -->
+                        <line x1="440" y1="260" x2="440" y2="350" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Episodic Memory to Tool Integration -->
+                        <line x1="740" y1="260" x2="740" y2="350" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Pattern Recognition to Output -->
+                        <line x1="440" y1="410" x2="550" y2="480" stroke="#e74c3c" stroke-width="3" marker-end="url(#arrowhead-red)"/>
+                        
+                        <!-- Tool Integration to Output -->
+                        <line x1="740" y1="410" x2="650" y2="480" stroke="#e74c3c" stroke-width="3" marker-end="url(#arrowhead-red)"/>
+                        
+                        <!-- Self-referencing feedback loop for Cognitive Loop -->
+                        <path d="M 740 50 Q 740 20, 770 20 Q 800 20, 800 50 Q 800 80, 770 80 Q 740 80, 740 50" 
+                              stroke="#667eea" stroke-width="1" fill="none" stroke-dasharray="5,5" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <text x="770" y="15" text-anchor="middle" fill="#667eea" font-size="9" font-style="italic" opacity="0.7">Self-Reasoning</text>
+                        
+                        <!-- New feedback connections based on markup -->
+                        <!-- Requirements Doc back to User Request (feedback loop) -->
+                        <path d="M 500 510 Q 140 510 140 110" stroke="#9b59b6" stroke-width="2" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="5,5" opacity="0.7"/>
+                        
+                        <!-- Episodic Memory to Pattern Recognition (cross-connection) -->
+                        <line x1="650" y1="230" x2="530" y2="380" stroke="#9b59b6" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,5" opacity="0.7"/>
+                        
+                        <!-- Labels for key flows -->
+                        <text x="280" y="70" fill="#667eea" font-size="12">Initiate</text>
+                        <text x="580" y="70" fill="#667eea" font-size="12">Activate</text>
+                        <text x="880" y="70" fill="#667eea" font-size="12">Persist</text>
+                        <text x="880" y="220" fill="#667eea" font-size="12">Index</text>
+                        <text x="490" y="450" fill="#e74c3c" font-size="12" font-weight="bold">Synthesize</text>
+                        <text x="690" y="450" fill="#e74c3c" font-size="12" font-weight="bold">Generate</text>
+                    </svg>
+                </div>
+            </div>
+                    
+                    <!-- Primary Platform Components -->
+                    <h3 style="color: #667eea; margin: 30px 0 20px 0; text-align: center;">Primary Platform Components</h3>
+                    
+                    <!-- LLABS Innovation (Proprietary) -->
+                    <div style="background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                        <h4 style="color: #d63031; margin-bottom: 15px;">🔒 LLABS Innovation (Proprietary Components)</h4>
+                        <div class="platform-grid">
+                            <div class="component proprietary">
+                                <div class="component-title">♾️ Cognitive Loop Engine</div>
+                                <div class="component-desc">Enables genuine autonomous reasoning beyond request-response</div>
+                            </div>
+                            
+                            <div class="component proprietary">
+                                <div class="component-title">💾 State Persistence Engine</div>
+                                <div class="component-desc">Maintains context across extended periods</div>
+                            </div>
+                            
+                            <div class="component proprietary">
+                                <div class="component-title">🧩 Episodic Memory System</div>
+                                <div class="component-desc">Stores complete narrative contexts with causal relationships</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Toolset Architecture -->
+                    <div style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                        <h4 style="color: white; margin-bottom: 15px;">🛠️ Toolset Architecture</h4>
+                        <div class="platform-grid">
+                            <div class="component">
+                                <div class="component-title">📊 Weaviate Vector Database</div>
+                                <div class="component-desc">Semantic search & knowledge storage with advanced vector embeddings</div>
+                            </div>
+                            
+                            <div class="component">
+                                <div class="component-title">🔄 LLM Inference Layer</div>
+                                <div class="component-desc">Intelligent router to Anthropic, OpenAI, and Grok models</div>
+                            </div>
+                            
+                            <div class="component">
+                                <div class="component-title">🔧 Tool Integration Framework</div>
+                                <div class="component-desc">Connects to external systems, APIs, and data sources</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Supporting Components -->
+                    <div style="background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); padding: 20px; border-radius: 10px;">
+                        <h4 style="color: white; margin-bottom: 15px;">📦 Supporting Components</h4>
+                        <div class="platform-grid">
+                            <div class="component">
+                                <div class="component-title">📈 Pattern Recognition Module</div>
+                                <div class="component-desc">Learns from experience and identifies optimization opportunities</div>
+                            </div>
+                            
+                            <div class="component">
+                                <div class="component-title">🤖 Agent Management System</div>
+                                <div class="component-desc">Creates, deploys, and monitors specialized agents</div>
+                            </div>
+                            
+                            <div class="component">
+                                <div class="component-title">🔐 Security & Governance</div>
+                                <div class="component-desc">Enterprise-grade security with complete data isolation</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="key-points">
+                        <h3>Key Differentiators</h3>
+                        <ul>
+                            <li>Maintains complete context for months, not just hours</li>
+                            <li>Learns from every interaction without retraining</li>
+                            <li>Operates autonomously without constant human oversight</li>
+                            <li>Each agent deployment makes the system smarter</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ASC Agent Flow Section -->
+            <div class="diagram-section">
+                <h2>Level 2: ASC Agent Implementation Flow</h2>
+                <p class="description">
+                    How the Autonomous Stakeholder Consultant agent orchestrates platform components to enhance O9 implementations. This flow demonstrates the agent's approach to streamlining the discovery process.
+                </p>
+                
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <div class="step-title"><span class="step-number">1</span>Initialize Discovery Mission</div>
+                        <div class="step-desc">Agent receives mandate: "Conduct complete stakeholder discovery for O9 implementation"</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-title"><span class="step-number">2</span>Cognitive Loop Activation</div>
+                        <div class="step-desc">Autonomous planning engine creates comprehensive interview strategy, identifies stakeholders from org charts, schedules meetings via calendar integration</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-title"><span class="step-number">3</span>Natural Conversation Generation</div>
+                        <div class="step-desc">LLM Inference Layer generates context-aware questions, adapts to stakeholder responses in real-time, maintains natural dialogue flow</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-title"><span class="step-number">4</span>Episodic Memory Storage</div>
+                        <div class="step-desc">Complete conversation narratives preserved with emotional context, causal relationships mapped, contradictions flagged for resolution</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-title"><span class="step-number">5</span>Vector Indexing & Pattern Matching</div>
+                        <div class="step-desc">Weaviate indexes all conversations for semantic search, identifies patterns across stakeholder interviews, detects gaps in requirements</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-title"><span class="step-number">6</span>State Persistence Across Weeks</div>
+                        <div class="step-desc">Maintains complete context throughout the entire discovery phase, tracks objectives and prior conversations, builds comprehensive mental model</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-title"><span class="step-number">7</span>Continuous Learning Loop</div>
+                        <div class="step-desc">Applies patterns from previous O9 implementations, predicts likely requirements based on industry, adapts approach based on stakeholder feedback</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-title"><span class="step-number">8</span>Synthesis & Contradiction Resolution</div>
+                        <div class="step-desc">Pattern Recognition Module identifies all contradictions, generates unified requirements document, suggests resolution strategies for conflicts</div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-title"><span class="step-number">9</span>Deliverable Generation</div>
+                        <div class="step-desc">Complete requirements document with gap analysis, stakeholder alignment matrix, implementation roadmap with dependencies mapped</div>
+                    </div>
+                    
+                    <div class="key-points">
+                        <h3>ASC Agent Outcomes</h3>
+                        <ul>
+                            <li>Comprehensive stakeholder coverage through systematic identification</li>
+                            <li>Streamlined discovery process with autonomous operation</li>
+                            <li>Persistent context maintenance throughout implementation</li>
+                            <li>Potential for managing multiple implementations in parallel</li>
+                            <li>Continuous learning from each implementation experience</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- D3.js Library for Force-Based Graph -->
+            <script src="https://d3js.org/d3.v7.min.js"></script>
+            
+            <!-- ASC Agent Visual Flow -->
+            <div class="diagram-section">
+                <h2>ASC Agent Process Flow Graph</h2>
+                <div class="key-points" style="background: #fff3cd; border-color: #ffc107; margin-bottom: 20px;">
+                    <h3 style="color: #856404;">⚡ Important: Agent-Generated Pattern</h3>
+                    <p style="color: #856404; line-height: 1.6; margin-top: 10px;">
+                        <strong>This flow was generated by our Agent Creation Agent</strong> based on O9's requirements and materials provided. Each agent develops its own unique process pattern optimized for its specific domain and objectives.
+                    </p>
+                    <p style="color: #856404; line-height: 1.6; margin-top: 10px;">
+                        The ASC agent's flow will <strong>expand dynamically</strong> as it learns from each implementation, discovering new stakeholder types, refining interview techniques, and optimizing its synthesis approach.
+                    </p>
+                </div>
+                <p class="description">
+                    Visual representation of the ASC agent's workflow for O9 stakeholder discovery. Click "Provide Feedback" below to see how the agent evolves its process based on real-world experience.
+                </p>
+                
+                    <!-- ASC Flow Tooltip System -->
+                    <style>
+                        .asc-node { cursor: pointer; transition: all 0.3s ease; }
+                        .asc-node:hover { filter: brightness(1.1); }
+                    </style>
+                    
+                    <div id="asc-tooltip" class="custom-tooltip"></div>
+                    
+                    <script>
+                        // ASC Flow Tooltip content
+                        const ascTooltips = {
+                            'start': {
+                                title: '🚀 Process Initiation',
+                                content: '<strong>Starting Point:</strong> ASC Agent receives O9 discovery mission<br><br>• Loads context and objectives<br>• Initializes stakeholder analysis<br>• Sets up interview protocols<br><br><em>Rapid initialization and setup</em>'
+                            },
+                            'identify': {
+                                title: '🔍 Stakeholder Identification',
+                                content: '<strong>AI-Powered Discovery:</strong><br><br>• Analyzes org charts & documents<br>• Identifies key decision makers<br>• Maps influence networks<br>• Prioritizes interview order<br><br><em>Output: Stakeholder matrix with roles</em>'
+                            },
+                            'schedule': {
+                                title: '📅 Automated Scheduling',
+                                content: '<strong>Calendar Integration:</strong><br><br>• Checks availability across calendars<br>• Sends personalized invitations<br>• Manages conflicts & rescheduling<br>• Prepares interview protocols<br><br><em>Automated coordination reduces manual effort</em>'
+                            },
+                            'conduct': {
+                                title: '🎤 Interview Execution',
+                                content: '<strong>Adaptive Questioning:</strong><br><br>• Dynamic question generation<br>• Real-time follow-up probing<br>• Sentiment analysis<br>• Contradiction detection<br><br><em>Captures full narrative context</em>'
+                            },
+                            'store': {
+                                title: '🧠 Episodic Memory Storage',
+                                proprietary: true,
+                                content: '<strong>🔒 PROPRIETARY - Narrative Intelligence:</strong><br><br>• Stores complete conversation context<br>• Preserves emotional undertones<br>• Links causal relationships<br>• Enables experience replay<br><br><em>Beyond transcription to meaning</em>'
+                            },
+                            'decision': {
+                                title: '🤔 Iteration Decision',
+                                content: '<strong>Smart Loop Control:</strong><br><br>• Evaluates coverage completeness<br>• Identifies gaps in perspectives<br>• Decides on additional interviews<br>• Optimizes for diminishing returns<br><br><em>Knows when enough data is collected</em>'
+                            },
+                            'analyze': {
+                                title: '📊 Pattern Analysis',
+                                content: '<strong>AI Pattern Recognition:</strong><br><br>• Identifies recurring themes<br>• Maps requirement clusters<br>• Discovers hidden connections<br>• Prioritizes by frequency & impact<br><br><em>Improves with each implementation</em>'
+                            },
+                            'detect': {
+                                title: '⚠️ Contradiction Detection',
+                                content: '<strong>Conflict Resolution:</strong><br><br>• Finds conflicting requirements<br>• Identifies misaligned priorities<br>• Suggests reconciliation paths<br>• Flags for human review<br><br><em>Prevents costly misunderstandings</em>'
+                            },
+                            'synthesize': {
+                                title: '📝 Requirements Synthesis',
+                                content: '<strong>Final Deliverable:</strong><br><br>• Comprehensive requirements document<br>• Stakeholder alignment matrix<br>• Risk & dependency analysis<br>• Implementation roadmap<br><br><em>Enterprise-grade in days, not months</em>'
+                            },
+                            'output': {
+                                title: '📄 Output Generation',
+                                content: '<strong>Deliverable Creation:</strong><br><br>• Formats for different audiences<br>• Executive summaries<br>• Technical specifications<br>• Next steps & recommendations<br><br><em>Integrates with Jira, Confluence</em>'
+                            }
+                        };
+                        
+                        // Show ASC tooltip function
+                        function showAscTooltip(event, id) {
+                            const tooltip = document.getElementById('asc-tooltip');
+                            const data = ascTooltips[id];
+                            if (!data) return;
+                            
+                            let html = '<h4>' + data.title;
+                            if (data.proprietary) {
+                                html += ' <span class="proprietary-badge">PROPRIETARY</span>';
+                            }
+                            html += '</h4><div style="line-height: 1.6; color: #555;">' + data.content + '</div>';
+                            
+                            tooltip.innerHTML = html;
+                            tooltip.classList.add('show');
+                            
+                            // Position tooltip
+                            const rect = event.target.getBoundingClientRect();
+                            const containerRect = event.target.closest('.architecture-diagram').getBoundingClientRect();
+                            
+                            let left = rect.left - containerRect.left + rect.width/2 - 150;
+                            let top = rect.top - containerRect.top + rect.height + 10;
+                            
+                            // Adjust if too close to bottom
+                            if (rect.bottom + 200 > containerRect.bottom) {
+                                top = rect.top - containerRect.top - 200;
+                            }
+                            
+                            tooltip.style.left = Math.max(10, Math.min(left, containerRect.width - 310)) + 'px';
+                            tooltip.style.top = top + 'px';
+                        }
+                        
+                        // Hide ASC tooltip
+                        function hideAscTooltip() {
+                            const tooltip = document.getElementById('asc-tooltip');
+                            if (tooltip) tooltip.classList.remove('show');
+                        }
+                        
+                        // Add listeners after DOM loads
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // START node
+                            const startNode = document.querySelector('circle[cx="100"][cy="250"]');
+                            if (startNode) {
+                                startNode.classList.add('asc-node');
+                                startNode.addEventListener('mouseenter', (e) => showAscTooltip(e, 'start'));
+                                startNode.addEventListener('mouseleave', hideAscTooltip);
+                            }
+                            
+                            // Other nodes
+                            const nodeMap = [
+                                {selector: 'rect[x="200"][y="220"]', id: 'identify'},
+                                {selector: 'rect[x="420"][y="220"]', id: 'schedule'},
+                                {selector: 'rect[x="640"][y="220"]', id: 'conduct'},
+                                {selector: 'rect[x="860"][y="220"]', id: 'store'},
+                                {selector: 'polygon[points="0,-40 60,0 0,40 -60,0"]', id: 'decision'},
+                                {selector: 'rect[x="640"][y="350"]', id: 'analyze'},
+                                {selector: 'rect[x="420"][y="350"]', id: 'detect'},
+                                {selector: 'rect[x="200"][y="350"]', id: 'synthesize'},
+                                {selector: 'rect[x="50"][y="350"]', id: 'output'}
+                            ];
+                            
+                            nodeMap.forEach(item => {
+                                const node = document.querySelector(item.selector);
+                                if (node) {
+                                    node.classList.add('asc-node');
+                                    const parent = node.parentElement;
+                                    const target = parent && parent.tagName === 'g' ? parent : node;
+                                    target.addEventListener('mouseenter', (e) => showAscTooltip(e, item.id));
+                                    target.addEventListener('mouseleave', hideAscTooltip);
+                                }
+                            });
+                        });
+                    </script>
+                <!-- Enhanced Force-Based Flow Graph -->
+                <style>
+                    #stage { position:relative; background:#f8f9fa; border-radius:12px; padding:20px; overflow:hidden; margin: 0 20px; }
+                    #svg { width:100%; height:640px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; cursor:grab; }
+                    #svg.grabbing { cursor:grabbing; }
+                    .grid line { stroke:#eef2f7; stroke-width:1; }
+                    .link { stroke-width:2; fill:none; }
+                    .link.dashed { stroke-dasharray:6 6; }
+                    .link-label { font-size:12px; fill:#334155; user-select:none; pointer-events:none; }
+                    .node { cursor:pointer; }
+                    .node .label { font-weight:700; fill:#fff; font-size:14px; }
+                    .node .sublabel { fill:#fff; font-size:12px; }
+                    #tooltip { position:absolute; opacity:0; background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(248,249,250,.98)); color:#333; padding:12px; border-radius:10px; font-size:13px; max-width:320px; z-index:1000; box-shadow:0 8px 32px rgba(0,0,0,.15), 0 0 0 1px rgba(102,126,234,.1); backdrop-filter:blur(10px); transition:opacity .2s ease; pointer-events:none; }
+                    #tooltip h4 { margin:0 0 6px 0; color:#667eea; font-size:14px; font-weight:600; }
+                    #tooltip .pill { background:linear-gradient(135deg,#ffeaa7,#fdcb6e); color:#d63031; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:600; margin-left:6px; }
+                    #toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; background:linear-gradient(135deg,rgba(102,126,234,.08),rgba(118,75,162,.08)); border:1px solid rgba(102,126,234,.2); padding:10px 12px; border-radius:10px; margin-bottom:12px; }
+                    .btn { appearance:none; border:0; padding:8px 12px; border-radius:8px; background:#667eea; color:#fff; font-weight:600; font-size:14px; cursor:pointer; box-shadow:0 3px 8px rgba(102,126,234,.25); transition:all .15s ease; }
+                    .btn:hover { transform:translateY(-1px); box-shadow:0 5px 15px rgba(102,126,234,.35); }
+                    .btn:disabled { opacity:.5; cursor:not-allowed; }
+                    .btn.ghost { background:transparent; color:#667eea; border:1px solid rgba(102,126,234,.4); box-shadow:none; }
+                    .btn.secondary { background:#6c757d; }
+                    #history { margin-top:12px; background:#f8fafc; border:1px solid #e2e8f0; border-left:4px solid #667eea; border-radius:8px; padding:15px 20px; }
+                    #history h4 { margin:0 0 12px 0; color:#334155; font-size:16px; font-weight:600; }
+                    #history ol { margin:0; padding-left:25px; max-height:400px; overflow:auto; }
+                    #history li { margin:8px 0; color:#475569; font-size:14px; line-height:1.5; }
+                    #history li strong { color:#334155; font-weight:600; display:inline-block; margin-right:5px; }
+                    #history li em { color:#667eea; font-style:italic; }
+                </style>
+                
+                <div id="stage">
+                    <div id="toolbar">
+                        <button class="btn" id="btn-feedback">📝 Provide Feedback</button>
+                        <button class="btn secondary" id="btn-reset" style="display:none;">🔄 Reset Flow</button>
+                        <span style="flex:1;"></span>
+                        <button class="btn ghost" id="btn-fit">Fit to View</button>
+                        <button class="btn ghost" id="btn-zoom-in">Zoom +</button>
+                        <button class="btn ghost" id="btn-zoom-out">Zoom −</button>
+                        <span style="color:#667eea; font-weight:600; margin-left:12px;">Feedback: <span id="count">0</span></span>
+                    </div>
+                    
+                    <div id="history" style="display:none;">
+                        <h4>Feedback History</h4>
+                        <ol id="history-list"></ol>
+                    </div>
+                    
+                    <svg id="svg" viewBox="0 0 1280 640" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="m-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#3498db"/>
+                            </marker>
+                            <marker id="m-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#2ecc71"/>
+                            </marker>
+                            <marker id="m-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#e74c3c"/>
+                            </marker>
+                            <marker id="m-amber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#f39c12"/>
+                            </marker>
+                            <marker id="m-teal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#00b894"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                    
+                    <div id="tooltip"></div>
+                </div>
+                
+                <script>
+                    // Force-Based ASC Flow Graph Implementation
+                    const COLORS = {
+                        start: {fill:'#2ecc71', stroke:'#27ae60'},
+                        primary: {fill:'#3498db', stroke:'#2980b9'},
+                        plum: {fill:'#9b59b6', stroke:'#8e44ad'},
+                        orange: {fill:'#e67e22', stroke:'#d35400'},
+                        amber: {fill:'#f39c12', stroke:'#e67e22'},
+                        slate: {fill:'#34495e', stroke:'#2c3e50'},
+                        teal: {fill:'#16a085', stroke:'#1abc9c'},
+                        crimson: {fill:'#c0392b', stroke:'#e74c3c'},
+                        green: {fill:'#27ae60', stroke:'#2ecc71'},
+                        end: {fill:'#e74c3c', stroke:'#c0392b'},
+                        aqua: {fill:'#00b894', stroke:'#00cec9'}
+                    };
+                    
+                    const TOOLTIPS = {
+                        start: {
+                            title:'🚀 Process Initiation', 
+                            body:'<strong>What:</strong> ASC Agent receives its mission from O9 Solutions to conduct comprehensive stakeholder discovery.<br><br>' +
+                                 '<strong>Why:</strong> O9 implementations often fail due to misaligned stakeholder expectations. This agent ensures all voices are heard.<br><br>' +
+                                 '<strong>How:</strong> Loads company context, org charts, project scope, and initializes interview protocols.<br><br>' +
+                                 '<em>The agent can operate autonomously for extended periods once initialized</em>'
+                        },
+                        identify: {
+                            title:'🔍 Stakeholder Identification', 
+                            body:'<strong>What:</strong> AI-powered discovery of all relevant stakeholders across the organization.<br><br>' +
+                                 '<strong>Why:</strong> Traditional consultants often miss key influencers or decision makers, leading to gaps.<br><br>' +
+                                 '<strong>How:</strong> Analyzes org charts, project documents, email chains, and uses NLP to identify power dynamics.<br><br>' +
+                                 '<strong>Output:</strong> Prioritized stakeholder matrix with roles, influence levels, and optimal interview sequence.'
+                        },
+                        schedule: {
+                            title:'📅 Automated Scheduling', 
+                            body:'<strong>What:</strong> Autonomous coordination of interviews without human intervention.<br><br>' +
+                                 '<strong>Why:</strong> Eliminates weeks of back-and-forth scheduling emails and calendar conflicts.<br><br>' +
+                                 '<strong>How:</strong> Integrates with calendar APIs, sends personalized invitations, manages rescheduling.<br><br>' +
+                                 '<strong>Smart Feature:</strong> Adapts interview order based on availability and stakeholder dependencies.'
+                        },
+                        conduct: {
+                            title:'🎤 Interview Execution', 
+                            body:'<strong>What:</strong> Dynamic, intelligent stakeholder interviews that adapt in real-time.<br><br>' +
+                                 '<strong>Why:</strong> Unlike static surveys, captures nuance, emotion, and unspoken concerns.<br><br>' +
+                                 '<strong>How:</strong> Uses advanced NLP for dynamic questioning, sentiment analysis, and contradiction detection.<br><br>' +
+                                 '<strong>Key Innovation:</strong> Probes deeper when detecting hesitation or inconsistency, just like an expert interviewer.'
+                        },
+                        store: {
+                            title:'🧠 Episodic Memory [PROPRIETARY]', 
+                            body:'<strong>What:</strong> Stores complete narrative context, not just facts.<br><br>' +
+                                 '<strong>Why:</strong> Requirements aren\'t just data points - they\'re stories with context, emotion, and relationships.<br><br>' +
+                                 '<strong>How:</strong> LLABS proprietary episodic memory preserves full conversation narratives with causal links.<br><br>' +
+                                 '<strong>Capability:</strong> Designed to maintain context across extended periods of operation, unlike typical chatbot interactions.'
+                        },
+                        decision: {
+                            title:'🤔 Iteration Decision Point', 
+                            body:'<strong>What:</strong> Intelligent evaluation of discovery completeness.<br><br>' +
+                                 '<strong>Why:</strong> Ensures comprehensive coverage without unnecessary redundancy.<br><br>' +
+                                 '<strong>How:</strong> Analyzes stakeholder coverage, identifies gaps, detects emerging themes needing exploration.<br><br>' +
+                                 '<strong>Decision Logic:</strong> Evaluates whether additional interviews would provide valuable insights.'
+                        },
+                        analyze: {
+                            title:'📊 Pattern Analysis', 
+                            body:'<strong>What:</strong> Deep analysis of all collected stakeholder input.<br><br>' +
+                                 '<strong>Why:</strong> Surfaces hidden patterns and connections humans might miss across dozens of interviews.<br><br>' +
+                                 '<strong>How:</strong> Uses clustering algorithms, theme extraction, and relationship mapping.<br><br>' +
+                                 '<strong>Output:</strong> Requirement themes ranked by frequency, impact, and stakeholder consensus level.'
+                        },
+                        detect: {
+                            title:'⚠️ Contradiction Detection', 
+                            body:'<strong>What:</strong> Identifies conflicts between stakeholder requirements.<br><br>' +
+                                 '<strong>Why:</strong> Unresolved contradictions are the #1 cause of O9 implementation failures.<br><br>' +
+                                 '<strong>How:</strong> Cross-references all statements, detects logical conflicts, identifies misaligned priorities.<br><br>' +
+                                 '<strong>Resolution:</strong> Proposes reconciliation strategies and facilitates alignment discussions.'
+                        },
+                        generate: {
+                            title:'📝 Requirements Synthesis', 
+                            body:'<strong>What:</strong> Creates comprehensive requirements documentation.<br><br>' +
+                                 '<strong>Why:</strong> Delivers actionable, aligned requirements that all stakeholders have contributed to.<br><br>' +
+                                 '<strong>Deliverables:</strong><br>' +
+                                 '• Complete requirements document<br>' +
+                                 '• Stakeholder alignment matrix<br>' +
+                                 '• Risk analysis with contradictions<br>' +
+                                 '• Implementation roadmap<br>' +
+                                 '<strong>Approach:</strong> The system is designed to learn and improve from patterns over time.'
+                        },
+                        end: {
+                            title:'🎯 Process Complete', 
+                            body:'<strong>Result:</strong> O9 Solutions receives comprehensive requirements documentation.<br><br>' +
+                                 '<strong>Potential Benefits:</strong> Streamlined discovery process with extensive stakeholder input.<br><br>' +
+                                 '<strong>Approach:</strong> Systematic identification of different perspectives and potential contradictions.<br><br>' +
+                                 '<strong>Next:</strong> Implementation can proceed with documented stakeholder perspectives.'
+                        },
+                        analyzeRepo: {
+                            title:'📦 Repository Analysis', 
+                            body:'<strong>What:</strong> Pre-interview analysis of O9\'s technical systems.<br><br>' +
+                                 '<strong>Why:</strong> Grounds interviews in technical reality, prevents impossible requirements.<br><br>' +
+                                 '<strong>How:</strong> Scans code repos, APIs, database schemas, existing integrations.<br><br>' +
+                                 '<strong>Value:</strong> Seeds interviews with technically-informed questions about constraints.'
+                        },
+                        validate: {
+                            title:'✅ Validation Checkpoint', 
+                            body:'<strong>What:</strong> Iterative validation with stakeholders during discovery.<br><br>' +
+                                 '<strong>Why:</strong> Catches misunderstandings early rather than at project end.<br><br>' +
+                                 '<strong>How:</strong> Shares interim findings, confirms interpretations, corrects course.<br><br>' +
+                                 '<strong>Approach:</strong> Periodic validation as patterns and themes emerge during the discovery process.'
+                        },
+                        network: {
+                            title:'🕸️ Network Analysis', 
+                            body:'<strong>What:</strong> Maps informal influence networks beyond org charts.<br><br>' +
+                                 '<strong>Why:</strong> Real decision power often differs from formal hierarchy.<br><br>' +
+                                 '<strong>How:</strong> Analyzes communication patterns, identifies hidden influencers.<br><br>' +
+                                 '<strong>Impact:</strong> Ensures we interview the people who really drive decisions.'
+                        },
+                        dashboard: {
+                            title:'📊 Progress Dashboard', 
+                            body:'<strong>What:</strong> Real-time visibility into discovery progress.<br><br>' +
+                                 '<strong>Why:</strong> Keeps O9 leadership informed without interrupting the process.<br><br>' +
+                                 '<strong>Tracking:</strong><br>' +
+                                 '• Stakeholder interview progress<br>' +
+                                 '• Identified discussion points<br>' +
+                                 '• Emerging themes and patterns<br>' +
+                                 '• Discovery status updates<br>' +
+                                 '<strong>Access:</strong> Web dashboard updated after each interview.'
+                        }
+                    };
+                    
+                    // Initialize nodes and links
+                    let linkId = 0;
+                    let nodes = [
+                        nodeCircle('start','START',80,COLORS.start),
+                        nodeRect('identify','Identify','Stakeholders',COLORS.primary),
+                        nodeRect('schedule','Schedule','Interviews',COLORS.plum),
+                        nodeRect('conduct','Conduct','Interview',COLORS.orange),
+                        nodeRect('store','Store Narrative','🔒 Episodic Memory',COLORS.amber),
+                        nodeDiamond('decision','More','Stakeholders?',120,120,COLORS.slate),
+                        nodeRect('analyze','Analyze','Patterns',COLORS.teal),
+                        nodeRect('detect','Detect','Contradictions',COLORS.crimson),
+                        nodeRect('generate','Generate','Requirements',COLORS.green),
+                        nodeCircle('end','END',80,COLORS.end)
+                    ];
+                    
+                    let links = [
+                        link('start','identify'),
+                        link('identify','schedule'),
+                        link('schedule','conduct'),
+                        link('conduct','store'),
+                        link('store','decision'),
+                        link('decision','analyze',{cls:'no'}),
+                        link('analyze','detect'),
+                        link('detect','generate'),
+                        link('generate','end'),
+                        link('decision','identify',{cls:'yes', dashed:true, label:'YES – Continue Loop'})
+                    ];
+                    
+                    const flowOrderTop = ['start','identify','schedule','conduct','store','decision'];
+                    const flowBottom = ['analyze','detect','generate','end'];
+                    
+                    // Feedback steps
+                    let feedbackSteps = [
+                        {
+                            text:"Analyze enterprise repository before interviews to identify technical constraints.",
+                            context: "During Sprint 3 with Customer X, we discovered 40% of requirements were technically infeasible due to legacy system limitations only found after interviews were complete.",
+                            reasoning: "Early technical analysis prevents wasted interview time on impossible requirements and allows agents to guide conversations toward feasible solutions.",
+                            agentUnderstanding: "I now understand that technical constraints shape what's possible. Before asking stakeholders about desired features, I must first map the technical landscape to frame discussions realistically.",
+                            implementation: "Agent now: 1) Scans all code repositories, 2) Identifies API limitations, 3) Creates feasibility matrix BEFORE first meeting, 4) Adjusts questions based on technical reality",
+                            impact: "Reduced requirement rework by 60%, saved 2 weeks of clarifications",
+                            apply:()=>{ if(!getNode('analyzeRepo')){ nodes.push(nodeRect('analyzeRepo','Analyze','Repository', COLORS.end)); replaceLink('start','identify', ['start','analyzeRepo'], ['analyzeRepo','identify']); insertAfter(flowOrderTop,'start','analyzeRepo'); }}
+                        },
+                        {
+                            text:"Add iterative validation checkpoints instead of only validating at the end.",
+                            context: "Customer Y had 15 stakeholders with conflicting views. By the time we validated at the end, positions had hardened and resolution took 3 extra weeks.",
+                            reasoning: "Continuous validation catches contradictions early when stakeholders are still flexible, preventing entrenchment and reducing conflict resolution time.",
+                            agentUnderstanding: "Human psychology matters - early course correction is easier than late-stage conflict resolution. I must validate incrementally to maintain stakeholder flexibility.",
+                            implementation: "Agent validates after every 3 interviews, sends summaries to all stakeholders, schedules clarification calls within 48 hours of detecting contradictions",
+                            impact: "Contradiction resolution reduced from weeks to days, stakeholder satisfaction up 35%",
+                            apply:()=>{ if(!getNode('validate')){ nodes.push(nodeRect('validate','Validate','Checkpoint', COLORS.amber)); replaceLink('store','decision', ['store','validate'], ['validate','decision']); links.push(link('validate','schedule',{cls:'validate', dashed:true, label:'Iterative Validation'})); insertAfter(flowOrderTop,'store','validate'); }}
+                        },
+                        {
+                            text:"Identify informal influencers using social network analysis.",
+                            context: "At Company Z, the org chart missed that a mid-level analyst actually influenced all major decisions. We discovered this only after our recommendations were blocked.",
+                            reasoning: "Formal hierarchies often hide actual decision-making power. Understanding informal influence networks ensures we engage the right people.",
+                            agentUnderstanding: "Power structures aren't always visible in org charts. I must analyze communication patterns and meeting attendance to map true influence networks.",
+                            implementation: "Agent performs email/Slack analysis, meeting pattern analysis, reference tracking to identify and prioritize high-influence individuals",
+                            impact: "Implementation success rate increased 40%, reduced political roadblocks",
+                            apply:()=>{ if(!getNode('network')){ nodes.push(nodeRect('network','Network','Analysis', COLORS.plum)); replaceLink('identify','schedule', ['identify','network'], ['network','schedule']); }}
+                        },
+                        {
+                            text:"Add real-time progress dashboard for stakeholder visibility.",
+                            context: "Stakeholders at Company W grew anxious during the 6-week discovery phase with no visibility, leading to scope creep and constant status meetings.",
+                            reasoning: "Transparency reduces anxiety and builds trust. When stakeholders can see progress, they're less likely to interfere.",
+                            agentUnderstanding: "Humans need visibility to feel comfortable with autonomous processes. By providing continuous updates, I can work uninterrupted while maintaining confidence.",
+                            implementation: "Agent creates auto-updating dashboard with interviews completed, live requirement graphs, contradiction heat maps, and automated weekly summaries",
+                            impact: "Status meetings reduced 80%, scope creep down 50%, improved trust scores",
+                            apply:()=>{ if(!getNode('dashboard')){ nodes.push(nodeRect('dashboard','Progress','Dashboard', COLORS.aqua)); links.push(link('store','dashboard',{cls:'status', dashed:true, label:'Status Updates'})); }}
+                        }
+                    ];
+                    
+                    // D3 Setup
+                    const svg = d3.select('#svg');
+                    const stage = document.getElementById('stage');
+                    const tooltip = document.getElementById('tooltip');
+                    const historyDiv = document.getElementById('history');
+                    
+                    // Grid
+                    const gRoot = svg.append('g').attr('class','root');
+                    const gGrid = gRoot.append('g').attr('class','grid');
+                    const gridW = 1280, gridH = 640, step = 60;
+                    for(let x=0;x<=gridW;x+=step) gGrid.append('line').attr('x1',x).attr('y1',0).attr('x2',x).attr('y2',gridH);
+                    for(let y=0;y<=gridH;y+=step) gGrid.append('line').attr('x1',0).attr('y1',y).attr('x2',gridW).attr('y2',y);
+                    
+                    const gLinks = gRoot.append('g').attr('class','links');
+                    const gLabels = gRoot.append('g').attr('class','link-labels');
+                    const gNodes = gRoot.append('g').attr('class','nodes');
+                    
+                    // Zoom & pan
+                    const zoom = d3.zoom().scaleExtent([0.5, 2.5]).on('zoom', (ev) => gRoot.attr('transform', ev.transform));
+                    svg.call(zoom);
+                    
+                    // Force simulation
+                    let simulation = d3.forceSimulation(nodes)
+                        .force('link', d3.forceLink(links).id(d=>d.id).distance(180).strength(0.8))
+                        .force('charge', d3.forceManyBody().strength(-900))
+                        .force('center', d3.forceCenter(gridW/2, gridH/2))
+                        .force('collide', d3.forceCollide().radius(d => Math.hypot(d.w,d.h)/2 + 25))
+                        .force('x', d3.forceX(gridW/2).strength(0.02))
+                        .force('y', d3.forceY(gridH/2).strength(0.02));
+                    
+                    let layoutMode = 'flow';
+                    applyFlowForces();
+                    
+                    // Helper functions
+                    function nodeRect(id,title,subtitle,color){ return {id, title, subtitle, shape:'rect', w:160, h:60, ...color}; }
+                    function nodeCircle(id,title,size,color){ return {id, title, shape:'circle', w:size, h:size, ...color}; }
+                    function nodeDiamond(id,title,subtitle,w,h,color){ return {id, title, subtitle, shape:'diamond', w, h, ...color}; }
+                    function link(s,t,opts={}){ return {id:`L${++linkId}`, source:s, target:t, dashed:!!opts.dashed, cls:opts.cls||'', label:opts.label}; }
+                    function getNode(id){ return nodes.find(n=>n.id===id); }
+                    function attrId(x){ return (typeof x==='object')? x.id : x; }
+                    function replaceLink(sOld,tOld, ...replacements){
+                        links = links.filter(L => !(attrId(L.source)===sOld && attrId(L.target)===tOld));
+                        for(const [s,t] of replacements){ links.push(link(s,t)); }
+                    }
+                    function insertAfter(arr, afterId, newId){
+                        const i = arr.indexOf(afterId);
+                        if(i === -1) arr.push(newId); else arr.splice(i+1, 0, newId);
+                    }
+                    
+                    function anchorPoint(A, B){
+                        const dx = B.x - A.x, dy = B.y - A.y;
+                        if(dx===0 && dy===0) return {x:A.x, y:A.y};
+                        
+                        if(A.shape==='circle'){
+                            const r = A.w/2, k = r/Math.hypot(dx,dy);
+                            return {x: A.x + dx*k, y: A.y + dy*k};
+                        }
+                        if(A.shape==='diamond'){
+                            const a = A.w/2, b = A.h/2;
+                            const k = 1 / (Math.abs(dx)/a + Math.abs(dy)/b);
+                            return {x: A.x + dx*k, y: A.y + dy*k};
+                        }
+                        // rect
+                        const hw = A.w/2, hh = A.h/2;
+                        const kx = hw / Math.abs(dx || 1e-6);
+                        const ky = hh / Math.abs(dy || 1e-6);
+                        const k = Math.min(kx, ky);
+                        return {x: A.x + dx*k, y: A.y + dy*k};
+                    }
+                    
+                    function applyFlowForces(){
+                        const top = flowOrderTop.slice();
+                        const mx = 100, W = gridW - mx*2;
+                        const stepX = W / Math.max(1, top.length-1);
+                        const yTop = 180, yOverlay = 90, yBottom = 460;
+                        
+                        const flowX = {};
+                        top.forEach((id,i)=>{ flowX[id] = mx + i*stepX; });
+                        if(getNode('network'))   flowX['network']   = (flowX['identify'] + flowX['schedule'])/2;
+                        if(getNode('validate'))  flowX['validate']  = flowX['store'] + stepX*0.55;
+                        if(getNode('analyzeRepo')) flowX['analyzeRepo'] = flowX['start'] + stepX*0.55;
+                        
+                        const xForce = d3.forceX(d=>{
+                            if(d.id==='dashboard') return gridW - 160;
+                            if(d.id==='network') return flowX['network'] ?? gridW/2;
+                            if(d.id in flowX) return flowX[d.id];
+                            if(flowBottom.includes(d.id)) return gridW - (['analyze','detect','generate','end'].indexOf(d.id)+1)*240;
+                            return gridW/2;
+                        }).strength(0.15);
+                        
+                        const yForce = d3.forceY(d=>{
+                            if(d.id==='network') return yOverlay;
+                            if(flowBottom.includes(d.id)) return yBottom;
+                            if(d.id==='dashboard') return yBottom-40;
+                            return yTop;
+                        }).strength(0.15);
+                        
+                        simulation.force('xflow', layoutMode==='flow' ? xForce : null);
+                        simulation.force('yflow', layoutMode==='flow' ? yForce : null);
+                    }
+                    
+                    // Update graph
+                    function updateGraph() {
+                        // Links
+                        const keyFor = d => d.id;
+                        const colorFor = d => d.cls==='validate' ? '#f39c12' :
+                                             d.cls==='yes' ? '#2ecc71' :
+                                             d.cls==='no' ? '#e74c3c' :
+                                             d.cls==='status' ? '#00b894' : '#3498db';
+                        const markerFor = d => d.cls==='validate' ? 'url(#m-amber)' :
+                                               d.cls==='yes' ? 'url(#m-green)' :
+                                               d.cls==='no' ? 'url(#m-red)' :
+                                               d.cls==='status' ? 'url(#m-teal)' : 'url(#m-blue)';
+                        
+                        const linkSel = gLinks.selectAll('path.link').data(links, keyFor);
+                        linkSel.exit().remove();
+                        linkSel.enter()
+                            .append('path')
+                            .attr('class', d => `link ${d.dashed?'dashed':''} ${d.cls||''}`)
+                            .attr('stroke', colorFor)
+                            .attr('marker-end', markerFor)
+                            .merge(linkSel)
+                            .attr('stroke', colorFor)
+                            .attr('marker-end', markerFor);
+                        
+                        const lblSel = gLabels.selectAll('text.link-label').data(links.filter(d=>d.label), keyFor);
+                        lblSel.exit().remove();
+                        lblSel.enter().append('text')
+                            .attr('class','link-label')
+                            .attr('text-anchor','middle')
+                            .style('fill','#334155')
+                            .style('font-size','12px')
+                            .text(d=>d.label);
+                        
+                        // Nodes
+                        const nodeSel = gNodes.selectAll('g.node').data(nodes, d => d.id);
+                        nodeSel.exit().remove();
+                        
+                        const nodeEnter = nodeSel.enter().append('g')
+                            .attr('class','node')
+                            .call(d3.drag()
+                                .on('start', dragstarted)
+                                .on('drag', dragged)
+                                .on('end', dragended))
+                            .on('mousemove', (ev,d)=>showTip(ev,d))
+                            .on('mouseleave', hideTip);
+                        
+                        // Shapes
+                        nodeEnter.each(function(d){
+                            const g = d3.select(this);
+                            if(d.shape==='rect'){
+                                g.append('rect')
+                                    .attr('x', -d.w/2).attr('y', -d.h/2)
+                                    .attr('rx', 10)
+                                    .attr('width', d.w).attr('height', d.h)
+                                    .attr('fill', d.fill).attr('stroke', d.stroke).attr('stroke-width', 2);
+                            } else if(d.shape==='circle'){
+                                g.append('circle')
+                                    .attr('r', d.w/2)
+                                    .attr('fill', d.fill).attr('stroke', d.stroke).attr('stroke-width', 3);
+                            } else if(d.shape==='diamond'){
+                                const w=d.w, h=d.h;
+                                const points = `0,${-h/2} ${w/2},0 0,${h/2} ${-w/2},0`;
+                                g.append('polygon')
+                                    .attr('points',points)
+                                    .attr('fill', d.fill).attr('stroke', d.stroke).attr('stroke-width', 2);
+                            }
+                            g.append('text').attr('class','label').attr('text-anchor','middle')
+                                .attr('y', d.shape==='circle'? -2 : (d.shape==='diamond'? -5 : -d.h/2 + 22))
+                                .text(d.title);
+                            if(d.subtitle){
+                                g.append('text').attr('class','sublabel').attr('text-anchor','middle')
+                                    .attr('y', d.shape==='circle'? 14 : (d.shape==='diamond'? 12 : -d.h/2 + 40))
+                                    .text(d.subtitle);
+                            }
+                        });
+                        
+                        nodeEnter.merge(nodeSel);
+                        
+                        // Restart simulation
+                        simulation.nodes(nodes);
+                        simulation.force('link').links(links);
+                        simulation.alpha(0.9).restart();
+                    }
+                    
+                    simulation.on('tick', ticked);
+                    
+                    function ticked(){
+                        // Update link paths
+                        gLinks.selectAll('path.link').attr('d', d => {
+                            const s = getNode(typeof d.source === 'object' ? d.source.id : d.source);
+                            const t = getNode(typeof d.target === 'object' ? d.target.id : d.target);
+                            if(!s || !t) return '';
+                            const a1 = anchorPoint(s, t);
+                            const a2 = anchorPoint(t, s);
+                            return `M ${a1.x} ${a1.y} L ${a2.x} ${a2.y}`;
+                        });
+                        
+                        // Place labels
+                        gLabels.selectAll('text.link-label')
+                            .attr('x', d=>{
+                                const s = getNode(attrId(d.source)), t = getNode(attrId(d.target));
+                                return (s.x + t.x)/2;
+                            })
+                            .attr('y', d=>{
+                                const s = getNode(attrId(d.source)), t = getNode(attrId(d.target));
+                                return (s.y + t.y)/2 - 6;
+                            });
+                        
+                        // Update node positions
+                        gNodes.selectAll('g.node').attr('transform', d => `translate(${d.x},${d.y})`);
+                        
+                        // Clamp nodes with better margins to prevent border clashing
+                        nodes.forEach(n=>{
+                            const marginX = 100; // Increased horizontal margin
+                            const marginY = 60;  // Increased vertical margin
+                            n.x = Math.max(marginX, Math.min(gridW - marginX, n.x));
+                            n.y = Math.max(marginY, Math.min(gridH - marginY, n.y));
+                        });
+                    }
+                    
+                    // Tooltip
+                    function showTip(ev, d){
+                        const tip = TOOLTIPS[d.id];
+                        if(!tip) return;
+                        tooltip.innerHTML = `<h4>${tip.title}${d.id==='store'?'<span class="pill">PROPRIETARY</span>':''}</h4><div>${tip.body}</div>`;
+                        tooltip.style.opacity = 1;
+                        
+                        const rect = stage.getBoundingClientRect();
+                        const pad = 8;
+                        const mouseX = ev.clientX - rect.left;
+                        const mouseY = ev.clientY - rect.top;
+                        const tW = Math.min(360, rect.width - pad*2);
+                        tooltip.style.maxWidth = tW+'px';
+                        const ttRect = tooltip.getBoundingClientRect();
+                        let left = mouseX + 12;
+                        let top  = mouseY + 12;
+                        if(left + ttRect.width > rect.width - pad) left = rect.width - pad - ttRect.width;
+                        if(top + ttRect.height > rect.height - pad) top = mouseY - ttRect.height - 12;
+                        tooltip.style.left = left + 'px';
+                        tooltip.style.top  = top + 'px';
+                    }
+                    function hideTip(){ tooltip.style.opacity = 0; }
+                    
+                    // Dragging
+                    function dragstarted(event, d){
+                        if(!event.active) simulation.alphaTarget(0.3).restart();
+                        d.fx = d.x; d.fy = d.y;
+                    }
+                    function dragged(event, d){
+                        const t = d3.zoomTransform(svg.node());
+                        d.fx = (event.x - t.x) / t.k;
+                        d.fy = (event.y - t.y) / t.k;
+                    }
+                    function dragended(event, d){
+                        if(!event.active) simulation.alphaTarget(0);
+                        d.fx = null; d.fy = null;
+                    }
+                    
+                    // UI Controls
+                    document.getElementById('btn-feedback').addEventListener('click', ()=>{
+                        const step = feedbackSteps.shift();
+                        if(!step) return;
+                        step.apply();
+                        // Update history with detailed context
+                        historyDiv.style.display = 'block';
+                        const li = document.createElement('li');
+                        li.style.marginBottom = '20px';
+                        li.style.padding = '15px';
+                        li.style.background = 'linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%)';
+                        li.style.borderRadius = '8px';
+                        li.style.borderLeft = '4px solid #667eea';
+                        li.style.listStyle = 'none';
+                        
+                        // Create detailed feedback display
+                        li.innerHTML = `
+                            <div style="margin-bottom: 12px;">
+                                <strong style="color: #667eea; font-size: 1.1em;">📝 Feedback:</strong> 
+                                <span style="color: #333;">${step.text}</span>
+                            </div>
+                            ${step.context ? `
+                            <div style="margin-bottom: 10px; padding-left: 20px;">
+                                <strong style="color: #e74c3c;">❗ Context:</strong> 
+                                <span style="color: #666; font-size: 0.95em;">${step.context}</span>
+                            </div>` : ''}
+                            ${step.reasoning ? `
+                            <div style="margin-bottom: 10px; padding-left: 20px;">
+                                <strong style="color: #f39c12;">💡 Why This Matters:</strong> 
+                                <span style="color: #666; font-size: 0.95em;">${step.reasoning}</span>
+                            </div>` : ''}
+                            ${step.agentUnderstanding ? `
+                            <div style="margin-bottom: 10px; padding-left: 20px;">
+                                <strong style="color: #9b59b6;">🧠 Agent Understanding:</strong> 
+                                <span style="color: #666; font-size: 0.95em; font-style: italic;">"${step.agentUnderstanding}"</span>
+                            </div>` : ''}
+                            ${step.implementation ? `
+                            <div style="margin-bottom: 10px; padding-left: 20px;">
+                                <strong style="color: #2ecc71;">⚙️ Implementation:</strong> 
+                                <span style="color: #666; font-size: 0.95em;">${step.implementation}</span>
+                            </div>` : ''}
+                            ${step.impact ? `
+                            <div style="padding-left: 20px;">
+                                <strong style="color: #3498db;">📊 Impact:</strong> 
+                                <span style="color: #666; font-size: 0.95em; font-weight: 600;">${step.impact}</span>
+                            </div>` : ''}
+                        `;
+                        document.getElementById('history-list').appendChild(li);
+                        // Update counter
+                        const countEl = document.getElementById('count');
+                        countEl.textContent = String(+countEl.textContent + 1);
+                        // Show reset
+                        document.getElementById('btn-reset').style.display = 'inline-block';
+                        // Update button state
+                        if(feedbackSteps.length===0){
+                            const btn = document.getElementById('btn-feedback');
+                            btn.textContent = '✅ Flow Fully Evolved';
+                            btn.disabled = true;
+                            btn.style.background = '#28a745';
+                        }
+                        applyFlowForces();
+                        updateGraph();
+                    });
+                    
+                    document.getElementById('btn-reset').addEventListener('click', ()=>{
+                        // Reset to base
+                        nodes = nodes.filter(n => ['start','identify','schedule','conduct','store','decision','analyze','detect','generate','end'].includes(n.id));
+                        linkId = 0;
+                        links = [
+                            link('start','identify'),
+                            link('identify','schedule'),
+                            link('schedule','conduct'),
+                            link('conduct','store'),
+                            link('store','decision'),
+                            link('decision','analyze',{cls:'no'}),
+                            link('analyze','detect'),
+                            link('detect','generate'),
+                            link('generate','end'),
+                            link('decision','identify',{cls:'yes', dashed:true, label:'YES – Continue Loop'})
+                        ];
+                        // Restore steps
+                        feedbackSteps = [
+                            {
+                                text:"Analyze enterprise repository before interviews to identify technical constraints.",
+                                context: "During Sprint 3 with Customer X, we discovered 40% of requirements were technically infeasible due to legacy system limitations only found after interviews were complete.",
+                                reasoning: "Early technical analysis prevents wasted interview time on impossible requirements and allows agents to guide conversations toward feasible solutions.",
+                                agentUnderstanding: "I now understand that technical constraints shape what's possible. Before asking stakeholders about desired features, I must first map the technical landscape to frame discussions realistically.",
+                                implementation: "Agent now: 1) Scans all code repositories, 2) Identifies API limitations, 3) Creates feasibility matrix BEFORE first meeting, 4) Adjusts questions based on technical reality",
+                                impact: "Reduced requirement rework by 60%, saved 2 weeks of clarifications",
+                                apply:()=>{ if(!getNode('analyzeRepo')){ nodes.push(nodeRect('analyzeRepo','Analyze','Repository', COLORS.end)); replaceLink('start','identify', ['start','analyzeRepo'], ['analyzeRepo','identify']); insertAfter(flowOrderTop,'start','analyzeRepo'); }}
+                            },
+                            {
+                                text:"Add iterative validation checkpoints instead of only validating at the end.",
+                                context: "Customer Y had 15 stakeholders with conflicting views. By the time we validated at the end, positions had hardened and resolution took 3 extra weeks.",
+                                reasoning: "Continuous validation catches contradictions early when stakeholders are still flexible, preventing entrenchment and reducing conflict resolution time.",
+                                agentUnderstanding: "Human psychology matters - early course correction is easier than late-stage conflict resolution. I must validate incrementally to maintain stakeholder flexibility.",
+                                implementation: "Agent validates after every 3 interviews, sends summaries to all stakeholders, schedules clarification calls within 48 hours of detecting contradictions",
+                                impact: "Contradiction resolution reduced from weeks to days, stakeholder satisfaction up 35%",
+                                apply:()=>{ if(!getNode('validate')){ nodes.push(nodeRect('validate','Validate','Checkpoint', COLORS.amber)); replaceLink('store','decision', ['store','validate'], ['validate','decision']); links.push(link('validate','schedule',{cls:'validate', dashed:true, label:'Iterative Validation'})); insertAfter(flowOrderTop,'store','validate'); }}
+                            },
+                            {
+                                text:"Identify informal influencers using social network analysis.",
+                                context: "At Company Z, the org chart missed that a mid-level analyst actually influenced all major decisions. We discovered this only after our recommendations were blocked.",
+                                reasoning: "Formal hierarchies often hide actual decision-making power. Understanding informal influence networks ensures we engage the right people.",
+                                agentUnderstanding: "Power structures aren't always visible in org charts. I must analyze communication patterns and meeting attendance to map true influence networks.",
+                                implementation: "Agent performs email/Slack analysis, meeting pattern analysis, reference tracking to identify and prioritize high-influence individuals",
+                                impact: "Implementation success rate increased 40%, reduced political roadblocks",
+                                apply:()=>{ if(!getNode('network')){ nodes.push(nodeRect('network','Network','Analysis', COLORS.plum)); replaceLink('identify','schedule', ['identify','network'], ['network','schedule']); }}
+                            },
+                            {
+                                text:"Add real-time progress dashboard for stakeholder visibility.",
+                                context: "Stakeholders at Company W grew anxious during the 6-week discovery phase with no visibility, leading to scope creep and constant status meetings.",
+                                reasoning: "Transparency reduces anxiety and builds trust. When stakeholders can see progress, they're less likely to interfere.",
+                                agentUnderstanding: "Humans need visibility to feel comfortable with autonomous processes. By providing continuous updates, I can work uninterrupted while maintaining confidence.",
+                                implementation: "Agent creates auto-updating dashboard with interviews completed, live requirement graphs, contradiction heat maps, and automated weekly summaries",
+                                impact: "Status meetings reduced 80%, scope creep down 50%, improved trust scores",
+                                apply:()=>{ if(!getNode('dashboard')){ nodes.push(nodeRect('dashboard','Progress','Dashboard', COLORS.aqua)); links.push(link('store','dashboard',{cls:'status', dashed:true, label:'Status Updates'})); }}
+                            }
+                        ];
+                        // Reset UI
+                        historyDiv.style.display = 'none';
+                        document.getElementById('history-list').innerHTML='';
+                        document.getElementById('count').textContent='0';
+                        const btn = document.getElementById('btn-feedback');
+                        btn.textContent='📝 Provide Feedback'; 
+                        btn.disabled=false; 
+                        btn.style.background='';
+                        document.getElementById('btn-reset').style.display='none';
+                        applyFlowForces();
+                        updateGraph();
+                    });
+                    
+                    document.getElementById('btn-fit').addEventListener('click', ()=>{
+                        svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity);
+                    });
+                    document.getElementById('btn-zoom-in').addEventListener('click', ()=>{
+                        svg.transition().duration(200).call(zoom.scaleBy, 1.15);
+                    });
+                    document.getElementById('btn-zoom-out').addEventListener('click', ()=>{
+                        svg.transition().duration(200).call(zoom.scaleBy, 0.87);
+                    });
+                    
+                    // Initial render
+                    updateGraph();
+                </script>
+                </div>
+            </div>
+            
+            <!-- Toolset Architecture Section -->
+            <div class="diagram-section">
+                <div class="key-points" style="background: #e8f5e9; border-color: #4caf50;">
+                    <h3 style="color: #2e7d32;">🔧 Toolset Architecture: Shared Platform + Agent-Specific Tools</h3>
+                    <p style="color: #2e7d32; line-height: 1.6; margin-top: 10px;">
+                        <strong>Shared Platform Tools (Available to All Agents):</strong>
+                    </p>
+                    <ul style="color: #2e7d32; margin-top: 5px; list-style: none; padding-left: 0;">
+                        <li>✓ Browser Client - Web navigation and research</li>
+                        <li>✓ Search Engine - Information discovery</li>
+                        <li>✓ Terminal Engine - System operations</li>
+                        <li>✓ File Operations - Code and document management</li>
+                        <li>✓ Communication APIs - Email, chat, video calls</li>
+                    </ul>
+                    <p style="color: #2e7d32; line-height: 1.6; margin-top: 15px;">
+                        <strong>ASC Agent's Specialized Tools:</strong>
+                    </p>
+                    <ul style="color: #2e7d32; margin-top: 5px; list-style: none; padding-left: 0;">
+                        <li>⚡ O9 Platform API - Direct integration with O9's systems</li>
+                        <li>⚡ Stakeholder Analysis Engine - Role and influence mapping</li>
+                        <li>⚡ Requirement Synthesis Module - Contradiction detection</li>
+                        <li>⚡ Interview Protocol Generator - Adaptive questioning</li>
+                        <li>⚡ Calendar Integration - Automated scheduling</li>
+                    </ul>
+                    <p style="color: #2e7d32; line-height: 1.6; margin-top: 15px;">
+                        <strong>Compare with Akash Agent's Specialized Tools:</strong>
+                    </p>
+                    <ul style="color: #2e7d32; margin-top: 5px; list-style: none; padding-left: 0;">
+                        <li>🚀 Kubernetes APIs - Cluster management</li>
+                        <li>🚀 Blockchain Interfaces - Akash Network integration</li>
+                        <li>🚀 Deployment Orchestrators - Container automation</li>
+                        <li>🚀 DevOps Automation - CI/CD pipelines</li>
+                        <li>🚀 Resource Optimization - Cost and performance tuning</li>
+                    </ul>
+                    <p style="color: #2e7d32; line-height: 1.6; margin-top: 15px; font-weight: bold;">
+                        Each agent's toolset is purpose-built for its domain. The platform provides the foundation, but agents select and integrate the specific tools they need to accomplish their unique missions.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Innovation Note -->
+            <div class="diagram-section">
+                <div class="key-points" style="background: #f0f9ff; border-color: #0ea5e9;">
+                    <h3 style="color: #0ea5e9;">The LLABS Innovation</h3>
+                    <p style="color: #555; line-height: 1.6; margin-top: 10px;">
+                        <strong>Each agent's orchestration pattern is unique to its purpose.</strong> The ASC agent shown above uses our platform differently than an Integration Engineer agent would. This flexibility—enabled by our cognitive platform—is what allows us to create purpose-built intelligence for any enterprise challenge.
+                    </p>
+                    <p style="color: #555; line-height: 1.6; margin-top: 15px;">
+                        Unlike rigid agentic frameworks, LLABS agents are not constrained by predetermined patterns. They leverage the platform's capabilities in whatever way best serves their mission, learning and adapting their approach over time.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Prepared for O9 Solutions</strong></p>
+            <p style="margin-top: 10px; opacity: 0.8;">LLABS - Levangie Laboratories | September 2025</p>
+            <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.7;">Transforming AI from Assistants to Autonomous Workers</p>
+        </div>
+    </div>
+</body>
+</html>
