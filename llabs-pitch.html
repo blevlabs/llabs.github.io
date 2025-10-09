@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLABS Cognitive Architecture - Visual Pitch</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 80px;
+            scroll-snap-align: start;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #60a5fa;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 0 0 30px rgba(96, 165, 250, 0.3);
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #60a5fa;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #f59e0b;
+            margin: 30px 0 20px;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+
+        .diagram {
+            background: rgba(30, 41, 59, 0.6);
+            border: 2px solid #334155;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px auto;
+            max-width: 900px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .diagram svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .svg-box {
+            fill: rgba(30, 41, 59, 0.9);
+            stroke: #60a5fa;
+            stroke-width: 2;
+        }
+
+        .svg-box-error {
+            fill: rgba(30, 41, 59, 0.9);
+            stroke: #ef4444;
+            stroke-width: 2;
+        }
+
+        .svg-box-success {
+            fill: rgba(30, 41, 59, 0.9);
+            stroke: #22c55e;
+            stroke-width: 2;
+        }
+
+        .svg-text {
+            fill: #e0e0e0;
+            font-family: 'SF Mono', monospace;
+            font-size: 14px;
+        }
+
+        .svg-text-small {
+            fill: #94a3b8;
+            font-family: 'SF Mono', monospace;
+            font-size: 12px;
+        }
+
+        .svg-text-highlight {
+            fill: #fbbf24;
+            font-weight: 600;
+        }
+
+        .svg-arrow {
+            stroke: #60a5fa;
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+
+        .svg-arrow-error {
+            stroke: #ef4444;
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrowhead-error);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .comparison-box {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid #475569;
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .comparison-box.wrong {
+            border-color: #ef4444;
+        }
+
+        .comparison-box.right {
+            border-color: #22c55e;
+        }
+
+        .key-point {
+            background: rgba(96, 165, 250, 0.1);
+            border-left: 4px solid #60a5fa;
+            padding: 20px 30px;
+            margin: 30px auto;
+            max-width: 800px;
+            border-radius: 8px;
+            font-size: 1.3em;
+            text-align: left;
+        }
+
+        .proof-point {
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid #22c55e;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .proof-point h4 {
+            color: #22c55e;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #60a5fa;
+            margin: 20px 0;
+        }
+
+        .highlight {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .badge.high { background: #dc2626; color: white; }
+        .badge.medium { background: #f59e0b; color: white; }
+        .badge.low { background: #3b82f6; color: white; }
+        .badge.static { background: #6366f1; color: white; }
+        .badge.dynamic { background: #10b981; color: white; }
+
+        .section-number {
+            font-size: 0.8em;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            text-align: left;
+            list-style: none;
+            padding-left: 0;
+            font-size: 1.2em;
+        }
+
+        ul li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        ul li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #60a5fa;
+            font-size: 1.2em;
+        }
+
+        .scroll-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9em;
+            color: #64748b;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Slide 1: Title -->
+    <div class="slide">
+        <div class="container">
+            <h1>🧠 LLABS Cognitive Architecture Framework</h1>
+            <p class="subtitle">True Autonomous Intelligence Through RLHF Exploitation</p>
+            <div class="key-point">
+                We've reverse engineered how chat models work to create truly autonomous AI agents that learn from experience, not just information.
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: The Problem -->
+    <div class="slide">
+        <div class="container">
+            <div class="section-number">Part 1</div>
+            <h2>The Industry's Fatal Flaw</h2>
+            
+            <div class="diagram">
+                <svg width="700" height="500" viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#60a5fa" />
+                        </marker>
+                        <marker id="arrowhead-error" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#ef4444" />
+                        </marker>
+                    </defs>
+                    
+                    <!-- Top Box -->
+                    <rect class="svg-box-error" x="100" y="20" width="500" height="120" rx="8" />
+                    <text class="svg-text" x="350" y="50" text-anchor="middle" font-weight="bold">INDUSTRY BELIEF (Wrong)</text>
+                    <text class="svg-text" x="350" y="80" text-anchor="middle">LLM = Chatbot = AI</text>
+                    <text class="svg-text-small" x="350" y="110" text-anchor="middle">"Make chatbots do everything"</text>
+                    
+                    <!-- Arrow -->
+                    <line class="svg-arrow-error" x1="350" y1="150" x2="350" y2="190" />
+                    
+                    <!-- Problem Box -->
+                    <ellipse cx="350" cy="220" rx="140" ry="30" fill="#ef4444" opacity="0.3" stroke="#ef4444" stroke-width="2"/>
+                    <text class="svg-text" x="350" y="228" text-anchor="middle" font-weight="bold" fill="#ef4444">❌ FUNDAMENTAL PROBLEM ❌</text>
+                    
+                    <!-- Arrow -->
+                    <line class="svg-arrow-error" x1="350" y1="255" x2="350" y2="295" />
+                    
+                    <!-- Bottom Box -->
+                    <rect class="svg-box" x="100" y="305" width="500" height="180" rx="8" />
+                    <text class="svg-text" x="350" y="335" text-anchor="middle" font-weight="bold">CHAT ≠ ACTION</text>
+                    
+                    <text class="svg-text-small" x="120" y="365" font-weight="bold">Models optimized for:</text>
+                    <text class="svg-text-small" x="140" y="385">• User engagement</text>
+                    <text class="svg-text-small" x="140" y="405">• Conversation continuation</text>
+                    <text class="svg-text-small" x="140" y="425">• "What can I help with next?"</text>
+                    
+                    <text class="svg-text-small" x="380" y="365" font-weight="bold">NOT optimized for:</text>
+                    <text class="svg-text-small" x="400" y="385">• Autonomous work</text>
+                    <text class="svg-text-small" x="400" y="405">• Task completion</text>
+                    <text class="svg-text-small" x="400" y="425">• Taking action</text>
+                </svg>
+            </div>
+
+            <div class="key-point">
+                <strong>Key Message:</strong> Everyone is trying to turn chatbots into agents, but chat models are fundamentally optimized for the wrong thing.
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: How Chat Models Work -->
+    <div class="slide">
+        <div class="container">
+            <h2>How Chat Models Actually Work</h2>
+            
+            <div class="diagram">
+                <svg width="700" height="480" viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg">
+                    <!-- System Prompt Box -->
+                    <rect class="svg-box" x="100" y="20" width="500" height="100" rx="8" />
+                    <text class="svg-text" x="120" y="50" font-weight="bold">SYSTEM PROMPT</text>
+                    <rect x="540" y="30" width="50" height="25" fill="#ef4444" rx="4" />
+                    <text x="565" y="48" text-anchor="middle" font-size="12" fill="white" font-weight="bold">HIGH</text>
+                    <text class="svg-text-small" x="120" y="75">"You are a helpful assistant"</text>
+                    <text class="svg-text-small" x="120" y="95">• Defines behavior</text>
+                    <text class="svg-text-small" x="120" y="110">• Hard to override (security)</text>
+                    
+                    <!-- Arrow -->
+                    <line class="svg-arrow" x1="350" y1="130" x2="350" y2="160" />
+                    
+                    <!-- User Message Box -->
+                    <rect class="svg-box" x="100" y="170" width="500" height="90" rx="8" />
+                    <text class="svg-text" x="120" y="200" font-weight="bold">USER MESSAGE</text>
+                    <rect x="540" y="180" width="50" height="25" fill="#3b82f6" rx="4" />
+                    <text x="565" y="198" text-anchor="middle" font-size="12" fill="white" font-weight="bold">LOW</text>
+                    <text class="svg-text-small" x="120" y="225">"Do task X"</text>
+                    <text class="svg-text-small" x="120" y="245">• Changes every turn</text>
+                    
+                    <!-- Arrow -->
+                    <line class="svg-arrow" x1="350" y1="270" x2="350" y2="300" />
+                    
+                    <!-- Assistant Response Box -->
+                    <rect class="svg-box" x="100" y="310" width="500" height="90" rx="8" />
+                    <text class="svg-text" x="120" y="340" font-weight="bold">ASSISTANT RESPONSE</text>
+                    <rect x="520" y="320" width="70" height="25" fill="#f59e0b" rx="4" />
+                    <text x="555" y="338" text-anchor="middle" font-size="12" fill="white" font-weight="bold">MEDIUM</text>
+                    <text class="svg-text-small" x="120" y="365">"Here's the result: [answer]"</text>
+                    <text class="svg-text-small" x="120" y="385">• Optimized to END and WAIT</text>
+                    
+                    <!-- Arrow -->
+                    <line class="svg-arrow" x1="350" y1="410" x2="350" y2="435" />
+                    
+                    <!-- Stop Sign -->
+                    <ellipse cx="350" cy="455" rx="80" ry="25" fill="#ef4444" opacity="0.3" stroke="#ef4444" stroke-width="2"/>
+                    <text class="svg-text" x="350" y="463" text-anchor="middle" font-weight="bold" fill="#ef4444">⛔ STOPS ⛔</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: The LLABS Breakthrough -->
+    <div class="slide">
+        <div class="container">
+            <div class="section-number">Part 2</div>
+            <h2>The LLABS Breakthrough</h2>
+            <h3>Reverse Engineering RLHF</h3>
+            
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h3 style="color: #ef4444;">❌ Traditional</h3>
+                    <div class="diagram">
+                        <svg width="320" height="350" viewBox="0 0 320 350" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Stack of layers -->
+                            <rect class="svg-box-error" x="60" y="20" width="200" height="60" rx="8" />
+                            <text class="svg-text" x="160" y="55" text-anchor="middle">Build layers</text>
+                            
+                            <rect class="svg-box-error" x="60" y="90" width="200" height="60" rx="8" />
+                            <text class="svg-text" x="160" y="125" text-anchor="middle">on TOP of</text>
+                            
+                            <rect class="svg-box-error" x="60" y="160" width="200" height="60" rx="8" />
+                            <text class="svg-text" x="160" y="195" text-anchor="middle">chat model</text>
+                            
+                            <text class="svg-text-small" x="160" y="240" text-anchor="middle">= Wrappers</text>
+                            
+                            <!-- Arrow -->
+                            <line class="svg-arrow-error" x1="160" y1="250" x2="160" y2="270" />
+                            
+                            <!-- Consequences -->
+                            <text class="svg-text-small" x="160" y="290" text-anchor="middle">Chain only as</text>
+                            <text class="svg-text-small" x="160" y="305" text-anchor="middle">strong as</text>
+                            <text class="svg-text-small" x="160" y="320" text-anchor="middle">weakest link</text>
+                            
+                            <text class="svg-text-highlight" x="160" y="345" text-anchor="middle" font-weight="bold">Moat DECREASES</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="comparison-box right">
+                    <h3 style="color: #22c55e;">✅ LLABS</h3>
+                    <div class="diagram">
+                        <svg width="320" height="350" viewBox="0 0 320 350" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Single unified box -->
+                            <rect class="svg-box-success" x="60" y="20" width="200" height="200" rx="8" />
+                            <text class="svg-text" x="160" y="70" text-anchor="middle">Reorganize</text>
+                            <text class="svg-text" x="160" y="95" text-anchor="middle">context</text>
+                            <text class="svg-text" x="160" y="120" text-anchor="middle" font-weight="bold">WITHIN</text>
+                            <text class="svg-text" x="160" y="145" text-anchor="middle">existing</text>
+                            <text class="svg-text" x="160" y="170" text-anchor="middle">model</text>
+                            
+                            <!-- Glow effect -->
+                            <circle cx="160" cy="110" r="90" fill="none" stroke="#22c55e" stroke-width="2" opacity="0.3" class="pulse" />
+                            
+                            <!-- Arrow -->
+                            <line class="svg-arrow" x1="160" y1="230" x2="160" y2="250" />
+                            
+                            <!-- Benefits -->
+                            <text class="svg-text-small" x="160" y="270" text-anchor="middle">Access base</text>
+                            <text class="svg-text-small" x="160" y="285" text-anchor="middle">model behavior</text>
+                            <text class="svg-text-small" x="160" y="300" text-anchor="middle">without base model</text>
+                            
+                            <text class="svg-text-highlight" x="160" y="330" text-anchor="middle" font-weight="bold" fill="#22c55e">Moat INCREASES</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Context Reorganization -->
+    <div class="slide">
+        <div class="container">
+            <h2>How CAF Reorganizes Context</h2>
+            
+            <div class="diagram">
+                <h3 style="color: #ef4444; margin-bottom: 20px;">BEFORE (Chat)</h3>
+                <svg width="700" height="280" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+                    <!-- System -->
+                    <rect class="svg-box" x="50" y="20" width="600" height="60" rx="8" />
+                    <text class="svg-text" x="70" y="50" font-weight="bold">System:</text>
+                    <text class="svg-text-small" x="150" y="50">"You are a chatbot"</text>
+                    <rect x="580" y="30" width="50" height="25" fill="#ef4444" rx="4" />
+                    <text x="605" y="48" text-anchor="middle" font-size="12" fill="white" font-weight="bold">HIGH</text>
+                    
+                    <!-- User -->
+                    <rect class="svg-box" x="50" y="100" width="600" height="60" rx="8" />
+                    <text class="svg-text" x="70" y="130" font-weight="bold">User:</text>
+                    <text class="svg-text-small" x="150" y="130">"Do X" → "Do Y" → "Do Z"</text>
+                    <rect x="580" y="110" width="50" height="25" fill="#3b82f6" rx="4" />
+                    <text x="605" y="128" text-anchor="middle" font-size="12" fill="white" font-weight="bold">LOW</text>
+                    <text class="svg-text-small" x="150" y="150">(Changes each turn)</text>
+                    
+                    <!-- Assistant -->
+                    <rect class="svg-box" x="50" y="180" width="600" height="60" rx="8" />
+                    <text class="svg-text" x="70" y="210" font-weight="bold">Assistant:</text>
+                    <text class="svg-text-small" x="150" y="210">"Done" → STOP → "Done" → STOP</text>
+                    <rect x="550" y="190" width="80" height="25" fill="#f59e0b" rx="4" />
+                    <text x="590" y="208" text-anchor="middle" font-size="12" fill="white" font-weight="bold">MEDIUM</text>
+                    
+                    <!-- Labels -->
+                    <text class="svg-text-small" x="350" y="265" text-anchor="middle" fill="#ef4444">= Request-Response Cycle</text>
+                </svg>
+            </div>
+
+            <div class="arrow">↓ TRANSFORM ↓</div>
+
+              <div class="diagram">
+                  <h3 style="color: #22c55e; margin-bottom: 20px;">AFTER (CAF)</h3>
+                  <svg width="700" height="350" viewBox="0 0 700 350" xmlns="http://www.w3.org/2000/svg">
+                      <!-- System Prompt (small, at top) -->
+                      <rect class="svg-box-success" x="60" y="20" width="580" height="45" rx="8" />
+                      <text class="svg-text" x="80" y="45" font-weight="bold">System:</text>
+                      <text class="svg-text-small" x="160" y="45">CAF Cognitive Architecture + Episodic Memory</text>
+                      <rect x="580" y="28" width="45" height="20" fill="#ef4444" rx="4" />
+                      <text x="602" y="42" text-anchor="middle" font-size="10" fill="white" font-weight="bold">HIGH</text>
+                      
+                      <!-- Main Continuous Assistant State (large box) -->
+                      <rect class="svg-box-success" x="60" y="85" width="580" height="220" rx="8" stroke="#22c55e" stroke-width="3" />
+                      <rect x="60" y="85" width="580" height="220" fill="none" stroke="#22c55e" stroke-width="2" opacity="0.3" rx="10" class="pulse" />
+                      
+                      <!-- Header inside assistant box -->
+                      <text class="svg-text" x="350" y="115" text-anchor="middle" font-weight="bold" fill="#22c55e" font-size="16">Assistant: Perpetual Reasoning Flow</text>
+                      
+                      <!-- Simplified continuous flow loop -->
+                      <ellipse cx="350" cy="200" rx="160" ry="70" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="8,4" opacity="0.6" />
+                      
+                      <!-- Flow labels positioned clearly around ellipse -->
+                      <text class="svg-text-small" x="350" y="145" text-anchor="middle" fill="#22c55e">Reasoning</text>
+                      <text class="svg-text-small" x="480" y="205" text-anchor="middle" fill="#22c55e">Action</text>
+                      <text class="svg-text-small" x="350" y="260" text-anchor="middle" fill="#22c55e">Observation</text>
+                      <text class="svg-text-small" x="220" y="205" text-anchor="middle" fill="#22c55e">Planning</text>
+                      
+                      <!-- Center message -->
+                      <text class="svg-text-small" x="350" y="195" text-anchor="middle" font-style="italic" fill="#64748b">Continuous,</text>
+                      <text class="svg-text-small" x="350" y="210" text-anchor="middle" font-style="italic" fill="#64748b">never stops</text>
+                      
+                      <!-- User Input Box (outside, left) -->
+                      <rect class="svg-box" x="80" y="165" width="85" height="55" rx="6" fill="#3b82f6" fill-opacity="0.15" stroke="#3b82f6" stroke-width="2" />
+                      <text class="svg-text-small" x="122" y="188" text-anchor="middle" font-weight="bold" fill="#3b82f6">USER</text>
+                      <text class="svg-text-small" x="122" y="203" text-anchor="middle" font-weight="bold" fill="#3b82f6">INPUT</text>
+                      
+                      <!-- Injection Arrow (clean) -->
+                      <line x1="165" y1="192" x2="188" y2="192" stroke="#3b82f6" stroke-width="2" />
+                      <polygon points="188,192 178,188 178,196" fill="#3b82f6" />
+
+                      <!-- Bottom label -->
+                      <text class="svg-text-small" x="350" y="330" text-anchor="middle" fill="#22c55e" font-weight="bold">= Perpetual Cognitive State (Not Turn-Based)</text>
+                  </svg>
+              </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: The Trick -->
+    <div class="slide">
+        <div class="container">
+            <h2>The Trick: Wrapping + Nesting</h2>
+            
+            <div class="diagram">
+                <svg width="700" height="400" viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Step boxes -->
+                    <g transform="translate(0, 0)">
+                        <rect class="svg-box" x="50" y="20" width="600" height="60" rx="8" />
+                        <circle cx="90" cy="50" r="18" fill="#60a5fa" />
+                        <text class="svg-text" x="90" y="57" text-anchor="middle" font-weight="bold">1</text>
+                        <text class="svg-text" x="130" y="50">User message stays </text>
+                        <text class="svg-text-highlight" x="320" y="50">STATIC </text>
+                        <text class="svg-text-small" x="400" y="50">(goal never changes)</text>
+                    </g>
+                    
+                    <g transform="translate(0, 75)">
+                        <rect class="svg-box" x="50" y="20" width="600" height="60" rx="8" />
+                        <circle cx="90" cy="50" r="18" fill="#60a5fa" />
+                        <text class="svg-text" x="90" y="57" text-anchor="middle" font-weight="bold">2</text>
+                        <text class="svg-text" x="130" y="50">Observations </text>
+                        <text class="svg-text-highlight" x="250" y="50">NEST </text>
+                        <text class="svg-text" x="300" y="50">as new "user input"</text>
+                        <text class="svg-text-small" x="130" y="70">(results from actions)</text>
+                    </g>
+                    
+                    <g transform="translate(0, 150)">
+                        <rect class="svg-box" x="50" y="20" width="600" height="60" rx="8" />
+                        <circle cx="90" cy="50" r="18" fill="#60a5fa" />
+                        <text class="svg-text" x="90" y="57" text-anchor="middle" font-weight="bold">3</text>
+                        <text class="svg-text" x="130" y="50">Model thinks: "I'm processing data, not chatting"</text>
+                    </g>
+                    
+                    <g transform="translate(0, 225)">
+                        <rect class="svg-box" x="50" y="20" width="600" height="60" rx="8" />
+                        <circle cx="90" cy="50" r="18" fill="#60a5fa" />
+                        <text class="svg-text" x="90" y="57" text-anchor="middle" font-weight="bold">4</text>
+                        <text class="svg-text" x="130" y="50">No "turn-taking" pattern = </text>
+                        <text class="svg-text-highlight" x="400" y="50">No stop signal</text>
+                    </g>
+                    
+                    <g transform="translate(0, 300)">
+                        <rect class="svg-box-success" x="50" y="20" width="600" height="60" rx="8" />
+                        <circle cx="90" cy="50" r="18" fill="#22c55e" />
+                        <text class="svg-text" x="90" y="57" text-anchor="middle" font-weight="bold">5</text>
+                        <text class="svg-text" x="130" y="50">Continues until </text>
+                        <text class="svg-text-highlight" x="270" y="50" fill="#22c55e">task complete</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="key-point">
+                The model never sees a "user turn" because the user input stays static. Only observations change, so the model processes continuous data streams - not conversations.
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Episodic Memory -->
+    <div class="slide">
+        <div class="container">
+            <div class="section-number">Part 3</div>
+            <h2>Beyond RAG: Episodic Memory</h2>
+            
+            <div class="comparison">
+                <div class="comparison-box">
+                    <h3>RAG (Current Industry)</h3>
+                    <div class="diagram">
+                        <svg width="320" height="300" viewBox="0 0 320 300" xmlns="http://www.w3.org/2000/svg">
+                            <text class="svg-text" x="160" y="30" text-anchor="middle" font-weight="bold">Encodes:</text>
+                            
+                            <rect class="svg-box" x="60" y="50" width="200" height="150" rx="8" />
+                            <text class="svg-text" x="160" y="100" text-anchor="middle">Text</text>
+                            <text class="svg-text" x="160" y="130" text-anchor="middle">Documents</text>
+                            <text class="svg-text" x="160" y="160" text-anchor="middle">Information</text>
+                            
+                            <!-- Arrow -->
+                            <line class="svg-arrow" x1="160" y1="210" x2="160" y2="235" />
+                            
+                            <!-- Result -->
+                            <text class="svg-text-small" x="160" y="255" text-anchor="middle">"What is X?"</text>
+                            <text class="svg-text" x="160" y="280" text-anchor="middle" fill="#60a5fa">Good for Q&A</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="comparison-box right">
+                    <h3>Episodic Memory (LLABS)</h3>
+                    <div class="diagram">
+                        <svg width="320" height="300" viewBox="0 0 320 300" xmlns="http://www.w3.org/2000/svg">
+                            <text class="svg-text" x="160" y="30" text-anchor="middle" font-weight="bold">Encodes:</text>
+                            
+                            <rect class="svg-box-success" x="60" y="50" width="200" height="150" rx="8" />
+                            <text class="svg-text" x="160" y="85" text-anchor="middle">Reasoning</text>
+                            <text class="svg-text" x="160" y="110" text-anchor="middle">+ Actions</text>
+                            <text class="svg-text" x="160" y="135" text-anchor="middle">+ Results</text>
+                            <text class="svg-text" x="160" y="160" text-anchor="middle">+ Consequences</text>
+                            
+                            <!-- Glow effect -->
+                            <rect x="60" y="50" width="200" height="150" fill="none" stroke="#22c55e" stroke-width="3" opacity="0.4" rx="8" class="pulse" />
+                            
+                            <!-- Arrow -->
+                            <line class="svg-arrow" x1="160" y1="210" x2="160" y2="235" />
+                            
+                            <!-- Result -->
+                            <text class="svg-text-small" x="160" y="255" text-anchor="middle">"When I did X in</text>
+                            <text class="svg-text-small" x="160" y="270" text-anchor="middle">context Y, Z happened"</text>
+                            <text class="svg-text" x="160" y="295" text-anchor="middle" fill="#22c55e" font-weight="bold">Good for LEARNING</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-point">
+                Humans don't just learn from information - they learn from taking action and seeing results. We encode that.
+
+              </div>
+
+              <div class="key-point" style="margin-top: 30px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05)); padding: 25px; border-left: 4px solid #22c55e;">
+                  <h4 style="margin: 0 0 15px 0; color: #22c55e;">🔍 Episodic Retrieval in Action</h4>
+                  <p style="margin: 0; line-height: 1.6;">When an agent receives a new request, it retrieves similar historical episodes and action patterns from memory. This gives the agent immediate context about which tools, methodologies, and approaches successfully handled similar tasks in the past—enabling it to learn from experience rather than starting from scratch each time.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Learning from Experience -->
+    <div class="slide">
+        <div class="container">
+            <h2>How Agents Learn from Experience</h2>
+            
+            <div class="diagram">
+                <svg width="750" height="650" viewBox="0 0 750 650" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Episode 1 -->
+                    <rect class="svg-box" x="30" y="20" width="690" height="280" rx="8" />
+                    <text class="svg-text-highlight" x="50" y="50" font-size="16" font-weight="bold">Episode 1: Research Mining Industry</text>
+                    
+                    <!-- Flow -->
+                    <g transform="translate(50, 70)">
+                        <text class="svg-text" x="0" y="0">Reasoning:</text>
+                        <text class="svg-text-small" x="100" y="0">"Need to understand hype cycles"</text>
+                        
+                        <line class="svg-arrow" x1="50" y1="10" x2="50" y2="35" />
+                        
+                        <text class="svg-text" x="0" y="50">Action:</text>
+                        <text class="svg-text-small" x="80" y="50">search_web("mining innovations")</text>
+                        
+                        <line class="svg-arrow" x1="50" y1="60" x2="50" y2="85" />
+                        
+                        <text class="svg-text" x="0" y="100">Result:</text>
+                        <text class="svg-text-small" x="70" y="100">"Found 15 articles"</text>
+                        
+                        <line class="svg-arrow" x1="50" y1="110" x2="50" y2="135" />
+                        
+                        <text class="svg-text" x="0" y="150">Feedback:</text>
+                        <text class="svg-text-small" x="90" y="150" fill="#f59e0b">"Focus on Series A/B"</text>
+                        
+                        <line class="svg-arrow" x1="50" y1="160" x2="50" y2="185" />
+                        
+                        <text class="svg-text" x="0" y="200">Learning:</text>
+                        <text class="svg-text-small" x="90" y="200" fill="#ef4444">"Wrong stage, adjust strategy"</text>
+                    </g>
+                    
+                    <rect x="150" y="260" width="200" height="30" fill="#10b981" rx="4" />
+                    <text x="250" y="282" text-anchor="middle" font-size="13" fill="white" font-weight="bold">ENCODED AS EXPERIENCE</text>
+                    
+                    <!-- Arrow between episodes -->
+                    <line class="svg-arrow" x1="375" y1="310" x2="375" y2="340" stroke-width="4" />
+                    
+                    <!-- Episode 2 -->
+                    <rect class="svg-box-success" x="30" y="350" width="690" height="280" rx="8" />
+                    <text class="svg-text-highlight" x="50" y="380" font-size="16" font-weight="bold" fill="#22c55e">Episode 2: Research Next Industry</text>
+                    
+                    <!-- Flow -->
+                    <g transform="translate(50, 400)">
+                        <text class="svg-text" x="0" y="0">Retrieval:</text>
+                        <text class="svg-text-small" x="90" y="0" fill="#60a5fa">"Last time assumed late-stage"</text>
+                        
+                        <line class="svg-arrow" x1="50" y1="10" x2="50" y2="35" />
+                        
+                        <text class="svg-text" x="0" y="50">Adjustment:</text>
+                        <text class="svg-text-small" x="110" y="50" fill="#22c55e">"This time search seed/pre-seed"</text>
+                        
+                        <line class="svg-arrow" x1="50" y1="60" x2="50" y2="85" />
+                        
+                        <text class="svg-text" x="0" y="100">Action:</text>
+                        <text class="svg-text-small" x="80" y="100">Research early-stage companies</text>
+                        
+                        <line class="svg-arrow" x1="50" y1="110" x2="50" y2="135" />
+                        
+                        <text class="svg-text" x="0" y="150">Result:</text>
+                        <text class="svg-text-highlight" x="70" y="150" fill="#22c55e" font-weight="bold" font-size="16">ACCURATE FROM START</text>
+                    </g>
+                    
+                    <rect x="250" y="590" width="250" height="35" fill="#22c55e" rx="4" />
+                    <text x="375" y="615" text-anchor="middle" font-size="16" fill="white" font-weight="bold">= LEARNED FROM EXPERIENCE</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: The Cognitive Loop -->
+    <div class="slide">
+        <div class="container">
+            <div class="section-number">Part 4</div>
+            <h2>The Continuous Cognitive Loop</h2>
+            
+            <div class="diagram">
+                <svg width="800" height="750" viewBox="0 0 800 750" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrowhead-loop" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#60a5fa" />
+                        </marker>
+                    </defs>
+                    
+                    <!-- User Goal (Top) -->
+                    <rect class="svg-box-success" x="250" y="20" width="300" height="80" rx="8" />
+                    <text class="svg-text-highlight" x="400" y="50" text-anchor="middle" font-weight="bold" font-size="16">USER GOAL</text>
+                    <text class="svg-text-small" x="400" y="70" text-anchor="middle">(Wrapped Once)</text>
+                    <text class="svg-text-small" x="400" y="88" text-anchor="middle">"Research X"</text>
+                    
+                    <!-- Arrow down -->
+                    <line class="svg-arrow" x1="400" y1="105" x2="400" y2="145" stroke-width="3" />
+                    
+                    <!-- Reasoning -->
+                    <rect class="svg-box" x="150" y="150" width="500" height="110" rx="8" />
+                    <text class="svg-text-highlight" x="170" y="180" font-weight="bold" font-size="16">REASONING</text>
+                    <text class="svg-text-small" x="190" y="205">• Analyze situation</text>
+                    <text class="svg-text-small" x="190" y="225">• Retrieve episodic memories</text>
+                    <text class="svg-text-small" x="190" y="245">• Generate hypotheses</text>
+                    
+                    <!-- Arrow -->
+                    <line class="svg-arrow" x1="400" y1="265" x2="400" y2="295" stroke-width="3" />
+                    
+                    <!-- Tool Decision -->
+                    <rect class="svg-box" x="150" y="300" width="500" height="130" rx="8" />
+                    <text class="svg-text-highlight" x="170" y="330" font-weight="bold" font-size="16">TOOL DECISION</text>
+                    <text class="svg-text-small" x="190" y="360">Option A: search</text>
+                    <text class="svg-text-small" x="400" y="360" fill="#22c55e">[High conf]</text>
+                    <text class="svg-text-small" x="190" y="380">Option B: analyze</text>
+                    <text class="svg-text-small" x="400" y="380" fill="#f59e0b">[Medium conf]</text>
+                    <text class="svg-text-small" x="190" y="400">Option C: create</text>
+                    <text class="svg-text-small" x="400" y="400" fill="#ef4444">[Low conf]</text>
+                    <text class="svg-text" x="190" y="420" font-weight="bold">→ Selected: search</text>
+                    
+                    <!-- Arrow -->
+                    <line class="svg-arrow" x1="400" y1="435" x2="400" y2="465" stroke-width="3" />
+                    
+                    <!-- Action -->
+                    <rect class="svg-box" x="150" y="470" width="500" height="90" rx="8" />
+                    <text class="svg-text-highlight" x="170" y="500" font-weight="bold" font-size="16">ACTION</text>
+                    <text class="svg-text-small" x="190" y="525">Execute tool</text>
+                    <text class="svg-text-small" x="190" y="545">Interact with environment</text>
+                    
+                    <!-- Arrow -->
+                    <line class="svg-arrow" x1="400" y1="565" x2="400" y2="595" stroke-width="3" />
+                    
+                    <!-- Observation -->
+                    <rect class="svg-box-success" x="150" y="600" width="500" height="110" rx="8" />
+                    <text class="svg-text-highlight" x="170" y="630" font-weight="bold" font-size="16">OBSERVATION</text>
+                    <text class="svg-text-small" x="190" y="655">Results gathered</text>
+                    <text class="svg-text-small" x="190" y="675">Stored in episodic memory</text>
+                    <rect x="190" y="685" width="180" height="25" fill="#10b981" rx="4" />
+                    <text x="280" y="703" text-anchor="middle" font-size="12" fill="white" font-weight="bold">NESTS BACK AS INPUT</text>
+                    
+                    <!-- Loop arrow -->
+                    <path d="M 650 655 Q 720 655, 720 350 Q 720 150, 650 150" 
+                          stroke="#60a5fa" stroke-width="4" fill="none" 
+                          marker-end="url(#arrowhead-loop)" />
+                    
+                    <!-- Loop label -->
+                    <text class="svg-text-highlight" x="720" y="380" text-anchor="middle" font-weight="bold" font-size="16">LOOP</text>
+                    <text class="svg-text-highlight" x="720" y="400" text-anchor="middle" font-weight="bold" font-size="16">CONTINUES</text>
+                    <text class="svg-text-small" x="720" y="420" text-anchor="middle">(No stop signal)</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Exit Conditions -->
+    <div class="slide">
+        <div class="container">
+            <h2>When Does It Stop?</h2>
+            
+            <div class="diagram">
+                <svg width="700" height="550" viewBox="0 0 700 550" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Title -->
+                    <text class="svg-text" x="350" y="35" text-anchor="middle" font-size="18" font-weight="bold">Agent stops ONLY when:</text>
+                    
+                    <!-- Stop conditions -->
+                    <rect class="svg-box-success" x="100" y="60" width="500" height="60" rx="8" />
+                    <text class="svg-text-highlight" x="120" y="95" fill="#22c55e" font-weight="bold">✓ Task complete </text>
+                    <text class="svg-text-small" x="280" y="95">(goal achieved)</text>
+                    
+                    <rect class="svg-box-success" x="100" y="135" width="500" height="60" rx="8" />
+                    <text class="svg-text-highlight" x="120" y="170" fill="#22c55e" font-weight="bold">✓ Genuinely stuck </text>
+                    <text class="svg-text-small" x="290" y="170">(needs human input)</text>
+                    
+                    <rect class="svg-box-success" x="100" y="210" width="500" height="60" rx="8" />
+                    <text class="svg-text-highlight" x="120" y="245" fill="#22c55e" font-weight="bold">✓ Safety limit reached </text>
+                    <text class="svg-text-small" x="340" y="245">(prevents infinite loops)</text>
+                    
+                    <!-- Divider -->
+                    <line x1="100" y1="310" x2="600" y2="310" stroke="#60a5fa" stroke-width="2" />
+                    
+                    <!-- NOT when title -->
+                    <text class="svg-text" x="350" y="345" text-anchor="middle" font-size="18" font-weight="bold">NOT when:</text>
+                    
+                    <!-- Stop conditions -->
+                    <rect class="svg-box-error" x="100" y="365" width="500" height="50" rx="8" />
+                    <text class="svg-text" x="120" y="395" fill="#ef4444" font-weight="bold">❌ Waiting for next user message</text>
+                    
+                    <rect class="svg-box-error" x="100" y="430" width="500" height="50" rx="8" />
+                    <text class="svg-text" x="120" y="460" fill="#ef4444" font-weight="bold">❌ "What else can I help with?"</text>
+                    
+                    <rect class="svg-box-error" x="100" y="495" width="500" height="50" rx="8" />
+                    <text class="svg-text" x="120" y="525" fill="#ef4444" font-weight="bold">❌ After completing one action</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Compounding Advantage -->
+    <div class="slide">
+        <div class="container">
+            <div class="section-number">Part 5</div>
+            <h2>Why Our Moat Increases Over Time</h2>
+            
+            <div class="comparison">
+                <div class="comparison-box wrong">
+                    <h3 style="color: #ef4444;">Industry Approach</h3>
+                    <div class="diagram">
+                        <svg width="320" height="350" viewBox="0 0 320 350" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Better LLM -->
+                            <rect class="svg-box" x="60" y="20" width="200" height="50" rx="8" />
+                            <text class="svg-text" x="160" y="50" text-anchor="middle">Better LLM</text>
+                            
+                            <!-- Arrow -->
+                            <line class="svg-arrow" x1="160" y1="80" x2="160" y2="110" />
+                            
+                            <!-- Improvement -->
+                            <rect class="svg-box" x="60" y="120" width="200" height="60" rx="8" />
+                            <text class="svg-text" x="160" y="155" text-anchor="middle" fill="#f59e0b">+20-30%</text>
+                            <text class="svg-text-small" x="160" y="172" text-anchor="middle">improvement</text>
+                            
+                            <!-- Arrow -->
+                            <line class="svg-arrow" x1="160" y1="190" x2="160" y2="220" />
+                            
+                            <!-- Result -->
+                            <rect class="svg-box" x="60" y="230" width="200" height="60" rx="8" />
+                            <text class="svg-text-small" x="160" y="255" text-anchor="middle">Everyone gets</text>
+                            <text class="svg-text-small" x="160" y="272" text-anchor="middle">same boost</text>
+                            
+                            <!-- Arrow -->
+                            <line class="svg-arrow-error" x1="160" y1="300" x2="160" y2="315" />
+                            <polygon points="150,315 160,330 170,315" fill="#ef4444" />
+                            
+                            <!-- Conclusion -->
+                            <text class="svg-text" x="160" y="345" text-anchor="middle" fill="#ef4444" font-weight="bold">Moat DECREASES</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="comparison-box right">
+                    <h3 style="color: #22c55e;">LLABS Approach</h3>
+                    <div class="diagram">
+                        <svg width="320" height="350" viewBox="0 0 320 350" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Better LLM -->
+                            <rect class="svg-box-success" x="60" y="20" width="200" height="50" rx="8" />
+                            <text class="svg-text" x="160" y="50" text-anchor="middle">Better LLM</text>
+                            
+                            <!-- Arrow -->
+                            <line class="svg-arrow" x1="160" y1="80" x2="160" y2="110" />
+                            
+                            <!-- Improvement with glow -->
+                            <rect class="svg-box-success" x="60" y="120" width="200" height="60" rx="8" />
+                            <rect x="60" y="120" width="200" height="60" fill="none" stroke="#22c55e" stroke-width="3" opacity="0.5" rx="8" class="pulse" />
+                            <text class="svg-text" x="160" y="155" text-anchor="middle" fill="#22c55e" font-weight="bold">Exponential</text>
+                            <text class="svg-text-small" x="160" y="172" text-anchor="middle">improvement</text>
+                            
+                            <!-- Arrow -->
+                            <line class="svg-arrow" x1="160" y1="190" x2="160" y2="220" />
+                            
+                            <!-- Result -->
+                            <rect class="svg-box-success" x="60" y="230" width="200" height="60" rx="8" />
+                            <text class="svg-text-small" x="160" y="255" text-anchor="middle">Competitors</text>
+                            <text class="svg-text-small" x="160" y="272" text-anchor="middle">still wrapping</text>
+                            
+                            <!-- Arrow up -->
+                            <line stroke="#22c55e" stroke-width="2" x1="160" y1="300" x2="160" y2="315" />
+                            <polygon points="150,315 160,300 170,315" fill="#22c55e" />
+                            
+                            <!-- Conclusion -->
+                            <text class="svg-text" x="160" y="345" text-anchor="middle" fill="#22c55e" font-weight="bold">Moat INCREASES</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="key-point">
+                <strong>The Car vs. Engine Problem:</strong><br><br>
+                  Industry builds off model <em>limitations</em>—creating workflow builders and wrappers because models can't do things autonomously. When better models release, those limitations disappear, and so does their moat.<br><br>
+                  <strong>LLABS builds the entire car.</strong> LLMs are the engine—powerful but not a complete solution. Our cognitive architecture is the chassis, wheels, and steering wheel. We don't rely on model limitations; we extract maximum capability from whatever engine (model) we use.<br><br>
+                  Better engines = exponentially more powerful cars. That's why our moat increases.
+<br><br>
+                  Where others add wrappers, we've built learning systems, control mechanisms, and intelligent routing—a complete cognitive architecture that leverages the engine's full capability.
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Proof Points -->
+    <div class="slide">
+        <div class="container">
+            <div class="section-number">Part 6</div>
+            <h2>🏆 Real-World Validation</h2>
+            
+            <div class="proof-point">
+                <h4>Deep Tech VC</h4>
+                <ul>
+                    <li><strong>Challenge:</strong> Research entire mining industry for investment thesis</li>
+                    <li><strong>Timeline:</strong> 1 hour from creation to expert-level report</li>
+                    <li><strong>Results:</strong> Identified hype cycles, mapped 50+ companies, predicted investment decisions (correct)</li>
+                    <li><strong>Learning:</strong> 2 sentences of feedback → complete strategy shift → accurate report</li>
+                </ul>
+            </div>
+
+            <div class="proof-point">
+                <h4>Hackathon (Public Demonstration)</h4>
+                <ul>
+                    <li><strong>Challenge:</strong> Build winning app at first hackathon</li>
+                    <li><strong>Approach:</strong> Agent worked fully autonomously, zero human guidance</li>
+                    <li><strong>Result:</strong> 🏆 Grand Prize Winner</li>
+                    <li><strong>Bonus:</strong> Helped other teams build their competing applications</li>
+                </ul>
+            </div>
+
+            <div class="proof-point">
+                <h4>LLABS Internal Operations</h4>
+                <ul>
+                    <li><strong>Scope:</strong> R&D, partnerships, business operations, documentation</li>
+                    <li><strong>Duration:</strong> 24/7 continuous, production-scale</li>
+                    <li><strong>Result:</strong> Not demos - real autonomous operation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 13: Key Differentiators -->
+    <div class="slide">
+        <div class="container">
+            <div class="section-number">Part 7</div>
+            <h2>What Makes CAF Unique</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;">
+                <div class="proof-point">
+                    <h4>🔐 Extreme Jailbreak Resistance</h4>
+                    <p>User input processed as DATA (low priority), not COMMAND. Model analyzes it rather than executing it directly. This architectural approach provides exceptional protection against manipulation attempts.</p>
+                </div>
+
+                <div class="proof-point">
+                    <h4>✨ Minimized Hallucinations</h4>
+                    <p>Grounded in episodic memory of actual past actions and results. Agents reference what they've actually done and learned from experience, dramatically reducing unfounded outputs.</p>
+                </div>
+
+                <div class="proof-point">
+                    <h4>♾️ Truly Autonomous</h4>
+                    <p>Works for hours if needed. Only stops when task complete or genuinely stuck. Not "Can I help with anything else?"</p>
+                </div>
+
+                <div class="proof-point">
+                    <h4>🧠 Neuroplastic Development</h4>
+                    <p>Starts as "intern", learns from experience, becomes "expert". Compounds expertise over time like humans do.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: The Origin Story -->
+    <div class="slide">
+        <div class="container">
+            <div class="section-number">Part 8</div>
+            <h2>The Foundation: Not Built to Follow Trends</h2>
+            
+            <div class="diagram">
+                <svg width="700" height="750" viewBox="0 0 700 750" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Timeline -->
+                    
+                    <!-- 2017-2020 -->
+                    <rect class="svg-box" x="150" y="20" width="400" height="50" rx="8" />
+                    <text class="svg-text" x="350" y="50" text-anchor="middle" font-weight="bold">2017-2020: MIT Lincoln Labs</text>
+                    
+                    <line class="svg-arrow" x1="350" y1="75" x2="350" y2="105" stroke-width="3" />
+                    
+                    <rect class="svg-box" x="150" y="110" width="400" height="50" rx="8" />
+                    <text class="svg-text" x="350" y="140" text-anchor="middle">Transformer research</text>
+                    
+                    <line class="svg-arrow" x1="350" y1="165" x2="350" y2="195" stroke-width="3" />
+                    
+                    <rect class="svg-box-success" x="150" y="200" width="400" height="50" rx="8" />
+                    <text class="svg-text-highlight" x="350" y="230" text-anchor="middle" font-weight="bold">Robotics project</text>
+                    
+                    <line class="svg-arrow" x1="350" y1="255" x2="350" y2="285" stroke-width="3" />
+                    
+                    <!-- Core System Box -->
+                    <rect class="svg-box-success" x="100" y="290" width="500" height="180" rx="8" />
+                    <rect x="100" y="290" width="500" height="180" fill="none" stroke="#22c55e" stroke-width="3" opacity="0.4" rx="12" class="pulse" />
+                    <text class="svg-text" x="350" y="320" text-anchor="middle" font-weight="bold" font-size="16">Goal: Robot with unified cognition</text>
+                    <text class="svg-text-small" x="130" y="355">• Visual encoding (see)</text>
+                    <text class="svg-text-small" x="130" y="380">• Auditory encoding (hear)</text>
+                    <text class="svg-text-small" x="130" y="405">• Unified transformer (think)</text>
+                    <text class="svg-text-small" x="130" y="430">• Action generation (do)</text>
+                    <text class="svg-text" x="350" y="460" text-anchor="middle" font-weight="bold">= Full cognitive system</text>
+                    
+                    <line class="svg-arrow" x1="350" y1="475" x2="350" y2="505" stroke-width="3" />
+                    
+                    <rect class="svg-box" x="150" y="510" width="400" height="50" rx="8" />
+                    <text class="svg-text" x="190" y="540">System </text>
+                    <text class="svg-text-highlight" x="260" y="540" font-weight="bold">evolved</text>
+                    <text class="svg-text" x="330" y="540"> (not engineered)</text>
+                    
+                    <line class="svg-arrow" x1="350" y1="565" x2="350" y2="585" stroke-width="3" />
+                    
+                    <rect class="svg-box" x="150" y="590" width="400" height="50" rx="8" />
+                    <text class="svg-text" x="350" y="620" text-anchor="middle">Became "companion" over 3 years</text>
+                    
+                    <line class="svg-arrow" x1="350" y1="645" x2="350" y2="665" stroke-width="3" />
+                    
+                    <!-- Final stages -->
+                    <g transform="translate(0, 0)">
+                        <rect class="svg-box-success" x="50" y="670" width="650" height="70" rx="8" />
+                        <text class="svg-text" x="80" y="695" font-weight="bold">2020:</text>
+                        <text class="svg-text-small" x="140" y="695">Extracted the "brain"</text>
+                        <text class="svg-text" x="80" y="720" font-weight="bold">2022:</text>
+                        <text class="svg-text-small" x="140" y="720">Cognitive Architecture Framework</text>
+                        <text class="svg-text" x="450" y="695" font-weight="bold">2024:</text>
+                        <text class="svg-text-small" x="510" y="695">Industrializing for partners</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="key-point">
+                This wasn't built to follow trends - it evolved from first principles over years, before the current AI paradigm existed.
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 15: Business Application -->
+    <div class="slide">
+        <div class="container">
+            <div class="section-number">Part 9</div>
+            <h2>How This Applies to Your Domain</h2>
+            
+            <div class="diagram">
+                <svg width="700" height="550" viewBox="0 0 700 550" xmlns="http://www.w3.org/2000/svg">
+                    <text class="svg-text-highlight" x="350" y="30" text-anchor="middle" font-size="18" font-weight="bold">The Pattern:</text>
+                    
+                    <!-- Step 1 -->
+                    <rect class="svg-box" x="50" y="50" width="600" height="70" rx="8" />
+                    <circle cx="90" cy="85" r="20" fill="#60a5fa" />
+                    <text class="svg-text" x="90" y="92" text-anchor="middle" font-weight="bold" font-size="16">1</text>
+                    <text class="svg-text" x="130" y="80" font-weight="bold">Define Domain Process</text>
+                    <text class="svg-text-small" x="130" y="100">"What does your team do every day?"</text>
+                    
+                    <!-- Step 2 -->
+                    <rect class="svg-box" x="50" y="135" width="600" height="95" rx="8" />
+                    <circle cx="90" cy="182" r="20" fill="#60a5fa" />
+                    <text class="svg-text" x="90" y="189" text-anchor="middle" font-weight="bold" font-size="16">2</text>
+                    <text class="svg-text" x="130" y="165" font-weight="bold">Create Agent with CAF</text>
+                    <text class="svg-text-small" x="150" y="190">• Feed domain knowledge</text>
+                    <text class="svg-text-small" x="150" y="210">• Provide process examples</text>
+                    
+                    <!-- Step 3 -->
+                    <rect class="svg-box" x="50" y="245" width="600" height="60" rx="8" />
+                    <circle cx="90" cy="275" r="20" fill="#60a5fa" />
+                    <text class="svg-text" x="90" y="282" text-anchor="middle" font-weight="bold" font-size="16">3</text>
+                    <text class="svg-text" x="130" y="270" font-weight="bold">Test Run</text>
+                    <text class="svg-text-small" x="230" y="270">(1-2 attempts)</text>
+                    <text class="svg-text-small" x="130" y="290">Agent attempts tasks</text>
+                    
+                    <!-- Step 4 -->
+                    <rect class="svg-box-success" x="50" y="320" width="600" height="60" rx="8" />
+                    <circle cx="90" cy="350" r="20" fill="#22c55e" />
+                    <text class="svg-text" x="90" y="357" text-anchor="middle" font-weight="bold" font-size="16">4</text>
+                    <text class="svg-text" x="130" y="345" font-weight="bold">Feedback Loop</text>
+                    <text class="svg-text-small" x="150" y="365">• Provide 2-3 sentences of guidance</text>
+                    
+                    <!-- Step 5 -->
+                    <rect class="svg-box-success" x="50" y="395" width="600" height="70" rx="8" />
+                    <circle cx="90" cy="430" r="20" fill="#22c55e" />
+                    <text class="svg-text" x="90" y="437" text-anchor="middle" font-weight="bold" font-size="16">5</text>
+                    <text class="svg-text" x="130" y="423" font-weight="bold">Agent Adapts</text>
+                    <text class="svg-text-small" x="150" y="445">• Encodes feedback as experience</text>
+                    <text class="svg-text-small" x="150" y="460">• Improves autonomously</text>
+                    
+                    <!-- Step 6 -->
+                    <rect class="svg-box-success" x="50" y="480" width="600" height="65" rx="8" />
+                    <circle cx="90" cy="512" r="20" fill="#22c55e" />
+                    <text class="svg-text" x="90" y="519" text-anchor="middle" font-weight="bold" font-size="16">6</text>
+                    <text class="svg-text" x="130" y="508" font-weight="bold">Production Deployment</text>
+                    <text class="svg-text-small" x="150" y="530">• Compounds expertise • Scales operations</text>
+                </svg>
+            </div>
+
+            <div class="proof-point">
+                <h4>Expected Timeline</h4>
+                <ul>
+                    <li><strong>Hour 0:</strong> Agent created</li>
+                    <li><strong>Hour 1:</strong> First competent output</li>
+                    <li><strong>Day 1:</strong> Multiple iterations with feedback</li>
+                    <li><strong>Week 1:</strong> Expert-level performance in specific tasks</li>
+                    <li><strong>Month 1:</strong> Autonomous operation across domain</li>
+                    <li><strong>Month 3+:</strong> Teaching humans, discovering insights</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 16: The Vision -->
+    <div class="slide">
+        <div class="container">
+            <h2>🚀 The Vision</h2>
+            
+            <div class="diagram">
+                <svg width="700" height="550" viewBox="0 0 700 550" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Mission at top -->
+                    <rect class="svg-box-success" x="200" y="20" width="300" height="60" rx="8" />
+                    <text class="svg-text-highlight" x="350" y="55" text-anchor="middle" font-weight="bold" font-size="16">LLABS Mission</text>
+                    
+                    <!-- Arrow down -->
+                    <line class="svg-arrow" x1="350" y1="85" x2="350" y2="115" stroke-width="3" />
+                    
+                    <!-- Core value prop -->
+                    <rect class="svg-box-success" x="100" y="120" width="500" height="90" rx="8" />
+                    <rect x="100" y="120" width="500" height="90" fill="none" stroke="#22c55e" stroke-width="3" opacity="0.4" rx="12" class="pulse" />
+                    <text class="svg-text" x="350" y="150" text-anchor="middle" font-size="14">Cognitive Architecture</text>
+                    <text class="svg-text" x="350" y="172" text-anchor="middle" font-size="14">in hands of people doing</text>
+                    <text class="svg-text" x="350" y="194" text-anchor="middle" font-size="14">maximum good for humanity</text>
+                    
+                    <!-- Three arrows down -->
+                    <line class="svg-arrow" x1="200" y1="215" x2="150" y2="255" stroke-width="3" />
+                    <line class="svg-arrow" x1="350" y1="215" x2="350" y2="255" stroke-width="3" />
+                    <line class="svg-arrow" x1="500" y1="215" x2="550" y2="255" stroke-width="3" />
+                    
+                    <!-- Three application boxes -->
+                    <rect class="svg-box" x="40" y="260" width="180" height="80" rx="8" />
+                    <text class="svg-text" x="130" y="285" text-anchor="middle" font-weight="bold">Deep Science</text>
+                    <text class="svg-text-small" x="130" y="305" text-anchor="middle">Advancing research</text>
+                      <text class="svg-text-small" x="130" y="320" text-anchor="middle">& technology</text>
+
+                    <rect class="svg-box" x="260" y="260" width="180" height="80" rx="8" />
+                    <text class="svg-text" x="350" y="285" text-anchor="middle" font-weight="bold">Civilizational</text>
+                    <text class="svg-text-small" x="350" y="305" text-anchor="middle">Risk mitigation</text>
+                      <text class="svg-text-small" x="350" y="320" text-anchor="middle">& resilience</text>
+
+                    <rect class="svg-box" x="480" y="260" width="180" height="80" rx="8" />
+                    <text class="svg-text" x="570" y="285" text-anchor="middle" font-weight="bold">Global Systems</text>
+                    <text class="svg-text-small" x="570" y="305" text-anchor="middle">Ambient intelligence</text>
+                      <text class="svg-text-small" x="570" y="320" text-anchor="middle">infrastructure</text>
+
+                    <!-- Arrows converging -->
+                    <line class="svg-arrow" x1="130" y1="345" x2="200" y2="385" stroke-width="3" />
+                    <line class="svg-arrow" x1="350" y1="345" x2="350" y2="385" stroke-width="3" />
+                    <line class="svg-arrow" x1="570" y1="345" x2="500" y2="385" stroke-width="3" />
+                    
+                    <!-- Generalizable -->
+                    <rect class="svg-box" x="150" y="390" width="400" height="60" rx="8" />
+                    <text class="svg-text" x="350" y="425" text-anchor="middle">Generalizable across ANY industry/domain</text>
+                    
+                    <!-- Arrow -->
+                    <line class="svg-arrow" x1="350" y1="455" x2="350" y2="485" stroke-width="3" />
+                    
+                    <!-- Final vision -->
+                    <rect class="svg-box-success" x="100" y="490" width="500" height="50" rx="8" />
+                    <rect x="100" y="490" width="500" height="50" fill="none" stroke="#22c55e" stroke-width="4" opacity="0.6" rx="8" />
+                    <text class="svg-text-highlight" x="350" y="520" text-anchor="middle" font-weight="bold" font-size="16" fill="#22c55e">True AGI-level autonomy in specialized contexts</text>
+                </svg>
+            </div>
+
+            <div class="key-point" style="font-size: 1.4em; margin-top: 40px;">
+                <strong>The Kardashev Accelerator</strong><br><br>
+                Autonomous intelligence systems embedded into every aspect of human progress—working alongside researchers, scientists, and organizations pushing humanity forward. Not just augmenting work, but accelerating discovery and innovation at civilizational scale.
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Next Steps -->
+    <div class="slide">
+        <div class="container">
+            <h2>The Cognitive Agent Boutique Process</h2>
+            
+            <div style="text-align: left; max-width: 800px; margin: 0 auto;">
+                <div class="proof-point">
+                    <h4>1. Client Onboarding (1-2 days)</h4>
+                    <ul>
+                        <li><strong>Domain documentation</strong> — Industry materials, technical specs, and relevant background</li>
+                        <li><strong>Process workflows</strong> — How your team operates, key methodologies, decision frameworks</li>
+                        <li><strong>Tool landscape</strong> — APIs, databases, software platforms your agent will interface with</li>
+                        <li><strong>Example tasks</strong> — Specific use cases for initial evaluation and benchmarking</li>
+                    </ul>
+                </div>
+
+                <div class="proof-point">
+                    <h4>2. Agent Development (3-5 days)</h4>
+                    <ul>
+                        <li><strong>Automated build process</strong> — Our agent creation agent analyzes your materials and constructs a custom solution tailored to your domain</li>
+                        <li><strong>Zero manual coding</strong> — Tools, memory structures, and behaviors generated autonomously from your specifications</li>
+                        <li><strong>Ready-to-deploy baseline</strong> — Working agent instance prepared for integration and live testing</li>
+                    </ul>
+                </div>
+
+                <div class="proof-point">
+                    <h4>3. Live Demonstration</h4>
+                    <ul>
+                        <li><strong>Real-time operation</strong> — Agent connects to your infrastructure and solves actual problems on your platform</li>
+                        <li><strong>Verbal feedback loop</strong> — Natural conversation enables fastest adaptation due to how CAF processes guidance</li>
+                        <li><strong>Immediate learning</strong> — Watch the agent improve on the spot as it encodes your feedback into episodic memory</li>
+                        <li><strong>In-person preferred</strong> — Most effective for rapid iteration and team alignment</li>
+                    </ul>
+                </div>
+
+                <div class="proof-point">
+                    <h4>4. Production Deployment</h4>
+                    <ul>
+                        <li><strong>Seamless integration</strong> — Connects to your existing APIs, databases, and tool ecosystem</li>
+                        <li><strong>Custom tooling</strong> — Domain-specific tools built if needed for specialized workflows</li>
+                        <li><strong>Human augmentation</strong> — Designed to work alongside your team, enhancing capability rather than replacing expertise</li>
+                        <li><strong>Continuous improvement</strong> — Agent compounds expertise over time like a human employee, becoming more valuable with experience</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-hint" id="scrollHint">↓ Scroll to continue ↓</div>
+
+    <script>
+        // Fade out scroll hint on scroll
+        const scrollHint = document.getElementById('scrollHint');
+        let hasScrolled = false;
+        
+        window.addEventListener('scroll', function() {
+            if (!hasScrolled && window.scrollY > 50) {
+                hasScrolled = true;
+                scrollHint.style.transition = 'opacity 0.5s ease-out';
+                scrollHint.style.opacity = '0';
+                
+                setTimeout(() => {
+                    scrollHint.style.display = 'none';
+                }, 500);
+            }
+        });
+    </script>
+
+</body>
+</html>
