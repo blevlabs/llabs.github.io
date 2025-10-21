@@ -6,45 +6,45 @@
     <title>LLABS Operational Agents for Diversis Portfolio</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
             color: #2c3e50;
             background: #f5f5f5;
         }
-        
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
             background: white;
         }
-        
+
         .header {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
             padding: 50px 40px;
             text-align: center;
         }
-        
+
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 15px;
         }
-        
+
         .header .subtitle {
             font-size: 1.2em;
             opacity: 0.95;
             margin-bottom: 10px;
         }
-        
+
         .header .meeting-info {
             font-size: 1em;
             opacity: 0.85;
             margin-top: 15px;
             font-style: italic;
         }
-        
+
         .nav {
             background: #34495e;
             padding: 15px;
@@ -53,7 +53,7 @@
             top: 0;
             z-index: 100;
         }
-        
+
         .nav a {
             color: white;
             text-decoration: none;
@@ -63,37 +63,37 @@
             border-radius: 5px;
             transition: background 0.3s;
         }
-        
+
         .nav a:hover {
             background: #2c3e50;
         }
-        
+
         .content {
             padding: 40px;
         }
-        
+
         .intro-section {
             background: #ecf0f1;
             padding: 30px;
             margin-bottom: 40px;
             border-left: 5px solid #e74c3c;
         }
-        
+
         .intro-section h2 {
             color: #e74c3c;
             margin-bottom: 15px;
         }
-        
+
         .company-section {
             margin-bottom: 80px;
             padding-bottom: 40px;
             border-bottom: 3px solid #ecf0f1;
         }
-        
+
         .company-section:last-child {
             border-bottom: none;
         }
-        
+
         .company-header {
             background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
@@ -101,17 +101,17 @@
             margin-bottom: 30px;
             border-radius: 10px;
         }
-        
+
         .company-header h2 {
             font-size: 2.2em;
             margin-bottom: 10px;
         }
-        
+
         .company-header .stats {
             font-size: 1em;
             opacity: 0.9;
         }
-        
+
         .section-title {
             background: #34495e;
             color: white;
@@ -120,20 +120,20 @@
             font-size: 1.3em;
             font-weight: bold;
         }
-        
+
         .current-state-box {
             background: #fff3cd;
             border-left: 5px solid #ffc107;
             padding: 25px;
             margin: 20px 0;
         }
-        
+
         .current-state-box h4 {
             color: #856404;
             margin-bottom: 15px;
             font-size: 1.2em;
         }
-        
+
         .agent-proposal {
             background: white;
             border: 3px solid #3498db;
@@ -142,7 +142,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        
+
         .agent-number {
             background: #3498db;
             color: white;
@@ -153,13 +153,13 @@
             font-size: 1.1em;
             margin-bottom: 20px;
         }
-        
+
         .agent-proposal h3 {
             color: #2c3e50;
             font-size: 1.8em;
             margin-bottom: 10px;
         }
-        
+
         .agent-proposal .purpose {
             background: #e8f4f8;
             padding: 15px;
@@ -167,20 +167,20 @@
             border-left: 4px solid #3498db;
             font-size: 1.05em;
         }
-        
+
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 25px;
             margin: 25px 0;
         }
-        
+
         .detail-box {
             background: #ecf0f1;
             padding: 25px;
             border-radius: 8px;
         }
-        
+
         .detail-box h5 {
             color: #2c3e50;
             margin-bottom: 15px;
@@ -188,18 +188,18 @@
             border-bottom: 2px solid #3498db;
             padding-bottom: 8px;
         }
-        
+
         .detail-box ul {
             list-style: none;
         }
-        
+
         .detail-box li {
             padding: 8px 0;
             padding-left: 25px;
             position: relative;
             line-height: 1.6;
         }
-        
+
         .detail-box li::before {
             content: "→";
             position: absolute;
@@ -207,7 +207,7 @@
             color: #3498db;
             font-weight: bold;
         }
-        
+
         .code-example {
             background: #2c3e50;
             color: #ecf0f1;
@@ -218,49 +218,49 @@
             margin: 20px 0;
             white-space: pre-wrap;
         }
-        
+
         .why-not-ml {
             background: #d4edda;
             border-left: 5px solid #28a745;
             padding: 25px;
             margin: 25px 0;
         }
-        
+
         .why-not-ml h5 {
             color: #155724;
             margin-bottom: 15px;
             font-size: 1.2em;
         }
-        
+
         .why-not-ml table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
         }
-        
+
         .why-not-ml th {
             background: #28a745;
             color: white;
             padding: 12px;
             text-align: left;
         }
-        
+
         .why-not-ml td {
             padding: 12px;
             border-bottom: 1px solid #c3e6cb;
         }
-        
+
         .key-point {
             background: #fff3cd;
             border-left: 5px solid #ffc107;
             padding: 20px;
             margin: 20px 0;
         }
-        
+
         .key-point strong {
             color: #856404;
         }
-        
+
         @media print {
             .agent-proposal { break-inside: avoid; }
         }
@@ -300,13 +300,13 @@
             margin-bottom: 10px;
             font-size: 1.1em;
         }
-          
+
           /* Flowchart Styles */
           .flowchart-container {
               margin: 30px 0;
               padding: 0;
           }
-          
+
           .flowchart-phase {
               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
               color: white;
@@ -316,7 +316,7 @@
               position: relative;
               box-shadow: 0 4px 6px rgba(0,0,0,0.1);
           }
-          
+
           .flowchart-phase:not(:last-child)::after {
               content: '↓';
               position: absolute;
@@ -327,7 +327,7 @@
               color: #667eea;
               font-weight: bold;
           }
-          
+
           .phase-number {
               display: inline-block;
               background: rgba(255,255,255,0.3);
@@ -340,37 +340,37 @@
               margin-right: 10px;
               font-size: 1.1em;
           }
-          
+
           .phase-title {
               font-size: 1.2em;
               font-weight: bold;
               margin-bottom: 10px;
           }
-          
+
           .phase-content {
               padding-left: 45px;
               font-size: 0.95em;
               line-height: 1.6;
           }
-          
+
           .phase-content ul {
               list-style: none;
               padding: 0;
               margin: 10px 0 0 0;
           }
-          
+
           .phase-content li {
               padding: 5px 0 5px 20px;
               position: relative;
           }
-          
+
           .phase-content li:before {
               content: '▸';
               position: absolute;
               left: 0;
               color: rgba(255,255,255,0.8);
           }
-          
+
           .flowchart-outcome {
               background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
               color: white;
@@ -380,6 +380,25 @@
               font-weight: bold;
               text-align: center;
               box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          }
+
+          .portfolio-prospects-header {
+              background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+              color: white;
+              padding: 40px;
+              margin: 60px 0 40px 0;
+              text-align: center;
+              border-radius: 10px;
+          }
+
+          .portfolio-prospects-header h2 {
+              font-size: 2.2em;
+              margin-bottom: 15px;
+          }
+
+          .portfolio-prospects-header p {
+              font-size: 1.1em;
+              opacity: 0.95;
           }
     </style>
 </head>
@@ -392,15 +411,481 @@
         </div>
 
         <div class="nav">
-            <a href="#rooflink">RoofLink</a>
-            <a href="#infotech">Infotech</a>
-            <a href="#fishbowl">Fishbowl</a>
-
+              <a href="#infotech">Infotech (Fraud Detection)</a>
               <a href="#pe-ops">PE Operations</a>
+              <a href="#prospects">Portfolio Prospects</a>
         </div>
 
         <div class="content">
-            <!-- INTRO SECTION -->
+
+            <!-- INFOTECH SECTION -->
+            <div class="company-section" id="infotech">
+                <div class="company-header">
+                    <h2>🏗️ Infotech: Fraud Investigation Agent</h2>
+                    <div class="stats">Acquired July 2024 • $60M Revenue • 303 Employees • 39-Year AASHTO Partnership</div>
+                </div>
+
+                <div class="current-state-box">
+                    <h4>Current Operational Reality (Research-Backed)</h4>
+                    <p><strong>What Fraud Investigators DO All Day:</strong></p>
+                    <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
+                        <li><strong>Surveillance:</strong> Review bid patterns, emails, communications for collusion signs</li>
+                        <li><strong>Pattern Analysis:</strong> Statistical analysis (bid spreads, contractor clustering, geographic patterns)</li>
+                        <li><strong>Evidence Gathering:</strong> Collect documents, witness testimony, historical case precedents</li>
+                        <li><strong>Case Building:</strong> Compile evidence, build narrative, demonstrate pattern matching</li>
+                        <li><strong>Stakeholder Coordination:</strong> Work with DOJ, state DOTs, legal teams, prosecutors</li>
+                        <li><strong>Litigation Support:</strong> Expert testimony, evidence presentation, case documentation</li>
+                        <li><strong>Outcome Tracking:</strong> Monitor results, settlements, confirmed fraud cases</li>
+                    </ul>
+
+                    <p style="margin-top: 15px; padding: 15px; background: white; border-left: 4px solid #e74c3c;"><strong>The Bottleneck:</strong> Each investigation takes WEEKS. Infotech can only analyze selective bids (not all 50 states). Fraud happens while analysts work on other cases. Coverage is <10% of actual bidding activity.</p>
+
+                    <p style="margin-top: 15px; padding: 15px; background: white; border-left: 4px solid #28a745;"><strong>The Opportunity:</strong> <a href="https://www.insidegovernmentcontracts.com/2025/07/fraud-prevention-in-focus-examining-dods-risk-management-strategies/" target="_blank" style="color: #2980b9; text-decoration: underline;">DOD reported $7B procurement fraud in 7 years</a> [Source: Inside Government Contracts, GAO Testimony]. Infrastructure Bill ($1.2T) = massive increase in projects = more fraud opportunity. Market needs continuous monitoring at government scale.</p>
+                </div>
+
+                <div class="agent-proposal">
+                    <div class="agent-number">OPERATIONAL AGENT #1</div>
+                    <h3>Autonomous Fraud Investigation & Case Building Agent</h3>
+                    <div class="purpose">
+                        <strong>What This Agent DOES (The JOB):</strong> Operates as 24/7 fraud investigator - monitors EVERY bid across all 50 state DOTs in real-time, analyzes patterns using 39 years of AASHTO episodic memory, identifies suspicious activity, autonomously builds evidence files, coordinates with legal teams, learns from litigation outcomes. Like having 50 expert analysts working simultaneously, never sleeping.
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="detail-box">
+                            <h5>Tools & Integration Architecture</h5>
+                            <ul>
+                                <li><strong>Bid Express Platform API:</strong> Real-time bid submissions (all 50 states)</li>
+                                <li><strong>AASHTO Database:</strong> 39 years of bid data (Infotech proprietary)</li>
+                                <li><strong>State DOT Portals:</strong> 50 state bid monitoring systems</li>
+                                <li><strong>Contractor Database:</strong> Historical performance tracking</li>
+                                <li><strong>Infotech Case Files:</strong> Confirmed fraud cases (episodic patterns)</li>
+                                <li><strong>DOJ/Legal Systems:</strong> Case coordination and evidence sharing</li>
+                            </ul>
+                        </div>
+                        <div class="detail-box">
+                            <h5>What The Agent DOES (Continuous Investigation)</h5>
+                            <ul>
+                                <li><strong>Monitors every bid (50 states, real-time):</strong> Analyzes within seconds of submission</li>
+                                <li><strong>Pattern matching:</strong> Retrieves similar historical cases from 39-year database</li>
+                                <li><strong>Statistical analysis:</strong> Bid spread anomalies, contractor clustering, geographic patterns</li>
+                                <li><strong>Fraud probability scoring:</strong> 0.0-1.0 scale based on historical precedents</li>
+                                <li><strong>Evidence compilation:</strong> Gathers supporting docs, contractor histories, related bids</li>
+                                <li><strong>Case file generation:</strong> Investigation-ready packages for legal review</li>
+                                <li><strong>Stakeholder coordination:</strong> Tracks with DOJ, state DOTs, legal teams</li>
+                                <li><strong>Learns from outcomes:</strong> Confirmed fraud → strengthens pattern recognition</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="code-example">Episodic Learning Pattern (39-Year Memory Compounding):
+
+Episode Database:
+  TX-2019-I10-042: Confirmed collusion
+    Pattern: Top 3 bids within 0.3% spread
+    Scheme: Complementary bidding (one competitor bid high)
+    Outcome: $30M fraud proven
+
+Episode: FL-2024-I95-001 (New bid flagged)
+  Bid Pattern Detected:
+    - Project value: $12.5M
+    - Top 3 bids: $12.48M, $12.49M, $12.51M
+    - Spread: $30K (0.24% - ANOMALY)
+    - 4th bid: $16.2M (30% higher - suspicious)
+
+  Agent Reasoning:
+    Retrieval: "TX-2019-I10 had same pattern"
+    Analysis: "Complementary bidding scheme suspected"
+    Statistical: "Expected spread $450K, actual $30K"
+    Fraud Probability: 0.87 (HIGH)
+
+  Agent Actions (Autonomous):
+    1. Compiled evidence file:
+       - Bid submissions (all 4 contractors)
+       - Contractor relationship history
+       - Similar cases (TX-2019, 3 others)
+       - Statistical analysis (spread anomaly)
+    2. Generated case brief (ready for legal review)
+    3. Flagged for investigation (HIGH priority)
+    4. Coordinated with FL DOT investigator
+
+  Outcome (6 months later):
+    Confirmed: Collusion proven
+    Settlement: $8M recovered
+    Learning: Pattern reinforced (0.87 → 0.92 confidence for similar cases)
+
+Episode: CA-2024-Highway (Next similar case)
+  Pattern: Agent recognizes INSTANTLY
+  Action: Case file built in HOURS (vs. weeks manual)
+  Result: Investigation launched within 48 hours
+
+= Agent gets faster and more accurate with every case</div>
+
+                    <div class="why-not-ml">
+                        <h5>Why This Requires Cognitive Agents (Not Just ML/Automation)</h5>
+                        <p><strong>Existing Tools (Cardinal, Integrity Filters):</strong></p>
+                        <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
+                            <li>✅ Can detect fraud patterns (rule-based algorithms)</li>
+                            <li>❌ But: Static rules don't improve over time</li>
+                            <li>❌ But: Batch processing, not real-time continuous</li>
+                            <li>❌ But: Can't BUILD CASES (just flag anomalies)</li>
+                            <li>❌ But: Can't COORDINATE with stakeholders</li>
+                            <li>❌ But: Can't LEARN from litigation outcomes</li>
+                        </ul>
+
+                        <p style="margin-top: 20px;"><strong>LLABS Cognitive Agent:</strong></p>
+                        <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
+                            <li>✓ Continuous monitoring (all 50 states, every bid, instant analysis)</li>
+                            <li>✓ Evidence gathering (autonomously compiles case files)</li>
+                            <li>✓ Stakeholder coordination (tracks with legal teams)</li>
+                            <li>✓ Episodic learning ("TX-2019 pattern = fraud 92% of time")</li>
+                            <li>✓ Self-improving (every confirmed case makes it smarter)</li>
+                            <li>✓ Explainable (provides historical precedent: "similar to TX-2019")</li>
+                        </ul>
+
+                        <p style="margin-top: 20px; padding: 15px; background: white; font-weight: bold;">This is INVESTIGATION WORK, not prediction. Agent DOES the job fraud investigators do, but at 50-state scale, 24/7, continuously learning.</p>
+                    </div>
+
+                    <div class="key-point">
+
+                    <div class="data-build-box">
+                        <h5>📊 Data We'll Use From Infotech (Your 39-Year Goldmine)</h5>
+
+                        <div class="step-box">
+                            <h6>1. AASHTO Bid Database (39 Years - Your Proprietary Asset)</h6>
+                            <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
+                                <li><strong>Bid submissions:</strong> All 50 state DOTs, project values, contractor bids, award outcomes</li>
+                                <li><strong>Historical patterns:</strong> Bid spreads, contractor clustering, geographic trends</li>
+                                <li><strong>Project data:</strong> Type, location, timeline, budget, complications</li>
+                                <li><strong>Why we need it:</strong> Build episodic memory - "this bid pattern matched confirmed fraud case TX-2019"</li>
+                                <li><strong>Your competitive moat:</strong> This 39-year dataset is irreplaceable, competitors have ZERO access</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-box">
+                            <h6>2. Consulting Case Files (Confirmed Fraud Cases)</h6>
+                            <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
+                                <li><strong>Investigation records:</strong> What patterns led to confirmed fraud</li>
+                                <li><strong>Evidence types:</strong> What evidence proved collusion, bid-rigging, kickbacks</li>
+                                <li><strong>Litigation outcomes:</strong> Settlements, convictions, damages recovered</li>
+                                <li><strong>Why we need it:</strong> Agent learns "when I saw pattern X, it was fraud Y% of time"</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-box">
+                            <h6>3. Bid Express Platform Data (Real-Time)</h6>
+                            <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
+                                <li><strong>Current bids:</strong> Real-time submissions across 50 states</li>
+                                <li><strong>Contractor profiles:</strong> Bidding histories, performance records</li>
+                                <li><strong>Project specs:</strong> Scope, requirements, evaluation criteria</li>
+                                <li><strong>Why we need it:</strong> Agent monitors continuously, flags anomalies instantly</li>
+                            </ul>
+                        </div>
+
+                        <h5 style="margin-top: 30px;">🔧 How We Build The Agent (Using YOUR 39-Year Intelligence)</h5>
+
+                          <div class="flowchart-container">
+                              <div class="flowchart-phase">
+                                  <div class="phase-title"><span class="phase-number">1</span>Historical Pattern Encoding (39-Year Database)</div>
+                                  <div class="phase-content">
+                                      <ul>
+                                          <li>Ingest entire AASHTO database (39 years of procurement data)</li>
+                                          <li>For each historical bid, create episode: {project_details, bid_pattern, contractor_relationships, investigation_outcome, fraud_confirmed}</li>
+                                          <li>Example: "FL-2019, Highway $12.5M, top 3 bids within 0.3% → Investigation → Collusion confirmed → $30M recovered"</li>
+                                          <li>Agent builds pattern library of "known fraud signatures"</li>
+                                      </ul>
+                                  </div>
+                              </div>
+
+                              <div class="flowchart-phase">
+                                  <div class="phase-title"><span class="phase-number">2</span>Consulting Case Knowledge Transfer</div>
+                                  <div class="phase-content">
+                                      <ul>
+                                          <li>Your fraud investigators brief agent: "When we see pattern X, we investigate Y evidence"</li>
+                                          <li>Encode investigation methodologies: "Scheme Z typically involves contractor relationships A + B"</li>
+                                          <li>Agent encodes your team's 39 years of expertise</li>
+                                          <li>Result: Agent inherits institutional knowledge</li>
+                                      </ul>
+                                  </div>
+                              </div>
+
+                              <div class="flowchart-phase">
+                                  <div class="phase-title"><span class="phase-number">3</span>Real-Time Integration Setup</div>
+                                  <div class="phase-content">
+                                      <ul>
+                                          <li>Connect to Bid Express Platform API (live bid monitoring)</li>
+                                          <li>Connect to all 50 state DOT portals (comprehensive coverage)</li>
+                                          <li>Connect to Infotech case management system</li>
+                                          <li>Connect to DOJ/legal coordination tools</li>
+                                      </ul>
+                                  </div>
+                              </div>
+
+                              <div class="flowchart-phase">
+                                  <div class="phase-title"><span class="phase-number">4</span>Evidence Gathering Workflow</div>
+                                  <div class="phase-content">
+                                      <ul>
+                                          <li>Configure what constitutes suspicious pattern</li>
+                                          <li>Define evidence required for case file (based on your methodology)</li>
+                                          <li>Set stakeholder notification protocols (DOJ, state DOTs, your legal team)</li>
+                                          <li>Map your investigation process into agent reasoning</li>
+                                      </ul>
+                                  </div>
+                              </div>
+
+                              <div class="flowchart-phase">
+                                  <div class="phase-title"><span class="phase-number">5</span>Collaborative Investigation</div>
+                                  <div class="phase-content">
+                                      <ul>
+                                          <li>Agent flags suspicious bids → Your team reviews</li>
+                                          <li>Provide feedback: "Good catch" or "False positive because..."</li>
+                                          <li>Agent learns what patterns matter vs. what's noise</li>
+                                          <li>Your expertise + 39-year data + episodic learning = increasingly accurate</li>
+                                      </ul>
+                                  </div>
+                              </div>
+
+                              <div class="flowchart-outcome">
+                                  ✨ Agent becomes your investigation team's cognitive extension
+                              </div>
+                          </div>
+
+                        <h5 style="margin-top: 30px;">🔌 Integration Into Your Existing Infrastructure</h5>
+
+                        <div class="step-box">
+                            <h6>Your Current Systems:</h6>
+                            <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
+                                <li>Bid Express Platform (SaaS for DOT bidding)</li>
+                                <li>AASHTO database (39-year proprietary data)</li>
+                                <li>Case management system (investigation tracking)</li>
+                                <li>Consulting team workflows (evidence gathering, legal coordination)</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-box">
+                            <h6>How Agent Integrates (Embedded in Your Operations):</h6>
+                            <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
+                                <li><strong>Bid Express:</strong> Agent monitors via API, analyzes every submission in real-time (appears as additional analyst on your team)</li>
+                                <li><strong>AASHTO Database:</strong> Agent queries historical patterns, references past cases (like senior investigator with perfect memory)</li>
+                                <li><strong>Case Management:</strong> Agent creates case files directly in your system (investigators see them as if colleague prepared)</li>
+                                <li><strong>Your Team Workflow:</strong> Agent outputs match your investigation format (no learning new systems)</li>
+                                <li><strong>Legal Coordination:</strong> Agent tracks with DOJ/state DOTs using your existing communication channels</li>
+                            </ul>
+                        </div>
+
+                        <div class="step-box">
+                            <h6>Your Consulting Team's Experience:</h6>
+                            <p style="margin-top: 10px;"><strong>Investigators:</strong> Receive case files that look like another analyst prepared them - evidence compiled, patterns documented, legal precedents referenced.</p>
+                            <p style="margin-top: 10px;"><strong>Legal Team:</strong> Gets investigation-ready packages (not raw data dumps) - ready for prosecutor review or client presentation.</p>
+                            <p style="margin-top: 10px;"><strong>Business Impact:</strong> Can handle MORE cases simultaneously (50-state coverage, not selective), expand consulting revenue, offer "continuous monitoring" premium service.</p>
+                            <p style="margin-top: 10px; font-weight: bold; color: #155724;">Result: Agent amplifies your team's capacity, using YOUR 39-year expertise + data moat.</p>
+                        </div>
+                    </div>
+
+                    <div class="key-point">
+
+                        <p><strong>Pilot Impact Projections (12-Week Pilot):</strong></p>
+                        <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
+                            <li>Coverage: 10% selective → 100% all bids (50 states)</li>
+                            <li>Analysis time: Weeks → Seconds per bid</li>
+                            <li>Cases identified: Expected 3-5x increase (100% coverage vs. selective)</li>
+                            <li>Investigation speed: Weeks → Hours (evidence pre-compiled)</li>
+                            <li>Consulting revenue: Enable expansion (can handle more cases simultaneously)</li>
+                            <li>SaaS upsell: "Continuous fraud monitoring" premium feature for state DOTs</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="agent-proposal">
+                    <div class="agent-number">OPERATIONAL AGENT #2</div>
+                    <h3>Autonomous Compliance Monitoring Agent (50-State Regulation Tracking)</h3>
+                    <div class="purpose">
+                        <strong>What This Agent DOES (The JOB):</strong> Monitors federal + 50 state DOT regulations continuously, cross-references with active Infotech projects, alerts compliance gaps before violations, automates documentation updates. Operates as dedicated compliance specialist for every state simultaneously.
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="detail-box">
+                            <h5>Tools & Integration</h5>
+                            <ul>
+                                <li>Federal regulation databases (FHWA, EPA, OSHA)</li>
+                                <li>50 state DOT regulation portals</li>
+                                <li>Infotech project database (active projects)</li>
+                                <li>Client notification systems</li>
+                                <li>Compliance documentation platform</li>
+                            </ul>
+                        </div>
+                        <div class="detail-box">
+                            <h5>Continuous Operations</h5>
+                            <ul>
+                                <li>Monitors regulation changes (federal + 50 states, 24/7)</li>
+                                <li>Cross-references active projects affected</li>
+                                <li>Alerts compliance gaps before violations</li>
+                                <li>Generates remediation action plans</li>
+                                <li>Tracks implementation of corrective measures</li>
+                                <li>Learns which regulations change most frequently</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="why-not-ml">
+                        <h5>✅ Why No Automation Tool Does This</h5>
+                        <p><strong>Reality:</strong> Regulation monitoring requires REASONING ("Does new EPA rule affect Project X in Florida?"), not just alerting ("new rule published").</p>
+                        <p style="margin-top: 10px;"><strong>Human Team Can't:</strong> Monitor 50+ regulation sources continuously, cross-reference with hundreds of active projects, predict compliance impacts.</p>
+                        <p style="margin-top: 10px; font-weight: bold;">Agent OPERATES as compliance department at government scale.</p>
+                    </div>
+                </div>
+            </div>
+
+              <!-- PRIVATE EQUITY OPERATIONS SECTION -->
+              <div class="company-section" id="pe-ops">
+                  <div class="company-header">
+                      <h2>🏢 Diversis Capital: Private Equity Operations Agents</h2>
+                      <div class="stats">Portfolio Management • Cross-Company Intelligence • Value Creation</div>
+                  </div>
+
+                  <div class="current-state-box">
+                      <h4>Current Private Equity Operational Reality</h4>
+                      <p><strong>What PE Teams DO All Day:</strong></p>
+                      <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
+                          <li><strong>Portfolio Monitoring:</strong> Track KPIs across 10+ companies manually, identify trends, spot issues early</li>
+                          <li><strong>Cross-Company Pattern Recognition:</strong> Look for operational patterns across portfolio (what works at RoofLink might work at SalesRabbit)</li>
+                          <li><strong>Value Creation Initiatives:</strong> Identify operational improvements, cost reduction opportunities, revenue growth levers</li>
+                          <li><strong>Deal Flow Management:</strong> Screen 100+ deals per quarter, conduct market research, competitive analysis</li>
+                          <li><strong>Due Diligence:</strong> Deep research on target companies - financials, market position, competitive landscape, operational assessment</li>
+                          <li><strong>Exit Planning:</strong> Monitor market conditions, identify optimal exit timing, potential buyers</li>
+                      </ul>
+
+                      <p style="margin-top: 15px; padding: 15px; background: white; border-left: 4px solid #e74c3c;"><strong>The Bottleneck:</strong> Manual monitoring across growing portfolio, insights lost between companies, time-intensive research for each deal, reactive vs. proactive value creation.</p>
+                  </div>
+
+                  <div class="agent-proposal">
+                      <div class="agent-number">OPERATIONAL AGENT #1</div>
+                      <h3>Portfolio Intelligence & Value Creation Agent</h3>
+                      <div class="purpose">
+                          <strong>What This Agent DOES (The JOB):</strong> Continuously monitors all portfolio companies, identifies cross-company patterns and best practices, surfaces operational improvement opportunities, tracks value creation initiatives, generates board-ready insights. Like having an analyst who knows every detail of every portfolio company and can spot patterns humans miss.
+                      </div>
+
+                      <div class="grid-2">
+                          <div class="detail-box">
+                              <h5>Tools & Integration Architecture</h5>
+                              <ul>
+                                  <li><strong>Portfolio Company APIs:</strong> Direct integration with each company's systems (CRMs, ERPs, financial software)</li>
+                                  <li><strong>Financial Data:</strong> Revenue, margins, CAC, LTV, burn rate from all portfolio companies</li>
+                                  <li><strong>Operational Metrics:</strong> Company-specific KPIs (e.g., RoofLink lead conversion, Fishbowl NPS)</li>
+                                  <li><strong>Market Data:</strong> Industry benchmarks, competitive intelligence, market trends</li>
+                                  <li><strong>Historical Performance:</strong> Pre-acquisition data, value creation initiatives, outcomes</li>
+                                  <li><strong>Communication Tools:</strong> Slack/email integration for alerts and insights</li>
+                              </ul>
+                          </div>
+                          <div class="detail-box">
+                              <h5>What The Agent DOES (Continuous Operation)</h5>
+                              <ul>
+                                  <li><strong>Monitor portfolio health:</strong> Track KPIs across all companies, identify anomalies, predict issues</li>
+                                  <li><strong>Pattern recognition:</strong> "RoofLink's sales process improved conversion 25% → could apply to SalesRabbit"</li>
+                                  <li><strong>Value creation opportunities:</strong> Identify cost reduction, revenue growth, operational efficiency improvements</li>
+                                  <li><strong>Cross-company synergies:</strong> Spot opportunities for shared services, vendor consolidation, best practice transfer</li>
+                                  <li><strong>Board prep automation:</strong> Generate portfolio performance summaries, highlight key trends, prepare investor updates</li>
+                                  <li><strong>Early warning system:</strong> Alert on declining metrics, market threats, competitive risks before they become critical</li>
+                              </ul>
+                          </div>
+                      </div>
+
+                      <div class="code-example">Episodic Learning Pattern (How Agent Gets Smarter):
+
+Episode 1: RoofLink implements AI sales agent
+  Context: Lead response time drops from 30 min → <1 min
+  Result: Conversion rate increases 22%
+  Learning: "Fast response time = major conversion driver for service businesses"
+  Store: Best practice for sales operations
+
+Episode 5: Reviewing SalesRabbit performance
+  Context: Similar sales process, similar customers (door-to-door sales)
+  Retrieval: "RoofLink improved conversion with AI sales agent"
+  Insight: "SalesRabbit could benefit from same approach"
+  Action: Generate value creation recommendation for SalesRabbit
+  Outcome: Present to Diversis team for consideration
+
+Episode 12: Fishbowl customer churn spike
+  Context: NPS dropping, churn increasing 15%
+  Analysis: Compare to historical data across portfolio
+  Retrieval: "When Infotech had similar pattern, root cause was onboarding"
+  Hypothesis: "Fishbowl onboarding may be issue"
+  Recommendation: Deploy customer success agent (like Agent #1 we designed)
+
+= Agent builds institutional knowledge across entire portfolio</div>
+
+                      <div class="key-point">
+                          <p><strong>Pilot Impact Projections (Ongoing Portfolio Management):</strong></p>
+                          <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
+                              <li>Cross-company pattern identification: 5-10 high-value insights per quarter</li>
+                              <li>Early issue detection: 2-4 weeks earlier warning on operational problems</li>
+                              <li>Board prep time: 80% reduction (from 8 hours → 90 minutes per board meeting)</li>
+                              <li>Value creation pipeline: 3-5x more opportunities identified vs. manual process</li>
+                              <li>Partner time freed: 60% reduction in routine monitoring, focus on strategic decisions</li>
+                              <li>Portfolio performance: Estimated 10-15% improvement through better insight application</li>
+
+                            </ul>
+                            <p style="margin-top: 15px; padding: 15px; background: rgba(46,204,113,0.1); border-left: 4px solid #2ecc71; font-weight: bold;">Why This Is Impossible Without Us: Traditional dashboards show metrics. Generic BI tools create reports. But ONLY cognitive agents can autonomously identify patterns across disparate portfolio companies ("RoofLink's sales improvement could apply to SalesRabbit") and build institutional memory that compounds with every value creation initiative. This requires continuous reasoning across YOUR specific portfolio context - not generic market data.</p>
+                            <ul style="display: none;">
+                          </ul>
+                      </div>
+                  </div>
+
+                  <div class="agent-proposal">
+                      <div class="agent-number">OPERATIONAL AGENT #2</div>
+                      <h3>Deal Intelligence & Due Diligence Agent</h3>
+                      <div class="purpose">
+                          <strong>What This Agent DOES (The JOB):</strong> Screens inbound deal flow automatically, conducts preliminary market research and competitive analysis, generates comprehensive due diligence reports on target companies, identifies red flags and opportunities, maintains deal pipeline with intelligence updates. Like having a research analyst who works 24/7 and remembers every deal pattern.
+                      </div>
+
+                      <div class="grid-2">
+                          <div class="detail-box">
+                              <h5>Tools & Integration Architecture</h5>
+                              <ul>
+                                  <li><strong>Deal Flow Sources:</strong> Email integration for inbound deals, broker networks, proprietary sourcing</li>
+                                  <li><strong>Market Research:</strong> Industry reports, market size data, competitive landscape databases</li>
+                                  <li><strong>Company Intelligence:</strong> Public records, financial databases, news sources, social media</li>
+                                  <li><strong>Due Diligence Framework:</strong> Diversis investment criteria, historical deal patterns, success factors</li>
+                                  <li><strong>Financial Analysis:</strong> Revenue models, margin analysis, growth trajectories, benchmark comparison</li>
+                                  <li><strong>CRM Integration:</strong> Deal pipeline tracking, status updates, decision workflow</li>
+                              </ul>
+                          </div>
+                          <div class="detail-box">
+                              <h5>What The Agent DOES (Continuous Operation)</h5>
+                              <ul>
+                                  <li><strong>Screen deal flow:</strong> Evaluate 100+ deals per quarter against Diversis criteria automatically</li>
+                                  <li><strong>Market research:</strong> Analyze target market size, growth trends, competitive dynamics</li>
+                                  <li><strong>Competitive analysis:</strong> Map competitive landscape, identify positioning, assess differentiation</li>
+                                  <li><strong>Due diligence reports:</strong> Generate comprehensive DD packages - financials, operations, market, risks</li>
+                                  <li><strong>Red flag identification:</strong> Spot concerning patterns (declining metrics, market saturation, weak management)</li>
+                                  <li><strong>Opportunity scoring:</strong> Rank deals by fit with Diversis strategy, value creation potential, risk profile</li>
+                                  <li><strong>Pattern learning:</strong> Track which deals succeeded/failed, refine screening criteria over time</li>
+                              </ul>
+                          </div>
+                      </div>
+
+                      <div class="key-point">
+                          <p><strong>Pilot Impact Projections (Quarterly Deal Flow):</strong></p>
+                          <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
+                              <li>Deal screening: 100+ deals evaluated per quarter (vs. 30-40 manual)</li>
+                              <li>Research time: 80% reduction (from 20 hours → 4 hours per target company)</li>
+                              <li>Due diligence quality: More comprehensive, fewer surprises post-acquisition</li>
+                              <li>Pattern recognition: Learn from 50+ past deals, refine screening criteria continuously</li>
+                              <li>False positives: Reduced by 60% (fewer dead-end meetings with poor-fit targets)</li>
+                              <li>Partner focus: 70% more time on high-probability deals vs. research grunt work</li>
+
+                            </ul>
+                            <p style="margin-top: 15px; padding: 15px; background: rgba(46,204,113,0.1); border-left: 4px solid #2ecc71; font-weight: bold;">Why This Is Impossible Without Us: Deal databases (PitchBook, Crunchbase) provide generic market data. Research services conduct one-off analyses. But ONLY cognitive agents build institutional memory from YOUR 50+ past deals ("targets with pattern X failed integration, avoid"), learn what fits YOUR investment thesis, and refine screening criteria based on YOUR portfolio outcomes. This is pattern recognition specific to Diversis's strategy - not available off-the-shelf.</p>
+                            <ul style="display: none;">
+                          </ul>
+                      </div>
+                  </div>
+              </div>
+
+            <!-- PORTFOLIO PROSPECTS HEADER -->
+            <div class="portfolio-prospects-header" id="prospects">
+                <h2>📋 Additional Portfolio Company Prospects</h2>
+                <p>Operational agent opportunities identified for potential future deployment</p>
+            </div>
 
             <!-- ROOFLINK SECTION -->
             <div class="company-section" id="rooflink">
@@ -420,7 +905,7 @@
                         <li><strong>Current Problem:</strong> <a href="https://roofsnap.com/blog/roofing-follow-up-scripts/" target="_blank" style="color: #2980b9; text-decoration: underline;">50% of reps NEVER make single follow-up</a> (leads fall through cracks) [Source: RoofSnap Research]</li>
                         <li><strong>Pipeline Management:</strong> Track where each lead is, ensure nothing lost</li>
                     </ul>
-                    
+
                     <p style="margin-top: 15px; padding: 15px; background: white; border-left: 4px solid #e74c3c;"><strong>The Bottleneck:</strong> Human sales reps can't operate 24/7, forget follow-ups, inconsistent qualification, leads get lost at night/weekends (competitors scoop them).</p>
                 </div>
 
@@ -520,14 +1005,24 @@ Episode 27: Same objection
                                 <td>Adapts to obstacles autonomously</td>
                             </tr>
                         </table>
-                        
+
+
+                          <p style="margin-top: 20px;"><strong>Why Not Off-the-Shelf Sales Automation (Drift, HubSpot, Salesforce Einstein)?</strong></p>
+                          <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
+                              <li><strong>Generic templates:</strong> Drift/HubSpot provide pre-built playbooks that don't understand YOUR 5-year conversion patterns (storm leads vs. referrals, financing objections vs. timing objections)</li>
+                              <li><strong>Third-party vendor:</strong> Lives outside your CRM as external tool, creates integration friction and data silos</li>
+                              <li><strong>Can't learn from YOUR data:</strong> These tools use generic AI training, not episodic memory built from your historical lead-to-close patterns</li>
+                              <li><strong>Template-based adaptation:</strong> Configure workflows manually vs. agent that autonomously learns "when lead has characteristics X, approach Y works Z% of time"</li>
+                              <li><strong>No compounding intelligence:</strong> Each lead is independent vs. agent building institutional knowledge ("weekend storm leads convert 68% with next-day follow-up")</li>
+                          </ul>
+                          <p style="margin-top: 15px; padding: 15px; background: rgba(46,204,113,0.1); border-left: 4px solid #2ecc71; font-weight: bold;">The fundamental difference: Off-the-shelf tools automate YOUR process. Cognitive agents LEARN and IMPROVE your process continuously using your specific conversion data.</p>
                     </div>
 
                     <div class="key-point">
 
                     <div class="data-build-box">
                         <h5>📊 Data We'll Use From RoofLink (You Already Have This)</h5>
-                        
+
                         <div class="step-box">
                             <h6>1. Historical Lead & Conversion Data (5 Years)</h6>
                             <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
@@ -538,7 +1033,7 @@ Episode 27: Same objection
                                 <li><strong>Why we need it:</strong> Build episodic memory of "when lead had characteristics X, approach Y worked Z% of time"</li>
                             </ul>
                         </div>
-                        
+
                         <div class="step-box">
                             <h6>2. Sales Process Documentation (Your Current Workflow)</h6>
                             <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
@@ -549,7 +1044,7 @@ Episode 27: Same objection
                                 <li><strong>Why we need it:</strong> Agent mirrors your proven sales methodology (not generic approach)</li>
                             </ul>
                         </div>
-                        
+
                         <div class="step-box">
                             <h6>3. Product & Pricing Data</h6>
                             <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
@@ -559,9 +1054,9 @@ Episode 27: Same objection
                                 <li><strong>Why we need it:</strong> Agent provides accurate info to homeowners during qualification</li>
                             </ul>
                         </div>
-                        
+
                         <h5 style="margin-top: 30px;">🔧 How We Build The Agent (Using YOUR Data)</h5>
-                        
+
                           <div class="flowchart-container">
                               <div class="flowchart-phase">
                                   <div class="phase-title"><span class="phase-number">1</span>Data Ingestion</div>
@@ -627,9 +1122,9 @@ Episode 27: Same objection
                                   ✨ Agent becomes extension of YOUR sales team, not external tool
                               </div>
                           </div>
-                        
+
                         <h5 style="margin-top: 30px;">🔌 Integration Into Your Existing Stack (Not External Provider)</h5>
-                        
+
                         <div class="step-box">
                             <h6>Your Current Infrastructure:</h6>
                             <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
@@ -640,7 +1135,7 @@ Episode 27: Same objection
                                 <li>Potentially: SalesRabbit integration (sister company synergy)</li>
                             </ul>
                         </div>
-                        
+
                         <div class="step-box">
                             <h6>How Agent Plugs In (Native Integration):</h6>
                             <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
@@ -651,7 +1146,7 @@ Episode 27: Same objection
                                 <li><strong>Team Dashboard:</strong> Sales managers see agent activity same as human rep activity (no separate system)</li>
                             </ul>
                         </div>
-                        
+
                         <div class="step-box">
                             <h6>Data Flow (Seamless Within Your Systems):</h6>
                             <div class="integration-flow" style="margin-top: 15px;">New Lead Comes In (Website, Referral, Storm Event):
@@ -674,10 +1169,10 @@ Field rep sees:
   - Normal appointment on their calendar
   - Fully qualified lead notes in CRM
   - Everything as if human SDR did it
-  
+
 = Agent operates INSIDE your systems, not external platform</div>
                         </div>
-                        
+
                         <div class="step-box">
                             <h6>Your Team's Experience:</h6>
                             <p style="margin-top: 10px;"><strong>Sales Manager View:</strong> Sees agent activity in RoofLink dashboard - lead qualification status, follow-up history, pipeline metrics (looks like highly efficient rep).</p>
@@ -688,9 +1183,8 @@ Field rep sees:
                     </div>
 
                     <div class="key-point">
-                        
-                        <p><strong>Estimated Impact (6-Week Pilot):</strong></p>
-                          <p style="margin-left: 30px; margin-top: 5px; font-size: 0.9em; color: #666; font-style: italic;">Note: These are projected estimates based on industry benchmarks and pilot assumptions. Actual results will vary.</p>
+
+                        <p><strong>Pilot Impact Projections (6-Week Pilot):</strong></p>
                         <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
                             <li>Lead response time: 5 min → <1 min (always, even at 2 AM)</li>
                             <li>Follow-up consistency: 50% → 100% (no lead abandoned)</li>
@@ -742,324 +1236,6 @@ Field rep sees:
                 </div>
             </div>
 
-            <!-- INFOTECH SECTION -->
-            <div class="company-section" id="infotech">
-                <div class="company-header">
-                    <h2>🏗️ Infotech: Fraud Investigation Agent</h2>
-                    <div class="stats">Acquired July 2024 • $60M Revenue • 303 Employees • 39-Year AASHTO Partnership</div>
-                </div>
-
-                <div class="current-state-box">
-                    <h4>Current Operational Reality (Research-Backed)</h4>
-                    <p><strong>What Fraud Investigators DO All Day:</strong></p>
-                    <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
-                        <li><strong>Surveillance:</strong> Review bid patterns, emails, communications for collusion signs</li>
-                        <li><strong>Pattern Analysis:</strong> Statistical analysis (bid spreads, contractor clustering, geographic patterns)</li>
-                        <li><strong>Evidence Gathering:</strong> Collect documents, witness testimony, historical case precedents</li>
-                        <li><strong>Case Building:</strong> Compile evidence, build narrative, demonstrate pattern matching</li>
-                        <li><strong>Stakeholder Coordination:</strong> Work with DOJ, state DOTs, legal teams, prosecutors</li>
-                        <li><strong>Litigation Support:</strong> Expert testimony, evidence presentation, case documentation</li>
-                        <li><strong>Outcome Tracking:</strong> Monitor results, settlements, confirmed fraud cases</li>
-                    </ul>
-                    
-                    <p style="margin-top: 15px; padding: 15px; background: white; border-left: 4px solid #e74c3c;"><strong>The Bottleneck:</strong> Each investigation takes WEEKS. Infotech can only analyze selective bids (not all 50 states). Fraud happens while analysts work on other cases. Coverage is <10% of actual bidding activity.</p>
-                    
-                    <p style="margin-top: 15px; padding: 15px; background: white; border-left: 4px solid #28a745;"><strong>The Opportunity:</strong> <a href="https://www.insidegovernmentcontracts.com/2025/07/fraud-prevention-in-focus-examining-dods-risk-management-strategies/" target="_blank" style="color: #2980b9; text-decoration: underline;">DOD reported $7B procurement fraud in 7 years</a> [Source: Inside Government Contracts, GAO Testimony]. Infrastructure Bill ($1.2T) = massive increase in projects = more fraud opportunity. Market needs continuous monitoring at government scale.</p>
-                </div>
-
-                <div class="agent-proposal">
-                    <div class="agent-number">OPERATIONAL AGENT #1</div>
-                    <h3>Autonomous Fraud Investigation & Case Building Agent</h3>
-                    <div class="purpose">
-                        <strong>What This Agent DOES (The JOB):</strong> Operates as 24/7 fraud investigator - monitors EVERY bid across all 50 state DOTs in real-time, analyzes patterns using 39 years of AASHTO episodic memory, identifies suspicious activity, autonomously builds evidence files, coordinates with legal teams, learns from litigation outcomes. Like having 50 expert analysts working simultaneously, never sleeping.
-                    </div>
-
-                    <div class="grid-2">
-                        <div class="detail-box">
-                            <h5>Tools & Integration Architecture</h5>
-                            <ul>
-                                <li><strong>Bid Express Platform API:</strong> Real-time bid submissions (all 50 states)</li>
-                                <li><strong>AASHTO Database:</strong> 39 years of bid data (Infotech proprietary)</li>
-                                <li><strong>State DOT Portals:</strong> 50 state bid monitoring systems</li>
-                                <li><strong>Contractor Database:</strong> Historical performance tracking</li>
-                                <li><strong>Infotech Case Files:</strong> Confirmed fraud cases (episodic patterns)</li>
-                                <li><strong>DOJ/Legal Systems:</strong> Case coordination and evidence sharing</li>
-                            </ul>
-                        </div>
-                        <div class="detail-box">
-                            <h5>What The Agent DOES (Continuous Investigation)</h5>
-                            <ul>
-                                <li><strong>Monitors every bid (50 states, real-time):</strong> Analyzes within seconds of submission</li>
-                                <li><strong>Pattern matching:</strong> Retrieves similar historical cases from 39-year database</li>
-                                <li><strong>Statistical analysis:</strong> Bid spread anomalies, contractor clustering, geographic patterns</li>
-                                <li><strong>Fraud probability scoring:</strong> 0.0-1.0 scale based on historical precedents</li>
-                                <li><strong>Evidence compilation:</strong> Gathers supporting docs, contractor histories, related bids</li>
-                                <li><strong>Case file generation:</strong> Investigation-ready packages for legal review</li>
-                                <li><strong>Stakeholder coordination:</strong> Tracks with DOJ, state DOTs, legal teams</li>
-                                <li><strong>Learns from outcomes:</strong> Confirmed fraud → strengthens pattern recognition</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="code-example">Episodic Learning Pattern (39-Year Memory Compounding):
-
-Episode Database:
-  TX-2019-I10-042: Confirmed collusion
-    Pattern: Top 3 bids within 0.3% spread
-    Scheme: Complementary bidding (one competitor bid high)
-    Outcome: $30M fraud proven
-
-Episode: FL-2024-I95-001 (New bid flagged)
-  Bid Pattern Detected:
-    - Project value: $12.5M
-    - Top 3 bids: $12.48M, $12.49M, $12.51M
-    - Spread: $30K (0.24% - ANOMALY)
-    - 4th bid: $16.2M (30% higher - suspicious)
-  
-  Agent Reasoning:
-    Retrieval: "TX-2019-I10 had same pattern"
-    Analysis: "Complementary bidding scheme suspected"
-    Statistical: "Expected spread $450K, actual $30K"
-    Fraud Probability: 0.87 (HIGH)
-  
-  Agent Actions (Autonomous):
-    1. Compiled evidence file:
-       - Bid submissions (all 4 contractors)
-       - Contractor relationship history
-       - Similar cases (TX-2019, 3 others)
-       - Statistical analysis (spread anomaly)
-    2. Generated case brief (ready for legal review)
-    3. Flagged for investigation (HIGH priority)
-    4. Coordinated with FL DOT investigator
-  
-  Outcome (6 months later):
-    Confirmed: Collusion proven
-    Settlement: $8M recovered
-    Learning: Pattern reinforced (0.87 → 0.92 confidence for similar cases)
-
-Episode: CA-2024-Highway (Next similar case)
-  Pattern: Agent recognizes INSTANTLY
-  Action: Case file built in HOURS (vs. weeks manual)
-  Result: Investigation launched within 48 hours
-  
-= Agent gets faster and more accurate with every case</div>
-
-                    <div class="why-not-ml">
-                        <h5>Why This Requires Cognitive Agents (Not Just ML/Automation)</h5>
-                        <p><strong>Existing Tools (Cardinal, Integrity Filters):</strong></p>
-                        <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
-                            <li>✅ Can detect fraud patterns (rule-based algorithms)</li>
-                            <li>❌ But: Static rules don't improve over time</li>
-                            <li>❌ But: Batch processing, not real-time continuous</li>
-                            <li>❌ But: Can't BUILD CASES (just flag anomalies)</li>
-                            <li>❌ But: Can't COORDINATE with stakeholders</li>
-                            <li>❌ But: Can't LEARN from litigation outcomes</li>
-                        </ul>
-                        
-                        <p style="margin-top: 20px;"><strong>LLABS Cognitive Agent:</strong></p>
-                        <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
-                            <li>✓ Continuous monitoring (all 50 states, every bid, instant analysis)</li>
-                            <li>✓ Evidence gathering (autonomously compiles case files)</li>
-                            <li>✓ Stakeholder coordination (tracks with legal teams)</li>
-                            <li>✓ Episodic learning ("TX-2019 pattern = fraud 92% of time")</li>
-                            <li>✓ Self-improving (every confirmed case makes it smarter)</li>
-                            <li>✓ Explainable (provides historical precedent: "similar to TX-2019")</li>
-                        </ul>
-                        
-                        <p style="margin-top: 20px; padding: 15px; background: white; font-weight: bold;">This is INVESTIGATION WORK, not prediction. Agent DOES the job fraud investigators do, but at 50-state scale, 24/7, continuously learning.</p>
-                    </div>
-
-                    <div class="key-point">
-
-                    <div class="data-build-box">
-                        <h5>📊 Data We'll Use From Infotech (Your 39-Year Goldmine)</h5>
-                        
-                        <div class="step-box">
-                            <h6>1. AASHTO Bid Database (39 Years - Your Proprietary Asset)</h6>
-                            <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
-                                <li><strong>Bid submissions:</strong> All 50 state DOTs, project values, contractor bids, award outcomes</li>
-                                <li><strong>Historical patterns:</strong> Bid spreads, contractor clustering, geographic trends</li>
-                                <li><strong>Project data:</strong> Type, location, timeline, budget, complications</li>
-                                <li><strong>Why we need it:</strong> Build episodic memory - "this bid pattern matched confirmed fraud case TX-2019"</li>
-                                <li><strong>Your competitive moat:</strong> This 39-year dataset is irreplaceable, competitors have ZERO access</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="step-box">
-                            <h6>2. Consulting Case Files (Confirmed Fraud Cases)</h6>
-                            <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
-                                <li><strong>Investigation records:</strong> What patterns led to confirmed fraud</li>
-                                <li><strong>Evidence types:</strong> What evidence proved collusion, bid-rigging, kickbacks</li>
-                                <li><strong>Litigation outcomes:</strong> Settlements, convictions, damages recovered</li>
-                                <li><strong>Why we need it:</strong> Agent learns "when I saw pattern X, it was fraud Y% of time"</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="step-box">
-                            <h6>3. Bid Express Platform Data (Real-Time)</h6>
-                            <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
-                                <li><strong>Current bids:</strong> Real-time submissions across 50 states</li>
-                                <li><strong>Contractor profiles:</strong> Bidding histories, performance records</li>
-                                <li><strong>Project specs:</strong> Scope, requirements, evaluation criteria</li>
-                                <li><strong>Why we need it:</strong> Agent monitors continuously, flags anomalies instantly</li>
-                            </ul>
-                        </div>
-                        
-                        <h5 style="margin-top: 30px;">🔧 How We Build The Agent (Using YOUR 39-Year Intelligence)</h5>
-                        
-                          <div class="flowchart-container">
-                              <div class="flowchart-phase">
-                                  <div class="phase-title"><span class="phase-number">1</span>Historical Pattern Encoding (39-Year Database)</div>
-                                  <div class="phase-content">
-                                      <ul>
-                                          <li>Ingest entire AASHTO database (39 years of procurement data)</li>
-                                          <li>For each historical bid, create episode: {project_details, bid_pattern, contractor_relationships, investigation_outcome, fraud_confirmed}</li>
-                                          <li>Example: "FL-2019, Highway $12.5M, top 3 bids within 0.3% → Investigation → Collusion confirmed → $30M recovered"</li>
-                                          <li>Agent builds pattern library of "known fraud signatures"</li>
-                                      </ul>
-                                  </div>
-                              </div>
-
-                              <div class="flowchart-phase">
-                                  <div class="phase-title"><span class="phase-number">2</span>Consulting Case Knowledge Transfer</div>
-                                  <div class="phase-content">
-                                      <ul>
-                                          <li>Your fraud investigators brief agent: "When we see pattern X, we investigate Y evidence"</li>
-                                          <li>Encode investigation methodologies: "Scheme Z typically involves contractor relationships A + B"</li>
-                                          <li>Agent encodes your team's 39 years of expertise</li>
-                                          <li>Result: Agent inherits institutional knowledge</li>
-                                      </ul>
-                                  </div>
-                              </div>
-
-                              <div class="flowchart-phase">
-                                  <div class="phase-title"><span class="phase-number">3</span>Real-Time Integration Setup</div>
-                                  <div class="phase-content">
-                                      <ul>
-                                          <li>Connect to Bid Express Platform API (live bid monitoring)</li>
-                                          <li>Connect to all 50 state DOT portals (comprehensive coverage)</li>
-                                          <li>Connect to Infotech case management system</li>
-                                          <li>Connect to DOJ/legal coordination tools</li>
-                                      </ul>
-                                  </div>
-                              </div>
-
-                              <div class="flowchart-phase">
-                                  <div class="phase-title"><span class="phase-number">4</span>Evidence Gathering Workflow</div>
-                                  <div class="phase-content">
-                                      <ul>
-                                          <li>Configure what constitutes suspicious pattern</li>
-                                          <li>Define evidence required for case file (based on your methodology)</li>
-                                          <li>Set stakeholder notification protocols (DOJ, state DOTs, your legal team)</li>
-                                          <li>Map your investigation process into agent reasoning</li>
-                                      </ul>
-                                  </div>
-                              </div>
-
-                              <div class="flowchart-phase">
-                                  <div class="phase-title"><span class="phase-number">5</span>Collaborative Investigation</div>
-                                  <div class="phase-content">
-                                      <ul>
-                                          <li>Agent flags suspicious bids → Your team reviews</li>
-                                          <li>Provide feedback: "Good catch" or "False positive because..."</li>
-                                          <li>Agent learns what patterns matter vs. what's noise</li>
-                                          <li>Your expertise + 39-year data + episodic learning = increasingly accurate</li>
-                                      </ul>
-                                  </div>
-                              </div>
-
-                              <div class="flowchart-outcome">
-                                  ✨ Agent becomes your investigation team's cognitive extension
-                              </div>
-                          </div>
-                        
-                        <h5 style="margin-top: 30px;">🔌 Integration Into Your Existing Infrastructure</h5>
-                        
-                        <div class="step-box">
-                            <h6>Your Current Systems:</h6>
-                            <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
-                                <li>Bid Express Platform (SaaS for DOT bidding)</li>
-                                <li>AASHTO database (39-year proprietary data)</li>
-                                <li>Case management system (investigation tracking)</li>
-                                <li>Consulting team workflows (evidence gathering, legal coordination)</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="step-box">
-                            <h6>How Agent Integrates (Embedded in Your Operations):</h6>
-                            <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
-                                <li><strong>Bid Express:</strong> Agent monitors via API, analyzes every submission in real-time (appears as additional analyst on your team)</li>
-                                <li><strong>AASHTO Database:</strong> Agent queries historical patterns, references past cases (like senior investigator with perfect memory)</li>
-                                <li><strong>Case Management:</strong> Agent creates case files directly in your system (investigators see them as if colleague prepared)</li>
-                                <li><strong>Your Team Workflow:</strong> Agent outputs match your investigation format (no learning new systems)</li>
-                                <li><strong>Legal Coordination:</strong> Agent tracks with DOJ/state DOTs using your existing communication channels</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="step-box">
-                            <h6>Your Consulting Team's Experience:</h6>
-                            <p style="margin-top: 10px;"><strong>Investigators:</strong> Receive case files that look like another analyst prepared them - evidence compiled, patterns documented, legal precedents referenced.</p>
-                            <p style="margin-top: 10px;"><strong>Legal Team:</strong> Gets investigation-ready packages (not raw data dumps) - ready for prosecutor review or client presentation.</p>
-                            <p style="margin-top: 10px;"><strong>Business Impact:</strong> Can handle MORE cases simultaneously (50-state coverage, not selective), expand consulting revenue, offer "continuous monitoring" premium service.</p>
-                            <p style="margin-top: 10px; font-weight: bold; color: #155724;">Result: Agent amplifies your team's capacity, using YOUR 39-year expertise + data moat.</p>
-                        </div>
-                    </div>
-
-                    <div class="key-point">
-                        
-                        <p><strong>Estimated Impact (12-Week Pilot):</strong></p>
-                          <p style="margin-left: 30px; margin-top: 5px; font-size: 0.9em; color: #666; font-style: italic;">Note: These are projected estimates based on industry benchmarks and pilot assumptions. Actual results will vary.</p>
-                        <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
-                            <li>Coverage: 10% selective → 100% all bids (50 states)</li>
-                            <li>Analysis time: Weeks → Seconds per bid</li>
-                            <li>Cases identified: Expected 3-5x increase (100% coverage vs. selective)</li>
-                            <li>Investigation speed: Weeks → Hours (evidence pre-compiled)</li>
-                            <li>Consulting revenue: Enable expansion (can handle more cases simultaneously)</li>
-                            <li>SaaS upsell: "Continuous fraud monitoring" premium feature for state DOTs</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="agent-proposal">
-                    <div class="agent-number">OPERATIONAL AGENT #2</div>
-                    <h3>Autonomous Compliance Monitoring Agent (50-State Regulation Tracking)</h3>
-                    <div class="purpose">
-                        <strong>What This Agent DOES (The JOB):</strong> Monitors federal + 50 state DOT regulations continuously, cross-references with active Infotech projects, alerts compliance gaps before violations, automates documentation updates. Operates as dedicated compliance specialist for every state simultaneously.
-                    </div>
-
-                    <div class="grid-2">
-                        <div class="detail-box">
-                            <h5>Tools & Integration</h5>
-                            <ul>
-                                <li>Federal regulation databases (FHWA, EPA, OSHA)</li>
-                                <li>50 state DOT regulation portals</li>
-                                <li>Infotech project database (active projects)</li>
-                                <li>Client notification systems</li>
-                                <li>Compliance documentation platform</li>
-                            </ul>
-                        </div>
-                        <div class="detail-box">
-                            <h5>Continuous Operations</h5>
-                            <ul>
-                                <li>Monitors regulation changes (federal + 50 states, 24/7)</li>
-                                <li>Cross-references active projects affected</li>
-                                <li>Alerts compliance gaps before violations</li>
-                                <li>Generates remediation action plans</li>
-                                <li>Tracks implementation of corrective measures</li>
-                                <li>Learns which regulations change most frequently</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="why-not-ml">
-                        <h5>✅ Why No Automation Tool Does This</h5>
-                        <p><strong>Reality:</strong> Regulation monitoring requires REASONING ("Does new EPA rule affect Project X in Florida?"), not just alerting ("new rule published").</p>
-                        <p style="margin-top: 10px;"><strong>Human Team Can't:</strong> Monitor 50+ regulation sources continuously, cross-reference with hundreds of active projects, predict compliance impacts.</p>
-                        <p style="margin-top: 10px; font-weight: bold;">Agent OPERATES as compliance department at government scale.</p>
-                    </div>
-                </div>
-            </div>
-
             <!-- FISHBOWL SECTION -->
             <div class="company-section" id="fishbowl">
                 <div class="company-header">
@@ -1077,9 +1253,9 @@ Episode: CA-2024-Highway (Next similar case)
                         <li><strong>Account Reviews:</strong> Quarterly check-ins, success metrics, expansion opportunities</li>
                         <li><strong>Best Practice Sharing:</strong> Customer A solved problem → should share with Customers B, C, D</li>
                     </ul>
-                    
+
                     <p style="margin-top: 15px; padding: 15px; background: white; border-left: 4px solid #e74c3c;"><strong>The Bottleneck:</strong> 10,000 customers = impossible to provide personalized experience at scale. Generic onboarding for most. High-touch only for large accounts. Knowledge stays siloed (Customer 142's solution doesn't reach Customer 387).</p>
-                    
+
                     <p style="margin-top: 15px; padding: 15px; background: white; border-left: 4px solid #3498db;"><strong>Cin7 Comparison:</strong> Cin7's ForesightAI does EXCELLENT demand forecasting (24mo, 100+ algorithms). But: Each customer forecasted independently. No cross-customer operational intelligence. Customer 10,001 starts from scratch.</p>
                 </div>
 
@@ -1166,7 +1342,7 @@ Customer 1,429: Different industry, similar integration pattern
                             <li>❌ But: NO operational management (just forecasting)</li>
                             <li>❌ But: NO customer success operations (no onboarding, support, reviews)</li>
                         </ul>
-                        
+
                         <p style="margin-top: 20px;"><strong>LLABS Operational Agent:</strong></p>
                         <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
                             <li>✓ Does what Cin7 does (demand patterns, usage tracking)</li>
@@ -1175,15 +1351,25 @@ Customer 1,429: Different industry, similar integration pattern
                             <li><strong>✓ PLUS: Best practice transfer (solution from Customer 1 helps Customer 1000)</strong></li>
                             <li><strong>✓ PLUS: Episodic learning ("when Customer X had issue Y, solution Z worked")</strong></li>
                         </ul>
-                        
+
                         <p style="margin-top: 20px; padding: 15px; background: white; font-weight: bold; color: #155724;">Differentiation: Cin7 forecasts demand for one company at a time. LLABS creates portfolio-wide operational intelligence network that Fishbowl's 10,000 customers ALL benefit from. This is IMPOSSIBLE for competitors to match (they don't have 10K customer base).</p>
+
+                          <p style="margin-top: 20px;"><strong>Why Not Customer Success Platforms (Gainsight, ChurnZero, Totango)?</strong></p>
+                          <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
+                              <li><strong>Template-based playbooks:</strong> Generic onboarding flows that don't understand manufacturing software nuances (QuickBooks integration issues, multi-channel inventory setups)</li>
+                              <li><strong>Individual customer view:</strong> Each customer managed independently, no cross-customer pattern recognition</li>
+                              <li><strong>Manual best practice sharing:</strong> CSMs share tips via Slack/meetings, not automatic network intelligence</li>
+                              <li><strong>Generic health scoring:</strong> Login frequency, feature usage metrics vs. understanding "electronics manufacturers struggle with Shopify sync" patterns</li>
+                              <li><strong>No collective learning:</strong> Customer 10,001's onboarding is same difficulty as Customer 1 vs. agent that knows 10,000 successful setups</li>
+                          </ul>
+                          <p style="margin-top: 15px; padding: 15px; background: rgba(46,204,113,0.1); border-left: 4px solid #2ecc71; font-weight: bold;">The fundamental difference: CS platforms manage customers individually. Cognitive agents create NETWORK INTELLIGENCE where every customer interaction improves the experience for all 10,000 customers. This is only possible with YOUR customer base scale.</p>
                     </div>
 
                     <div class="key-point">
 
                     <div class="data-build-box">
                         <h5>📊 Data We'll Use From Fishbowl (Your 10,000-Customer Intelligence)</h5>
-                        
+
                         <div class="step-box">
                             <h6>1. Customer Data (10,000+ Customers - Network Intelligence)</h6>
                             <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
@@ -1195,7 +1381,7 @@ Customer 1,429: Different industry, similar integration pattern
                                 <li><strong>Your unique advantage:</strong> 10,000 customers = largest manufacturing software network intelligence pool</li>
                             </ul>
                         </div>
-                        
+
                         <div class="step-box">
                             <h6>2. Sales & Financial Data (24-Year QuickBooks Integration)</h6>
                             <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
@@ -1205,7 +1391,7 @@ Customer 1,429: Different industry, similar integration pattern
                                 <li><strong>Why we need it:</strong> Agent identifies at-risk customers early, proactive intervention</li>
                             </ul>
                         </div>
-                        
+
                         <div class="step-box">
                             <h6>3. Implementation & Support Documentation</h6>
                             <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
@@ -1215,9 +1401,9 @@ Customer 1,429: Different industry, similar integration pattern
                                 <li><strong>Why we need it:</strong> Agent mirrors your proven methodology, not generic approach</li>
                             </ul>
                         </div>
-                        
+
                         <h5 style="margin-top: 30px;">🔧 How We Build The Agent (Creating 10K-Customer Network Intelligence)</h5>
-                        
+
                           <div class="flowchart-container">
                               <div class="flowchart-phase">
                                   <div class="phase-title"><span class="phase-number">1</span>Cross-Customer Pattern Encoding</div>
@@ -1286,9 +1472,9 @@ Customer 1,429: Different industry, similar integration pattern
                                   ✨ Agent creates portfolio-wide intelligence network Cin7 CANNOT match
                               </div>
                           </div>
-                        
+
                         <h5 style="margin-top: 30px;">🔌 Integration Into Your Existing Systems (Native Operation)</h5>
-                        
+
                         <div class="step-box">
                             <h6>Your Current Infrastructure:</h6>
                             <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
@@ -1299,7 +1485,7 @@ Customer 1,429: Different industry, similar integration pattern
                                 <li>CS team workflows (onboarding, training, account reviews)</li>
                             </ul>
                         </div>
-                        
+
                         <div class="step-box">
                             <h6>How Agent Operates Within Your Ecosystem:</h6>
                             <ul style="margin-left: 25px; margin-top: 10px; list-style: disc;">
@@ -1310,7 +1496,7 @@ Customer 1,429: Different industry, similar integration pattern
                                 <li><strong>Customer Experience:</strong> Receive help from "Fishbowl" (not aware it's agent), fast responses, personalized guidance</li>
                             </ul>
                         </div>
-                        
+
                         <div class="step-box">
                             <h6>The Network Effect In Practice:</h6>
                             <div class="integration-flow" style="margin-top: 15px;">Customer 142: Has Shopify integration issue
@@ -1330,12 +1516,12 @@ Customer 10,001: Onboards (new electronics manufacturer)
   → Agent suggests: "Electronics manufacturers typically need multi-channel setup"
   → Proactive: Recommends Shopify integration before customer asks
   → Setup: 40% faster (agent already knows the pattern)
-  
+
 = Every customer makes agent smarter for ALL customers
 = Knowledge compounds across 10,000-customer network
 = This is what Cin7 cannot do (they forecast per customer, no network intelligence)</div>
                         </div>
-                        
+
                         <div class="step-box">
                             <h6>Your CS Team's Experience:</h6>
                             <p style="margin-top: 10px;"><strong>CSMs:</strong> Agent handles tier-1/tier-2 support, onboarding, adoption monitoring. CSMs focus on strategic accounts, complex issues, relationship building.</p>
@@ -1346,9 +1532,8 @@ Customer 10,001: Onboards (new electronics manufacturer)
                     </div>
 
                     <div class="key-point">
-                        
-                        <p><strong>Estimated Impact (12-Week Pilot with 500 Customers):</strong></p>
-                          <p style="margin-left: 30px; margin-top: 5px; font-size: 0.9em; color: #666; font-style: italic;">Note: These are projected estimates based on industry benchmarks and pilot assumptions. Actual results will vary.</p>
+
+                        <p><strong>Pilot Impact Projections (12-Week Pilot with 500 Customers):</strong></p>
                         <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
                             <li>Onboarding time: 2-4 weeks → 1-2 weeks (agent handles discovery + setup)</li>
                             <li>Support ticket resolution: 4-6 hours → <1 hour (agent has seen this before)</li>
@@ -1402,20 +1587,8 @@ Customer 10,001: Onboards (new electronics manufacturer)
             <!-- SUMMARY SECTION -->
             <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 50px 40px; margin-top: 40px;">
                 <h2 style="margin-bottom: 30px; font-size: 2em;">Summary: Operational Agents That DO JOBS</h2>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-top: 30px;">
-                    <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 10px;">
-                        <h4 style="color: #3498db; margin-bottom: 15px; font-size: 1.3em;">🏠 RoofLink</h4>
-                        <p><strong>NOT: "Predict storm leads" (ML model)</strong></p>
-                        <p style="margin-top: 10px;"><strong>YES: "Operate as 24/7 SDR"</strong></p>
-                        <ul style="margin-top: 15px; list-style: none;">
-                            <li style="padding: 5px 0;">✓ Respond to leads <5 min (always, even 2 AM)</li>
-                            <li style="padding: 5px 0;">✓ Qualify autonomously (Pain/Budget/Authority)</li>
-                            <li style="padding: 5px 0;">✓ Execute 5+ follow-up sequences (95% convert after 6th)</li>
-                            <li style="padding: 5px 0;">✓ Learn from every interaction</li>
-                        </ul>
-                    </div>
 
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-top: 30px;">
                     <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 10px;">
                         <h4 style="color: #3498db; margin-bottom: 15px; font-size: 1.3em;">🏗️ Infotech</h4>
                         <p><strong>NOT: "Predict fraud" (Cardinal already exists)</strong></p>
@@ -1425,6 +1598,30 @@ Customer 10,001: Onboards (new electronics manufacturer)
                             <li style="padding: 5px 0;">✓ Build evidence files (investigation-ready)</li>
                             <li style="padding: 5px 0;">✓ Coordinate with legal teams</li>
                             <li style="padding: 5px 0;">✓ Learn from 39 years + outcomes</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 10px;">
+                        <h4 style="color: #3498db; margin-bottom: 15px; font-size: 1.3em;">🏢 PE Operations</h4>
+                        <p><strong>NOT: "Dashboard of portfolio metrics"</strong></p>
+                        <p style="margin-top: 10px;"><strong>YES: "Continuously manage portfolio intelligence"</strong></p>
+                        <ul style="margin-top: 15px; list-style: none;">
+                            <li style="padding: 5px 0;">✓ Monitor all companies continuously</li>
+                            <li style="padding: 5px 0;">✓ Identify cross-company patterns</li>
+                            <li style="padding: 5px 0;">✓ Surface value creation opportunities</li>
+                            <li style="padding: 5px 0;">✓ Screen 100+ deals per quarter</li>
+                        </ul>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 10px;">
+                        <h4 style="color: #3498db; margin-bottom: 15px; font-size: 1.3em;">🏠 RoofLink</h4>
+                        <p><strong>NOT: "Predict storm leads" (ML model)</strong></p>
+                        <p style="margin-top: 10px;"><strong>YES: "Operate as 24/7 SDR"</strong></p>
+                        <ul style="margin-top: 15px; list-style: none;">
+                            <li style="padding: 5px 0;">✓ Respond to leads <5 min (always, even 2 AM)</li>
+                            <li style="padding: 5px 0;">✓ Qualify autonomously (Pain/Budget/Authority)</li>
+                            <li style="padding: 5px 0;">✓ Execute 5+ follow-up sequences (95% convert after 6th)</li>
+                            <li style="padding: 5px 0;">✓ Learn from every interaction</li>
                         </ul>
                     </div>
 
@@ -1444,7 +1641,7 @@ Customer 10,001: Onboards (new electronics manufacturer)
 
                 <div style="background: rgba(255,255,255,0.15); padding: 30px; margin-top: 30px; border-radius: 10px;">
                     <h3 style="color: #ecf0f1; margin-bottom: 20px; font-size: 1.5em;">The Core Differentiation: Continuous Autonomous OPERATION</h3>
-                    
+
                     <table style="width: 100%; margin-top: 20px; color: white;">
                         <tr style="border-bottom: 2px solid rgba(255,255,255,0.3);">
                             <th style="padding: 15px; text-align: left;">Capability</th>
@@ -1483,155 +1680,16 @@ Customer 10,001: Onboards (new electronics manufacturer)
                             <td style="padding: 12px; color: #3498db; font-weight: bold;">"Last time X happened, I did Y"</td>
                         </tr>
                     </table>
-                    
+
                     <p style="margin-top: 25px; font-size: 1.2em; padding: 20px; background: rgba(52,152,219,0.2); border-radius: 5px;"><strong>Bottom Line:</strong> These are JOBS that humans do today. Agents OPERATE continuously, LEARN from doing (episodic memory), ADAPT to situations (reasoning). You can't hire ML engineers to build this - it's autonomous cognitive operation, not prediction.</p>
                 </div>
             </div>
 
 
-              <!-- PRIVATE EQUITY OPERATIONS SECTION -->
-              <div class="company-section" id="pe-ops">
-                  <div class="company-header">
-                      <h2>🏢 Diversis Capital: Private Equity Operations Agents</h2>
-                      <div class="stats">Portfolio Management • Cross-Company Intelligence • Value Creation</div>
-                  </div>
-
-                  <div class="current-state-box">
-                      <h4>Current Private Equity Operational Reality</h4>
-                      <p><strong>What PE Teams DO All Day:</strong></p>
-                      <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
-                          <li><strong>Portfolio Monitoring:</strong> Track KPIs across 10+ companies manually, identify trends, spot issues early</li>
-                          <li><strong>Cross-Company Pattern Recognition:</strong> Look for operational patterns across portfolio (what works at RoofLink might work at SalesRabbit)</li>
-                          <li><strong>Value Creation Initiatives:</strong> Identify operational improvements, cost reduction opportunities, revenue growth levers</li>
-                          <li><strong>Deal Flow Management:</strong> Screen 100+ deals per quarter, conduct market research, competitive analysis</li>
-                          <li><strong>Due Diligence:</strong> Deep research on target companies - financials, market position, competitive landscape, operational assessment</li>
-                          <li><strong>Exit Planning:</strong> Monitor market conditions, identify optimal exit timing, potential buyers</li>
-                      </ul>
-                      
-                      <p style="margin-top: 15px; padding: 15px; background: white; border-left: 4px solid #e74c3c;"><strong>The Bottleneck:</strong> Manual monitoring across growing portfolio, insights lost between companies, time-intensive research for each deal, reactive vs. proactive value creation.</p>
-                  </div>
-
-                  <div class="agent-proposal">
-                      <div class="agent-number">OPERATIONAL AGENT #1</div>
-                      <h3>Portfolio Intelligence & Value Creation Agent</h3>
-                      <div class="purpose">
-                          <strong>What This Agent DOES (The JOB):</strong> Continuously monitors all portfolio companies, identifies cross-company patterns and best practices, surfaces operational improvement opportunities, tracks value creation initiatives, generates board-ready insights. Like having an analyst who knows every detail of every portfolio company and can spot patterns humans miss.
-                      </div>
-
-                      <div class="grid-2">
-                          <div class="detail-box">
-                              <h5>Tools & Integration Architecture</h5>
-                              <ul>
-                                  <li><strong>Portfolio Company APIs:</strong> Direct integration with each company's systems (CRMs, ERPs, financial software)</li>
-                                  <li><strong>Financial Data:</strong> Revenue, margins, CAC, LTV, burn rate from all portfolio companies</li>
-                                  <li><strong>Operational Metrics:</strong> Company-specific KPIs (e.g., RoofLink lead conversion, Fishbowl NPS)</li>
-                                  <li><strong>Market Data:</strong> Industry benchmarks, competitive intelligence, market trends</li>
-                                  <li><strong>Historical Performance:</strong> Pre-acquisition data, value creation initiatives, outcomes</li>
-                                  <li><strong>Communication Tools:</strong> Slack/email integration for alerts and insights</li>
-                              </ul>
-                          </div>
-                          <div class="detail-box">
-                              <h5>What The Agent DOES (Continuous Operation)</h5>
-                              <ul>
-                                  <li><strong>Monitor portfolio health:</strong> Track KPIs across all companies, identify anomalies, predict issues</li>
-                                  <li><strong>Pattern recognition:</strong> "RoofLink's sales process improved conversion 25% → could apply to SalesRabbit"</li>
-                                  <li><strong>Value creation opportunities:</strong> Identify cost reduction, revenue growth, operational efficiency improvements</li>
-                                  <li><strong>Cross-company synergies:</strong> Spot opportunities for shared services, vendor consolidation, best practice transfer</li>
-                                  <li><strong>Board prep automation:</strong> Generate portfolio performance summaries, highlight key trends, prepare investor updates</li>
-                                  <li><strong>Early warning system:</strong> Alert on declining metrics, market threats, competitive risks before they become critical</li>
-                              </ul>
-                          </div>
-                      </div>
-
-                      <div class="code-example">Episodic Learning Pattern (How Agent Gets Smarter):
-
-Episode 1: RoofLink implements AI sales agent
-  Context: Lead response time drops from 30 min → <1 min
-  Result: Conversion rate increases 22%
-  Learning: "Fast response time = major conversion driver for service businesses"
-  Store: Best practice for sales operations
-
-Episode 5: Reviewing SalesRabbit performance
-  Context: Similar sales process, similar customers (door-to-door sales)
-  Retrieval: "RoofLink improved conversion with AI sales agent"
-  Insight: "SalesRabbit could benefit from same approach"
-  Action: Generate value creation recommendation for SalesRabbit
-  Outcome: Present to Diversis team for consideration
-
-Episode 12: Fishbowl customer churn spike
-  Context: NPS dropping, churn increasing 15%
-  Analysis: Compare to historical data across portfolio
-  Retrieval: "When Infotech had similar pattern, root cause was onboarding"
-  Hypothesis: "Fishbowl onboarding may be issue"
-  Recommendation: Deploy customer success agent (like Agent #1 we designed)
-
-= Agent builds institutional knowledge across entire portfolio</div>
-
-                      <div class="key-point">
-                          <p><strong>Estimated Impact (Ongoing Portfolio Management):</strong></p>
-                          <p style="margin-left: 30px; margin-top: 5px; font-size: 0.9em; color: #666; font-style: italic;">Note: These are projected estimates based on industry benchmarks and pilot assumptions. Actual results will vary.</p>
-                          <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
-                              <li>Cross-company pattern identification: 5-10 high-value insights per quarter</li>
-                              <li>Early issue detection: 2-4 weeks earlier warning on operational problems</li>
-                              <li>Board prep time: 80% reduction (from 8 hours → 90 minutes per board meeting)</li>
-                              <li>Value creation pipeline: 3-5x more opportunities identified vs. manual process</li>
-                              <li>Partner time freed: 60% reduction in routine monitoring, focus on strategic decisions</li>
-                              <li>Portfolio performance: Estimated 10-15% improvement through better insight application</li>
-                          </ul>
-                      </div>
-                  </div>
-
-                  <div class="agent-proposal">
-                      <div class="agent-number">OPERATIONAL AGENT #2</div>
-                      <h3>Deal Intelligence & Due Diligence Agent</h3>
-                      <div class="purpose">
-                          <strong>What This Agent DOES (The JOB):</strong> Screens inbound deal flow automatically, conducts preliminary market research and competitive analysis, generates comprehensive due diligence reports on target companies, identifies red flags and opportunities, maintains deal pipeline with intelligence updates. Like having a research analyst who works 24/7 and remembers every deal pattern.
-                      </div>
-
-                      <div class="grid-2">
-                          <div class="detail-box">
-                              <h5>Tools & Integration Architecture</h5>
-                              <ul>
-                                  <li><strong>Deal Flow Sources:</strong> Email integration for inbound deals, broker networks, proprietary sourcing</li>
-                                  <li><strong>Market Research:</strong> Industry reports, market size data, competitive landscape databases</li>
-                                  <li><strong>Company Intelligence:</strong> Public records, financial databases, news sources, social media</li>
-                                  <li><strong>Due Diligence Framework:</strong> Diversis investment criteria, historical deal patterns, success factors</li>
-                                  <li><strong>Financial Analysis:</strong> Revenue models, margin analysis, growth trajectories, benchmark comparison</li>
-                                  <li><strong>CRM Integration:</strong> Deal pipeline tracking, status updates, decision workflow</li>
-                              </ul>
-                          </div>
-                          <div class="detail-box">
-                              <h5>What The Agent DOES (Continuous Operation)</h5>
-                              <ul>
-                                  <li><strong>Screen deal flow:</strong> Evaluate 100+ deals per quarter against Diversis criteria automatically</li>
-                                  <li><strong>Market research:</strong> Analyze target market size, growth trends, competitive dynamics</li>
-                                  <li><strong>Competitive analysis:</strong> Map competitive landscape, identify positioning, assess differentiation</li>
-                                  <li><strong>Due diligence reports:</strong> Generate comprehensive DD packages - financials, operations, market, risks</li>
-                                  <li><strong>Red flag identification:</strong> Spot concerning patterns (declining metrics, market saturation, weak management)</li>
-                                  <li><strong>Opportunity scoring:</strong> Rank deals by fit with Diversis strategy, value creation potential, risk profile</li>
-                                  <li><strong>Pattern learning:</strong> Track which deals succeeded/failed, refine screening criteria over time</li>
-                              </ul>
-                          </div>
-                      </div>
-
-                      <div class="key-point">
-                          <p><strong>Estimated Impact (Quarterly Deal Flow):</strong></p>
-                          <p style="margin-left: 30px; margin-top: 5px; font-size: 0.9em; color: #666; font-style: italic;">Note: These are projected estimates based on industry benchmarks and pilot assumptions. Actual results will vary.</p>
-                          <ul style="margin-left: 30px; margin-top: 10px; list-style: disc;">
-                              <li>Deal screening: 100+ deals evaluated per quarter (vs. 30-40 manual)</li>
-                              <li>Research time: 80% reduction (from 20 hours → 4 hours per target company)</li>
-                              <li>Due diligence quality: More comprehensive, fewer surprises post-acquisition</li>
-                              <li>Pattern recognition: Learn from 50+ past deals, refine screening criteria continuously</li>
-                              <li>False positives: Reduced by 60% (fewer dead-end meetings with poor-fit targets)</li>
-                              <li>Partner focus: 70% more time on high-probability deals vs. research grunt work</li>
-                          </ul>
-                      </div>
-                  </div>
-              </div>
             <!-- IMPLEMENTATION SECTION -->
             <div style="background: #ecf0f1; padding: 40px; margin-top: 40px;">
                 <h2 style="margin-bottom: 25px; font-size: 2em; color: #2c3e50;">Recommended Approach: Start With One, Prove Value, Expand</h2>
-                
+
                 <div style="background: white; padding: 30px; margin-bottom: 25px; border-left: 5px solid #3498db;">
                     <h4 style="color: #2c3e50; margin-bottom: 15px;">Phase 1: Pilot (6 Weeks) - Pick ONE Agent</h4>
                     <p><strong>Recommendation: RoofLink Sales Operations Agent</strong></p>
@@ -1641,7 +1699,7 @@ Episode 12: Fishbowl customer churn spike
                         <li><strong>Success Metrics:</strong> Response time, follow-up consistency, conversion rate, sales rep time savings</li>
                     </ul>
                 </div>
-                
+
                 <div style="background: white; padding: 30px; margin-bottom: 25px; border-left: 5px solid #28a745;">
                     <h4 style="color: #2c3e50; margin-bottom: 15px;">Phase 2: Expansion (Months 2-4) - Add Two More</h4>
                     <p><strong>If RoofLink Pilot Successful:</strong></p>
@@ -1650,7 +1708,7 @@ Episode 12: Fishbowl customer churn spike
                         <li><strong>Deploy:</strong> Fishbowl Customer Success Agent (pilot with 500 customers)</li>
                     </ul>
                 </div>
-                
+
                 <div style="background: white; padding: 30px; border-left: 5px solid #e74c3c;">
                     <h4 style="color: #2c3e50; margin-bottom: 15px;">Phase 3: Portfolio-Wide (Year 1) - Operational Transformation</h4>
                     <p><strong>Full Deployment Across Diversis Portfolio:</strong></p>
