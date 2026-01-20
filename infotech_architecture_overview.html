@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLABS Integration Architecture - Infotech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+
+        /* Full API Configuration Section - Collapsible */
+        .api-config-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        .api-config-section[open] {
+            padding-bottom: 40px;
+        }
+
+        .config-summary {
+            display: flex;
+            align-items: center;
+            padding: 20px 32px;
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            transition: all 0.15s ease;
+            gap: 16px;
+        }
+
+        .config-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .config-summary:hover {
+            background: linear-gradient(135deg, #234b7a 0%, #1e293b 100%);
+        }
+
+        .config-summary-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid #3b82f6;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .config-summary-icon svg {
+            width: 20px;
+            height: 20px;
+            color: #60a5fa;
+        }
+
+        .config-summary-text {
+            flex: 1;
+        }
+
+        .config-summary-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .config-summary-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+
+        .config-chevron {
+            width: 24px;
+            height: 24px;
+            position: relative;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .config-chevron::before {
+            content: '';
+            position: absolute;
+            top: 7px;
+            left: 6px;
+            width: 10px;
+            height: 10px;
+            border: solid #60a5fa;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            transition: transform 0.2s ease;
+        }
+
+        .api-config-section[open] .config-chevron::before {
+            transform: rotate(-135deg);
+            top: 11px;
+        }
+
+        /* Examples Section */
+        .examples-section {
+            padding: 0 40px;
+            margin-top: 32px;
+        }
+
+        .examples-header {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .example-dropdown {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .example-dropdown[open] {
+            border-color: #cbd5e1;
+        }
+
+        .example-summary {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+            background: white;
+            gap: 12px;
+            transition: background 0.15s ease;
+        }
+
+        .example-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .example-summary:hover {
+            background: #f8fafc;
+        }
+
+        .example-number {
+            width: 26px;
+            height: 26px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .example-title {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .example-chevron {
+            width: 18px;
+            height: 18px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .example-chevron::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 4px;
+            width: 7px;
+            height: 7px;
+            border: solid #94a3b8;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            transition: transform 0.2s ease;
+        }
+
+        .example-dropdown[open] .example-chevron::before {
+            transform: rotate(-135deg);
+            top: 8px;
+        }
+
+        .example-content {
+            padding: 0 18px 18px 18px;
+        }
+
+        .example-notes {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+        }
+
+        .example-notes p {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.6;
+            margin: 0 0 10px 0;
+        }
+
+        .example-notes p:last-child {
+            margin-bottom: 0;
+        }
+
+        .example-notes ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .example-notes li {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 4px;
+        }
+
+        .example-notes li:last-child {
+            margin-bottom: 0;
+        }
+
+        .example-notes code {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 12px;
+            background: #f1f5f9;
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: #0f172a;
+        }
+
+        .example-content .config-visual {
+            border-radius: 10px;
+        }
+
+        .example-content .visual-code {
+            font-size: 11px;
+        }
+
+        .api-config-section > .config-grid,
+        .api-config-section > .endpoints-table,
+        .api-config-section > .config-visual {
+            padding-left: 40px;
+            padding-right: 40px;
+        }
+
+        .api-config-section > .config-grid {
+            padding-top: 16px;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .config-panel {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .config-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 20px;
+            background: #f1f5f9;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .config-panel-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .config-panel-icon.request-icon {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .config-panel-icon.deploy-icon {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .config-panel-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: #0f172a;
+            flex: 1;
+        }
+
+        .config-badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+
+        .config-badge.env {
+            background: #166534;
+            color: white;
+        }
+
+        .config-params {
+            padding: 16px 20px;
+        }
+
+        .config-param {
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .config-param:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .config-param:first-child {
+            padding-top: 0;
+        }
+
+        .param-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .param-name {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .param-type {
+            font-size: 11px;
+            color: #64748b;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+
+        .param-required {
+            font-size: 10px;
+            font-weight: 600;
+            color: #dc2626;
+            text-transform: uppercase;
+        }
+
+        .param-optional {
+            font-size: 10px;
+            font-weight: 500;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .param-desc {
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .param-desc code {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 11px;
+            background: #e2e8f0;
+            padding: 1px 4px;
+            border-radius: 3px;
+            color: #0f172a;
+        }
+
+        /* Config Callout */
+        .config-callout {
+            display: flex;
+            gap: 14px;
+            margin: 16px 20px 20px 20px;
+            padding: 16px;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border: 1px solid #86efac;
+            border-radius: 10px;
+        }
+
+        .callout-icon {
+            width: 36px;
+            height: 36px;
+            background: #22c55e;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .callout-content {
+            flex: 1;
+        }
+
+        .callout-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #166534;
+            margin-bottom: 4px;
+        }
+
+        .callout-text {
+            font-size: 12px;
+            color: #15803d;
+            line-height: 1.5;
+        }
+
+        /* Endpoints Table */
+        .endpoints-table {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .endpoints-header {
+            padding: 14px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #0f172a;
+            background: #f1f5f9;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .endpoint-list {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .endpoint-list th {
+            text-align: left;
+            padding: 12px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .endpoint-list td {
+            padding: 12px 20px;
+            font-size: 13px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+
+        .endpoint-list tr:last-child td {
+            border-bottom: none;
+        }
+
+        .endpoint-list code {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 12px;
+            color: #0f172a;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+
+        .method.post {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .method.get {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        /* Config Visual */
+        .config-visual {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .visual-flow {
+            display: flex;
+            align-items: stretch;
+            gap: 20px;
+        }
+
+        .visual-box {
+            flex: 1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .visual-box.input-box {
+            border: 2px solid #3b82f6;
+        }
+
+        .visual-box.output-box {
+            border: 2px solid #22c55e;
+        }
+
+        .visual-label {
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-box .visual-label {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .output-box .visual-label {
+            background: #22c55e;
+            color: white;
+        }
+
+        .visual-code {
+            margin: 0;
+            padding: 14px;
+            background: #1e293b;
+            color: #e2e8f0;
+            font-size: 11px;
+            line-height: 1.5;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+
+        .visual-arrow {
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .arrow-line-v {
+            width: 100%;
+            height: 3px;
+            background: #475569;
+            position: relative;
+        }
+
+        .arrow-line-v::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -5px;
+            border: solid #475569;
+            border-width: 0 3px 3px 0;
+            padding: 5px;
+            transform: rotate(-45deg);
+        }
+
+        /* Clarification Section */
+        .clarification {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+        }
+
+        .clarify-grid {
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .clarify-box {
+            flex: 1;
+            border-radius: 12px;
+            padding: 24px;
+            min-width: 0;
+        }
+
+        .not-this {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+        }
+
+        .yes-this {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+        }
+
+        .clarify-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .clarify-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .not-this .clarify-icon {
+            background: #ef4444;
+            color: white;
+        }
+
+        .yes-this .clarify-icon {
+            background: #22c55e;
+            color: white;
+        }
+
+        .clarify-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .not-this .clarify-label { color: #dc2626; }
+        .yes-this .clarify-label { color: #16a34a; }
+
+        .clarify-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 20px;
+        }
+
+        .clarify-diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            margin-bottom: 20px;
+            min-height: 160px;
+        }
+
+        .black-box-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .black-box-icon {
+            width: 120px;
+            height: 120px;
+            background: #1e293b;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #ef4444;
+        }
+
+        .black-box-icon svg {
+            width: 48px;
+            height: 48px;
+            color: #64748b;
+        }
+
+        .black-box-label {
+            font-size: 13px;
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .function-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 20px 28px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid #bbf7d0;
+        }
+
+        .fn-input, .fn-output {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .fn-input {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .fn-output {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .fn-process {
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 22px;
+            color: #64748b;
+        }
+
+        .fn-arrow {
+            width: 20px;
+            height: 2px;
+            background: #94a3b8;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .fn-arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -3px;
+            border: solid #94a3b8;
+            border-width: 0 2px 2px 0;
+            padding: 3px;
+            transform: rotate(-45deg);
+        }
+
+        .clarify-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .clarify-list li {
+            padding: 6px 0;
+            padding-left: 24px;
+            position: relative;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .clarify-list li::before {
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .clarify-list.bad li::before {
+            content: '×';
+            color: #ef4444;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .clarify-list.good li::before {
+            content: '✓';
+            color: #22c55e;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .how-it-fits {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .fits-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .fits-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .fits-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            min-width: 90px;
+        }
+
+        .fits-step.yours {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+        }
+
+        .fits-step.llabs {
+            background: #dcfce7;
+            border: 2px solid #22c55e;
+        }
+
+        .step-num {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0f172a;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+        }
+
+        .step-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #0f172a;
+            text-align: center;
+        }
+
+        .step-desc {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 2px;
+            text-align: center;
+        }
+
+        .fits-arrow {
+            width: 24px;
+            height: 2px;
+            background: #cbd5e1;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .fits-arrow::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -3px;
+            border: solid #cbd5e1;
+            border-width: 0 2px 2px 0;
+            padding: 3px;
+            transform: rotate(-45deg);
+        }
+
+        .fits-note {
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* Learning Section */
+        .learning-section {
+            margin-bottom: 24px;
+        }
+
+        .learning-grid {
+            display: flex;
+            gap: 24px;
+        }
+
+        .learning-box {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .learning-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .learning-icon {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .learning-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .learning-text {
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .learning-compare {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .compare-item {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .compare-item.theirs {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .compare-item.ours {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        .compare-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .compare-item.theirs .compare-label { color: #dc2626; }
+        .compare-item.ours .compare-label { color: #16a34a; }
+
+        .compare-item ul {
+            margin: 0;
+            padding-left: 16px;
+        }
+
+        .compare-item li {
+            margin-bottom: 4px;
+            line-height: 1.4;
+            color: #475569;
+        }
+
+        .learning-note {
+            font-size: 12px;
+            color: #64748b;
+            margin: 0;
+            padding-top: 8px;
+            border-top: 1px solid #e2e8f0;
+            line-height: 1.5;
+        }
+
+        .microservices-diagram {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .micro-service {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            min-width: 80px;
+        }
+
+        .micro-service:first-child {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .micro-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .pdf-icon { background: #dcfce7; color: #16a34a; }
+        .contact-icon { background: #dbeafe; color: #2563eb; }
+        .bid-icon { background: #fef3c7; color: #d97706; }
+        .micro-more .micro-icon { background: #f1f5f9; color: #94a3b8; }
+
+        .micro-label {
+            font-size: 10px;
+            font-weight: 500;
+            color: #475569;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .micro-more {
+            border-style: dashed;
+            opacity: 0.7;
+        }
+
+        /* Main Architecture Diagram */
+        .architecture {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .box {
+            padding: 24px 32px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 180px;
+        }
+
+        .your-stack {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border: 2px solid #3b82f6;
+        }
+
+        .your-stack .label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #3b82f6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .llabs-service {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid #22c55e;
+        }
+
+        .llabs-service .label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #16a34a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .box-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .box-desc {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .arrow-line {
+            width: 60px;
+            height: 2px;
+            background: #cbd5e1;
+            position: relative;
+        }
+
+        .arrow-line::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            border: solid #cbd5e1;
+            border-width: 0 2px 2px 0;
+            padding: 4px;
+            transform: rotate(-45deg);
+        }
+
+        .arrow-label {
+            font-size: 11px;
+            font-weight: 500;
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: #64748b;
+        }
+
+        /* API Contract Section */
+        .api-contract {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+        }
+
+        .contract-grid {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .contract-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .contract-box h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .contract-box h3 .badge {
+            font-size: 10px;
+            background: #3b82f6;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .contract-box h3 .badge.out {
+            background: #22c55e;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            overflow-x: auto;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+
+        .key { color: #7dd3fc; }
+        .string { color: #86efac; }
+        .comment { color: #64748b; }
+
+        .contract-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 60px;
+        }
+
+        .contract-arrow-line {
+            width: 50px;
+            height: 3px;
+            background: #cbd5e1;
+            position: relative;
+        }
+
+        .contract-arrow-line::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -5px;
+            border: solid #cbd5e1;
+            border-width: 0 3px 3px 0;
+            padding: 5px;
+            transform: rotate(-45deg);
+        }
+
+        /* Deployment Section */
+        .deployment {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+        }
+
+        .infra-diagram {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            margin-top: 24px;
+        }
+
+        .infra-zone {
+            flex: 1;
+            padding: 32px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .your-infra {
+            background: linear-gradient(180deg, #dbeafe 0%, #eff6ff 100%);
+            border: 2px dashed #3b82f6;
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+        }
+
+        .zone-label {
+            position: absolute;
+            top: -12px;
+            left: 24px;
+            background: white;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #3b82f6;
+            border-radius: 4px;
+            border: 2px solid #3b82f6;
+        }
+
+        .your-infra .zone-label {
+            color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .infra-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .infra-item {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .infra-item .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .icon-blue { background: #dbeafe; }
+        .icon-green { background: #dcfce7; }
+        .icon-purple { background: #f3e8ff; }
+        .icon-orange { background: #ffedd5; }
+
+        .docker-zone {
+            background: linear-gradient(180deg, #f0fdf4 0%, #f0fdf4 100%);
+            border: 2px solid #22c55e;
+            border-radius: 0 12px 12px 0;
+            min-width: 280px;
+        }
+
+        .docker-zone .zone-label {
+            color: #16a34a;
+            border-color: #22c55e;
+        }
+
+        .docker-contents {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .docker-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .docker-header .icon {
+            font-size: 24px;
+        }
+
+        .docker-header span {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .docker-layers {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .docker-layer {
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .docker-layer .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .connection-line {
+            width: 60px;
+            height: 2px;
+            background: #94a3b8;
+            position: relative;
+        }
+
+        .connection-line::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            border: solid #94a3b8;
+            border-width: 0 2px 2px 0;
+            padding: 4px;
+            transform: rotate(-45deg);
+        }
+
+        /* Comparison Section */
+        .comparison {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 14px 16px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comparison-table td:first-child,
+        .comparison-table th:first-child {
+            text-align: left;
+        }
+
+        .comparison-table th:last-child,
+        .comparison-table td:last-child {
+            background: #f0fdf4;
+        }
+
+        .comparison-table th {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            background: #f8fafc;
+        }
+
+        .comparison-table th:last-child {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .comparison-table td {
+            font-size: 14px;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .check { color: #22c55e; font-weight: bold; }
+        .cross { color: #ef4444; }
+        .partial { color: #f59e0b; font-weight: 500; }
+
+        .poc-callout {
+            margin-top: 24px;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .poc-icon {
+            width: 40px;
+            height: 40px;
+            background: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .poc-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .poc-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .poc-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .poc-text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .footer-links a {
+            color: #3b82f6;
+            text-decoration: none;
+            margin-left: 24px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LLABS Document Extraction API</h1>
+        <p class="subtitle">Stateless document extraction for your infrastructure</p>
+
+        <!-- Full API Configuration Reference -->
+        <details class="api-config-section">
+            <summary class="config-summary">
+                <span class="config-summary-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </span>
+                <span class="config-summary-text">
+                    <div class="config-summary-title">Click Here for Complete API Configuration</div>
+                    <div class="config-summary-subtitle">All endpoints, request parameters, environment variables, and deployment options</div>
+                </span>
+                <span class="config-chevron"></span>
+            </summary>
+
+            <div class="config-grid">
+                <!-- Request Parameters -->
+                <div class="config-panel">
+                    <div class="config-panel-header">
+                        <span class="config-panel-icon request-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </span>
+                        <span class="config-panel-title">Request Body</span>
+                        <span class="config-badge">POST /v1/extract</span>
+                    </div>
+                    <div class="config-params">
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">document</code>
+                                <span class="param-type">string</span>
+                                <span class="param-required">required</span>
+                            </div>
+                            <div class="param-desc">Base64-encoded PDF, or use <code>document_url</code> for S3/HTTP</div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">schema</code>
+                                <span class="param-type">object | string</span>
+                                <span class="param-required">required</span>
+                            </div>
+                            <div class="param-desc">Your custom JSON schema, or a pre-built schema ID like <code>"dot_bridge_plan"</code></div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">instructions</code>
+                                <span class="param-type">string</span>
+                                <span class="param-optional">optional</span>
+                            </div>
+                            <div class="param-desc">Natural language guidance: "Focus on bid items table on page 2", "Ignore headers"</div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">options.include_citations</code>
+                                <span class="param-type">boolean</span>
+                                <span class="param-optional">optional</span>
+                            </div>
+                            <div class="param-desc">Return source text + page numbers for each extracted field</div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">options.include_bounding_boxes</code>
+                                <span class="param-type">boolean</span>
+                                <span class="param-optional">optional</span>
+                            </div>
+                            <div class="param-desc">Return x/y coordinates for highlighting in your UI</div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">options.confidence_threshold</code>
+                                <span class="param-type">number</span>
+                                <span class="param-optional">optional</span>
+                            </div>
+                            <div class="param-desc">0.0-1.0. Fields below threshold returned as null with reason</div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">options.page_range</code>
+                                <span class="param-type">string</span>
+                                <span class="param-optional">optional</span>
+                            </div>
+                            <div class="param-desc">"1-5", "1,3,7", or "all". Limit extraction to specific pages</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deployment Configuration -->
+                <div class="config-panel">
+                    <div class="config-panel-header">
+                        <span class="config-panel-icon deploy-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                        </span>
+                        <span class="config-panel-title">Deployment Config</span>
+                        <span class="config-badge env">Environment Variables</span>
+                    </div>
+                    <div class="config-params">
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">LLM_PROVIDER</code>
+                                <span class="param-type">string</span>
+                                <span class="param-required">required</span>
+                            </div>
+                            <div class="param-desc"><code>bedrock</code>, <code>anthropic</code>, <code>openai</code>, <code>azure</code>, or <code>ollama</code></div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">LLM_MODEL</code>
+                                <span class="param-type">string</span>
+                                <span class="param-required">required</span>
+                            </div>
+                            <div class="param-desc">Model ID: <code>anthropic.claude-3-sonnet</code>, <code>gpt-4o</code>, etc.</div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">AWS_ACCESS_KEY_ID</code>
+                                <span class="param-type">string</span>
+                                <span class="param-optional">if bedrock</span>
+                            </div>
+                            <div class="param-desc">Your AWS credentials for Bedrock access</div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">ANTHROPIC_API_KEY</code>
+                                <span class="param-type">string</span>
+                                <span class="param-optional">if anthropic</span>
+                            </div>
+                            <div class="param-desc">Direct Anthropic API key</div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">OPENAI_API_KEY</code>
+                                <span class="param-type">string</span>
+                                <span class="param-optional">if openai</span>
+                            </div>
+                            <div class="param-desc">OpenAI API key</div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">MAX_CONCURRENT_REQUESTS</code>
+                                <span class="param-type">number</span>
+                                <span class="param-optional">optional</span>
+                            </div>
+                            <div class="param-desc">Rate limiting. Default: 10</div>
+                        </div>
+                        <div class="config-param">
+                            <div class="param-header">
+                                <code class="param-name">LOG_LEVEL</code>
+                                <span class="param-type">string</span>
+                                <span class="param-optional">optional</span>
+                            </div>
+                            <div class="param-desc"><code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code></div>
+                        </div>
+                    </div>
+                    <div class="config-callout">
+                        <div class="callout-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                        </div>
+                        <div class="callout-content">
+                            <div class="callout-title">Model-Agnostic Architecture</div>
+                            <div class="callout-text">
+                                Our cognitive architecture brings domain-specific capabilities to any underlying model. Switch to the latest models as they release while retaining all extraction accuracy and domain training. The intelligence layer is separate from the base model, so upgrades are seamless.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Endpoints -->
+            <div class="endpoints-table">
+                <div class="endpoints-header">All Endpoints</div>
+                <table class="endpoint-list">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Endpoint</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code>/v1/extract</code></td>
+                            <td>Synchronous extraction. Returns JSON immediately.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code>/v1/extract/async</code></td>
+                            <td>Async extraction. Returns job_id for polling.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code>/v1/extract/jobs/{job_id}</code></td>
+                            <td>Poll async job status and retrieve results.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method post">POST</span></td>
+                            <td><code>/v1/extract/batch</code></td>
+                            <td>Batch extraction (up to 10 documents).</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code>/v1/schemas</code></td>
+                            <td>List available pre-built schemas.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code>/v1/schemas/{id}</code></td>
+                            <td>Get full schema definition.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="method get">GET</span></td>
+                            <td><code>/health</code></td>
+                            <td>Health check for load balancers.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Examples Section -->
+            <div class="examples-section">
+                <div class="examples-header">Examples</div>
+
+                <!-- Example 1: Pre-built Schema -->
+                <details class="example-dropdown" open>
+                    <summary class="example-summary">
+                        <span class="example-number">1</span>
+                        <span class="example-title">Using a Pre-built Schema (DOT Bridge Plan)</span>
+                        <span class="example-chevron"></span>
+                    </summary>
+                    <div class="example-content">
+                        <div class="example-notes">
+                            <p>Use a pre-built schema ID instead of defining your own. The <code>dot_bridge_plan</code> schema extracts all standard fields from DOT bridge construction documents.</p>
+                            <ul>
+                                <li>Response includes <code>field_details</code> with per-field confidence scores and citations</li>
+                                <li><code>instructions</code> provides natural language guidance to focus on specific sections</li>
+                                <li>Each citation includes page number and exact source text</li>
+                            </ul>
+                        </div>
+                        <div class="config-visual">
+                            <div class="visual-flow">
+                                <div class="visual-box input-box">
+                                    <div class="visual-label">Request</div>
+                                    <pre class="visual-code">{
+  "document": "JVBERi0xLjQK...",
+  "schema": "dot_bridge_plan",
+  "instructions": "Focus on permit tables",
+  "options": {
+    "include_citations": true,
+    "confidence_threshold": 0.85
+  }
+}</pre>
+                                </div>
+                                <div class="visual-arrow">
+                                    <div class="arrow-line-v"></div>
+                                </div>
+                                <div class="visual-box output-box">
+                                    <div class="visual-label">Response</div>
+                                    <pre class="visual-code">{
+  "status": "completed",
+  "data": {
+    "bridge_type": "Multi-span (5 spans)",
+    "jurisdiction": "Noxubee County, MS",
+    "total_length_ft": 500.00,
+    "permits": { ... }
+  },
+  "field_details": {
+    "bridge_type": {
+      "confidence": 0.98,
+      "citation": { "page": 1,
+        "text": "2@99' and 3@100'" }
+    },
+    "jurisdiction": {
+      "confidence": 0.99,
+      "citation": { "page": 1,
+        "text": "Noxubee County, Mississippi" }
+    },
+    "total_length_ft": {
+      "confidence": 0.97,
+      "citation": { "page": 1,
+        "text": "Length: 500.00 FT" }
+    }
+  },
+  "overall_confidence": 0.97
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Example 2: Custom Schema -->
+                <details class="example-dropdown">
+                    <summary class="example-summary">
+                        <span class="example-number">2</span>
+                        <span class="example-title">Custom Schema with Nested Objects</span>
+                        <span class="example-chevron"></span>
+                    </summary>
+                    <div class="example-content">
+                        <div class="example-notes">
+                            <p>Define your own schema to extract exactly what you need. Supports nested objects and arrays.</p>
+                            <ul>
+                                <li>Use <code>description</code> to guide extraction for ambiguous fields</li>
+                                <li>Arrays extract all matching items (e.g., all line items in a table)</li>
+                            </ul>
+                        </div>
+                        <div class="config-visual">
+                            <div class="visual-flow">
+                                <div class="visual-box input-box">
+                                    <div class="visual-label">Request</div>
+                                    <pre class="visual-code">{
+  "document": "JVBERi0xLjQK...",
+  "schema": {
+    "vendor": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "type": "string" }
+      }
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "description": { "type": "string" },
+        "quantity": { "type": "number" },
+        "unit_price": { "type": "number" }
+      }
+    },
+    "total": { "type": "number" }
+  }
+}</pre>
+                                </div>
+                                <div class="visual-arrow">
+                                    <div class="arrow-line-v"></div>
+                                </div>
+                                <div class="visual-box output-box">
+                                    <div class="visual-label">Response</div>
+                                    <pre class="visual-code">{
+  "status": "completed",
+  "data": {
+    "vendor": {
+      "name": "ABC Construction",
+      "address": "123 Main St, Jackson MS"
+    },
+    "line_items": [...],
+    "total": 79500
+  },
+  "field_details": {
+    "vendor.name": {
+      "confidence": 0.99,
+      "citation": { "page": 1,
+        "text": "ABC Construction LLC" }
+    },
+    "total": {
+      "confidence": 0.96,
+      "citation": { "page": 2,
+        "text": "Grand Total: $79,500.00" }
+    }
+  },
+  "overall_confidence": 0.94
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Example 3: Async Batch -->
+                <details class="example-dropdown">
+                    <summary class="example-summary">
+                        <span class="example-number">3</span>
+                        <span class="example-title">Async Batch Processing (Construction Bids)</span>
+                        <span class="example-chevron"></span>
+                    </summary>
+                    <div class="example-content">
+                        <div class="example-notes">
+                            <p>Process multiple construction bid documents in a single request. Each result includes full extracted data with per-field confidence and citations.</p>
+                            <ul>
+                                <li>Up to 10 documents per batch request</li>
+                                <li>Each document gets its own <code>id</code> for tracking in results</li>
+                                <li>Poll <code>/v1/extract/jobs/{job_id}</code> until status is <code>completed</code></li>
+                                <li>Each result includes the same <code>field_details</code> structure as single extractions</li>
+                            </ul>
+                        </div>
+                        <div class="config-visual">
+                            <div class="visual-flow">
+                                <div class="visual-box input-box">
+                                    <div class="visual-label">POST /v1/extract/batch</div>
+                                    <pre class="visual-code">{
+  "documents": [
+    { "id": "bid_001", "document": "JVBERi0xLjQK..." },
+    { "id": "bid_002", "document": "JVBERi0yLjAK..." }
+  ],
+  "schema": "construction_bid",
+  "options": { "include_citations": true }
+}</pre>
+                                </div>
+                                <div class="visual-arrow">
+                                    <div class="arrow-line-v"></div>
+                                </div>
+                                <div class="visual-box output-box">
+                                    <div class="visual-label">Response (after polling)</div>
+                                    <pre class="visual-code">{
+  "job_id": "job_abc123",
+  "status": "completed",
+  "results": [
+    {
+      "id": "bid_001",
+      "status": "completed",
+      "data": {
+        "project_name": "SR 14 Bridge Replacement",
+        "contractor": "ABC Construction LLC",
+        "bid_amount": 2450000,
+        "bid_date": "2026-01-15",
+        "bid_items": [
+          { "item": "Concrete Class AA",
+            "qty": 500, "unit": "CY", "price": 125 },
+          { "item": "Steel Reinforcing",
+            "qty": 85000, "unit": "LB", "price": 0.85 }
+        ]
+      },
+      "field_details": {
+        "contractor": {
+          "confidence": 0.99,
+          "citation": { "page": 1,
+            "text": "Bidder: ABC Construction LLC" }
+        },
+        "bid_amount": {
+          "confidence": 0.98,
+          "citation": { "page": 3,
+            "text": "Total Bid: $2,450,000.00" }
+        }
+      },
+      "overall_confidence": 0.97
+    },
+    {
+      "id": "bid_002",
+      "status": "completed",
+      "data": {
+        "project_name": "SR 14 Bridge Replacement",
+        "contractor": "XYZ Builders Inc",
+        "bid_amount": 2680000,
+        "bid_date": "2026-01-15",
+        "bid_items": [...]
+      },
+      "field_details": {
+        "contractor": {
+          "confidence": 0.99,
+          "citation": { "page": 1,
+            "text": "Contractor: XYZ Builders Inc" }
+        },
+        "bid_amount": {
+          "confidence": 0.97,
+          "citation": { "page": 2,
+            "text": "Bid Total: $2,680,000" }
+        }
+      },
+      "overall_confidence": 0.96
+    }
+  ]
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Example 4: Document URL -->
+                <details class="example-dropdown">
+                    <summary class="example-summary">
+                        <span class="example-number">4</span>
+                        <span class="example-title">Using Document URL (S3/HTTP)</span>
+                        <span class="example-chevron"></span>
+                    </summary>
+                    <div class="example-content">
+                        <div class="example-notes">
+                            <p>Instead of base64-encoding the document, provide a URL. Works with S3 pre-signed URLs or any HTTP endpoint.</p>
+                            <ul>
+                                <li>Use <code>document_url</code> instead of <code>document</code></li>
+                                <li>For S3, generate a pre-signed URL with read access</li>
+                                <li>Reduces payload size for large documents</li>
+                            </ul>
+                        </div>
+                        <div class="config-visual">
+                            <div class="visual-flow">
+                                <div class="visual-box input-box">
+                                    <div class="visual-label">Request</div>
+                                    <pre class="visual-code">{
+  "document_url": "https://your-bucket.s3.amazonaws.com/docs/bridge_plan.pdf?X-Amz-...",
+  "schema": "dot_bridge_plan",
+  "options": {
+    "include_citations": true,
+    "include_bounding_boxes": true
+  }
+}</pre>
+                                </div>
+                                <div class="visual-arrow">
+                                    <div class="arrow-line-v"></div>
+                                </div>
+                                <div class="visual-box output-box">
+                                    <div class="visual-label">Response</div>
+                                    <pre class="visual-code">{
+  "status": "completed",
+  "data": {
+    "total_cost": 2450000,
+    "contractor": "ABC Construction"
+  },
+  "field_details": {
+    "total_cost": {
+      "confidence": 0.98,
+      "citation": {
+        "page": 3,
+        "text": "Total: $2,450,000",
+        "bounding_box": {
+          "x": 120, "y": 450,
+          "width": 200, "height": 20
+        }
+      }
+    }
+  },
+  "overall_confidence": 0.97
+}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+            </div>
+        </details>
+
+        <!-- Simple Flow -->
+        <div class="architecture">
+            <div class="section-title">Integration Overview</div>
+            <div class="flow-container">
+                <div class="box your-stack">
+                    <div class="label">Your Stack</div>
+                    <div class="box-title">LangGraph Agent</div>
+                    <div class="box-desc">Your orchestration</div>
+                </div>
+
+                <div class="arrow">
+                    <div class="arrow-line"></div>
+                    <div class="arrow-label">POST /extract</div>
+                </div>
+
+                <div class="box llabs-service">
+                    <div class="label">LLABS Service</div>
+                    <div class="box-title">Document API</div>
+                    <div class="box-desc">PDF to JSON</div>
+                </div>
+
+                <div class="arrow">
+                    <div class="arrow-line"></div>
+                    <div class="arrow-label">JSON + Citations</div>
+                </div>
+
+                <div class="box your-stack">
+                    <div class="label">Your Stack</div>
+                    <div class="box-title">Your Database</div>
+                    <div class="box-desc">PostgreSQL / S3</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clarification Section -->
+        <div class="clarification">
+            <div class="section-title">Clarifying "Modularity"</div>
+            <div class="clarify-grid">
+                <div class="clarify-box not-this">
+                    <div class="clarify-header">
+                        <span class="clarify-icon">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </span>
+                        <span class="clarify-label">Not This</span>
+                    </div>
+                    <div class="clarify-title">Autonomous Black Box Agent</div>
+                    <div class="clarify-diagram">
+                        <div class="black-box-visual">
+                            <div class="black-box-icon">
+                                <span style="font-size: 52px; color: #64748b; font-weight: 300;">?</span>
+                            </div>
+                            <div class="black-box-label">Unpredictable</div>
+                        </div>
+                    </div>
+                    <ul class="clarify-list bad">
+                        <li>Unpredictable "emergent" behavior</li>
+                        <li>Requires our runtime/orchestration</li>
+                        <li>Stateful, session-dependent</li>
+                        <li>You're the consumer</li>
+                    </ul>
+                </div>
+
+                <div class="clarify-box yes-this">
+                    <div class="clarify-header">
+                        <span class="clarify-icon">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </span>
+                        <span class="clarify-label">What We're Offering</span>
+                    </div>
+                    <div class="clarify-title">Stateless Processing Function</div>
+                    <div class="clarify-diagram">
+                        <div class="function-box">
+                            <div class="fn-input">PDF</div>
+                            <div class="fn-arrow"></div>
+                            <div class="fn-process">f(x)</div>
+                            <div class="fn-arrow"></div>
+                            <div class="fn-output">JSON</div>
+                        </div>
+                    </div>
+                    <ul class="clarify-list good">
+                        <li>Deterministic: same input = same output</li>
+                        <li>Stateless: no session context between calls</li>
+                        <li>Single purpose: document extraction</li>
+                        <li>Improves over time on this specific task</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Clarifying Learning -->
+            <div class="learning-section">
+                <div class="learning-grid">
+                    <div class="learning-box">
+                        <div class="learning-header">
+                            <span class="learning-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                            </span>
+                            <span class="learning-title">What "Learning" Actually Means</span>
+                        </div>
+                        <p class="learning-text">
+                            When we say the agent "learns," we don't mean unpredictable emergent behavior. We mean:
+                        </p>
+                        <div class="learning-compare">
+                            <div class="compare-item theirs">
+                                <div class="compare-label">With other vendors</div>
+                                <ul>
+                                    <li>You wait for <em>their</em> team to improve the product</li>
+                                    <li>You continuously tune <em>your</em> prompts and pipelines</li>
+                                    <li>Accuracy stays flat until someone does work</li>
+                                </ul>
+                            </div>
+                            <div class="compare-item ours">
+                                <div class="compare-label">With LLABS</div>
+                                <ul>
+                                    <li>The model improves at <em>your specific task</em> over time</li>
+                                    <li>Same cost, increasingly reliable results</li>
+                                    <li>No extra effort from your team required</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="learning-note">
+                            Continuous improvement on your document types, transparently, within the same deterministic API contract.
+                        </p>
+                    </div>
+
+                    <div class="learning-box">
+                        <div class="learning-header">
+                            <span class="learning-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                            </span>
+                            <span class="learning-title">What "Other Capabilities" Means</span>
+                        </div>
+                        <p class="learning-text">
+                            When we mentioned the agent learned to do other things (sourcing subcontractors, etc.), we didn't mean one mega-agent. We meant:
+                        </p>
+                        <div class="microservices-diagram">
+                            <div class="micro-service">
+                                <div class="micro-icon pdf-icon">PDF</div>
+                                <div class="micro-label">Document<br>Extraction</div>
+                            </div>
+                            <div class="micro-service">
+                                <div class="micro-icon contact-icon">@</div>
+                                <div class="micro-label">Subcontractor<br>Lookup</div>
+                            </div>
+                            <div class="micro-service">
+                                <div class="micro-icon bid-icon">$</div>
+                                <div class="micro-label">Bid<br>Analysis</div>
+                            </div>
+                            <div class="micro-service micro-more">
+                                <div class="micro-icon">...</div>
+                                <div class="micro-label">Future<br>Services</div>
+                            </div>
+                        </div>
+                        <p class="learning-note">
+                            Each is a <strong>separate, focused microservice</strong> with its own endpoint. You choose which to deploy. Instead of your team dedicating engineering resources to build and maintain each AI-powered service, we build and ship new ones for you as needed.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="how-it-fits">
+                <div class="fits-title">How It Fits Into Your LangGraph Workflow</div>
+                <div class="fits-diagram">
+                    <div class="fits-step yours">
+                        <span class="step-num">1</span>
+                        <span class="step-label">Your Trigger</span>
+                        <span class="step-desc">User uploads PDF</span>
+                    </div>
+                    <div class="fits-arrow"></div>
+                    <div class="fits-step yours">
+                        <span class="step-num">2</span>
+                        <span class="step-label">Your Logic</span>
+                        <span class="step-desc">Classify document type</span>
+                    </div>
+                    <div class="fits-arrow"></div>
+                    <div class="fits-step llabs">
+                        <span class="step-num">3</span>
+                        <span class="step-label">LLABS Extract</span>
+                        <span class="step-desc">PDF to structured JSON</span>
+                    </div>
+                    <div class="fits-arrow"></div>
+                    <div class="fits-step yours">
+                        <span class="step-num">4</span>
+                        <span class="step-label">Your Logic</span>
+                        <span class="step-desc">Validate, transform</span>
+                    </div>
+                    <div class="fits-arrow"></div>
+                    <div class="fits-step yours">
+                        <span class="step-num">5</span>
+                        <span class="step-label">Your Database</span>
+                        <span class="step-desc">Store results</span>
+                    </div>
+                </div>
+                <p class="fits-note">
+                    <strong>You own the orchestration.</strong> We're just step 3: a tool in your pipeline, not a pipeline that uses your tools.
+                </p>
+            </div>
+        </div>
+
+        <!-- API Contract -->
+        <div class="api-contract">
+            <div class="section-title">API Contract</div>
+            <div class="contract-grid">
+                <div class="contract-box">
+                    <h3>Request <span class="badge">INPUT</span></h3>
+                    <pre><code>{
+  <span class="key">"document"</span>: <span class="string">"&lt;base64 PDF&gt;"</span>,
+  <span class="key">"schema"</span>: {
+    <span class="key">"project_name"</span>: <span class="string">"string"</span>,
+    <span class="key">"contractor"</span>: <span class="string">"string"</span>,
+    <span class="key">"bid_items"</span>: <span class="string">"array"</span>,
+    <span class="key">"total_cost"</span>: <span class="string">"number"</span>
+  },
+  <span class="key">"options"</span>: {
+    <span class="key">"include_citations"</span>: <span class="string">true</span>,
+    <span class="key">"confidence_threshold"</span>: <span class="string">0.9</span>
+  }
+}</code></pre>
+                </div>
+
+                <div class="contract-arrow"><div class="contract-arrow-line"></div></div>
+
+                <div class="contract-box">
+                    <h3>Response <span class="badge out">OUTPUT</span></h3>
+                    <pre><code>{
+  <span class="key">"data"</span>: {
+    <span class="key">"project_name"</span>: <span class="string">"Highway 101 Repair"</span>,
+    <span class="key">"contractor"</span>: <span class="string">"ABC Construction"</span>,
+    <span class="key">"bid_items"</span>: [...],
+    <span class="key">"total_cost"</span>: <span class="string">2450000</span>
+  },
+  <span class="key">"citations"</span>: [
+    { <span class="key">"field"</span>: <span class="string">"total_cost"</span>,
+      <span class="key">"page"</span>: <span class="string">3</span>,
+      <span class="key">"text"</span>: <span class="string">"..."</span> }
+  ],
+  <span class="key">"confidence"</span>: <span class="string">0.97</span>
+}</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deployment -->
+        <div class="deployment">
+            <div class="section-title">Deployment: Self-Hosted in Your AWS</div>
+            <div class="infra-diagram">
+                <div class="infra-zone your-infra">
+                    <div class="zone-label">YOUR AWS VPC</div>
+                    <div class="infra-items">
+                        <div class="infra-item">
+                            <div class="icon icon-blue">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                            </div>
+                            <span>Your LangGraph Agents</span>
+                        </div>
+                        <div class="infra-item">
+                            <div class="icon icon-purple">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9333ea" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                            </div>
+                            <span>Your PostgreSQL</span>
+                        </div>
+                        <div class="infra-item">
+                            <div class="icon icon-orange">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                            </div>
+                            <span>Your S3 Buckets</span>
+                        </div>
+                        <div class="infra-item">
+                            <div class="icon icon-blue">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            </div>
+                            <span>Your API Gateway</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="infra-zone docker-zone">
+                    <div class="zone-label">LLABS CONTAINER</div>
+                    <div class="docker-contents">
+                        <div class="docker-header">
+                            <span class="icon" style="color: #0db7ed;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.186m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.185-.186h-2.12a.186.186 0 00-.185.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288z"/></svg>
+                            </span>
+                            <span>Docker Image</span>
+                        </div>
+                        <div class="docker-layers">
+                            <div class="docker-layer">
+                                <span class="dot"></span>
+                                FastAPI Server
+                            </div>
+                            <div class="docker-layer">
+                                <span class="dot"></span>
+                                Document Parser
+                            </div>
+                            <div class="docker-layer">
+                                <span class="dot"></span>
+                                Extraction Engine
+                            </div>
+                            <div class="docker-layer">
+                                <span class="dot"></span>
+                                Schema Validator
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p style="margin-top: 24px; color: #64748b; font-size: 14px; text-align: center;">
+                <strong>You provide:</strong> AWS credentials for Bedrock/your LLM provider &nbsp;|&nbsp;
+                <strong>No data leaves your VPC</strong>
+            </p>
+        </div>
+
+        <!-- Comparison -->
+        <div class="comparison">
+            <div class="section-title">Integration Model Comparison</div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Capability</th>
+                        <th>LlamaParse</th>
+                        <th>Reducto</th>
+                        <th>Landing.ai</th>
+                        <th>LLABS API</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>REST API</td>
+                        <td class="check">✓</td>
+                        <td class="check">✓ OpenAPI</td>
+                        <td class="check">✓</td>
+                        <td class="check">✓ OpenAPI</td>
+                    </tr>
+                    <tr>
+                        <td>Self-hosted deployment</td>
+                        <td class="partial">Enterprise only</td>
+                        <td class="check">✓ On-prem, VPC</td>
+                        <td class="cross">✗ Cloud only</td>
+                        <td class="check">✓ Docker image</td>
+                    </tr>
+                    <tr>
+                        <td>Custom output schema</td>
+                        <td class="check">✓</td>
+                        <td class="check">✓</td>
+                        <td class="check">✓</td>
+                        <td class="check">✓</td>
+                    </tr>
+                    <tr>
+                        <td>Domain customization</td>
+                        <td class="partial">Generic + prompting</td>
+                        <td class="partial">Generic + prompting</td>
+                        <td class="partial">Generic + prompting</td>
+                        <td class="check">✓ Trained on your docs</td>
+                    </tr>
+                    <tr>
+                        <td>Swap underlying LLM</td>
+                        <td class="partial">Limited</td>
+                        <td class="check">✓ On-prem only</td>
+                        <td class="cross">✗</td>
+                        <td class="check">✓ Any provider</td>
+                    </tr>
+                    <tr>
+                        <td>Lightweight integration</td>
+                        <td class="check">✓ Composable</td>
+                        <td class="partial">Full pipeline</td>
+                        <td class="partial">Full solution</td>
+                        <td class="check">✓ Single endpoint</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="margin-top: 16px; font-size: 12px; color: #64748b; display: flex; gap: 20px; justify-content: flex-end;">
+                <span><span class="check">✓</span> = Full support</span>
+                <span><span class="partial">●</span> = Partial/conditional</span>
+                <span><span class="cross">✗</span> = Not available</span>
+            </div>
+
+            <div class="poc-callout">
+                <div class="poc-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="poc-content">
+                    <div class="poc-title">Already Validated</div>
+                    <div class="poc-text">
+                        The agent we built was trained on Infotech's actual construction documents and benchmark PDFs.
+                        The extraction accuracy you saw in the POC comes from that domain-specific training. That same trained model ships in the Docker image.
+                    </div>
+                    <div class="poc-text" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #cbd5e1;">
+                        <strong>Other platforms don't offer this.</strong> With LlamaParse, Reducto, and Landing.ai, you configure their pre-built models through prompts and schemas. If their generic model struggles with your document types, your only option is to keep tweaking prompts. We train on your actual documents.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div>LLABS Document Extraction API</div>
+        </div>
+    </div>
+</body>
+</html>
