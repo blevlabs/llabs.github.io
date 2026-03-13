@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLABS Cognitive Architecture</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0f;color:#e0e0e0;overflow-x:hidden}
+.nav{position:fixed;top:0;width:100%;background:rgba(10,10,15,.95);backdrop-filter:blur(10px);padding:16px 40px;display:flex;justify-content:space-between;align-items:center;z-index:100;border-bottom:1px solid rgba(255,255,255,.08)}
+.nav-logo{font-size:16px;font-weight:700;letter-spacing:2px;color:#fff}
+.nav-progress{display:flex;gap:10px}
+.nav-dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:#4f8eff;box-shadow:0 0 12px rgba(79,142,255,.4)}
+.slide{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:100px 80px 60px;opacity:0;transform:translateY(30px);transition:all .6s ease;position:relative}
+.slide.visible{opacity:1;transform:translateY(0)}
+.slide>*:not(.bg-canvas){position:relative;z-index:1}
+.slide-label{font-size:15px;letter-spacing:3px;text-transform:uppercase;color:#4f8eff;margin-bottom:20px}
+.slide h2{font-size:54px;font-weight:700;text-align:center;margin-bottom:24px;line-height:1.2}
+.slide p.subtitle{font-size:22px;color:#888;text-align:center;max-width:800px;margin-bottom:50px;line-height:1.6}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px;max-width:1200px;width:100%}
+.compare-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:36px;transition:all .3s}
+.compare-card:hover{border-color:rgba(79,142,255,.3)}
+.compare-card.highlight{border-color:#4f8eff;background:rgba(79,142,255,.05)}
+.compare-card h3{font-size:24px;margin-bottom:10px}
+.compare-card .tag{font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#666;margin-bottom:18px}
+.compare-card.highlight .tag{color:#4f8eff}
+.compare-card ul{list-style:none}
+.compare-card ul li{padding:10px 0;font-size:17px;color:#999;border-bottom:1px solid rgba(255,255,255,.04)}
+.compare-card ul li:last-child{border:none}
+.compare-card.highlight ul li{color:#ccc}
+.icon-x{color:#ff4444;margin-right:8px}
+.icon-check{color:#44ff88;margin-right:8px}
+.memory-compare{display:grid;grid-template-columns:1fr 1fr;gap:40px;max-width:1200px;width:100%}
+.memory-side{padding:36px;border-radius:16px}
+.memory-side.old{background:rgba(255,68,68,.05);border:1px solid rgba(255,68,68,.15)}
+.memory-side.new{background:rgba(79,142,255,.05);border:1px solid rgba(79,142,255,.15)}
+.memory-side h3{font-size:26px;margin-bottom:8px}
+.memory-side .label{font-size:14px;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.memory-side.old .label{color:#ff4444}
+.memory-side.new .label{color:#4f8eff}
+.memory-item{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:17px;color:#999;line-height:1.6}
+.memory-item:last-child{border:none}
+.memory-side.new .memory-item{color:#ccc}
+.arch-flow{display:flex;flex-direction:column;gap:20px;max-width:1000px;width:100%}
+.arch-step{display:flex;align-items:center;gap:28px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:28px 36px;transition:all .4s;cursor:default}
+.arch-step:hover{border-color:#4f8eff;transform:translateX(8px)}
+.arch-num{font-size:36px;font-weight:800;color:#4f8eff;min-width:55px}
+.arch-content h4{font-size:22px;margin-bottom:8px}
+.arch-content p{font-size:17px;color:#888;line-height:1.6}
+.arch-arrow{text-align:center;font-size:28px;color:#333}
+.recursive-stages{display:flex;gap:24px;justify-content:center;margin-top:30px;flex-wrap:wrap}
+.stage-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:28px;width:280px;text-align:left;transition:all .3s}
+.stage-card:hover{border-color:#4f8eff}
+.stage-card .stage-num{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#4f8eff;margin-bottom:12px}
+.stage-card h4{font-size:20px;margin-bottom:10px}
+.stage-card p{font-size:16px;color:#888;line-height:1.5}
+.vector-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:1200px;width:100%}
+.vector-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:32px;transition:all .3s}
+.vector-card:hover{border-color:rgba(79,142,255,.3);transform:translateY(-4px)}
+.vector-card .vector-label{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#4f8eff;margin-bottom:12px}
+.vector-card h4{font-size:22px;margin-bottom:10px}
+.vector-card p{font-size:16px;color:#888;line-height:1.6}
+.bg-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.viz-canvas{width:100%;max-width:1200px;height:400px;display:block;border-radius:12px;margin-bottom:36px}
+.card-canvas{width:100%;height:160px;display:block;border-radius:8px;margin-bottom:14px}
+.step-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:18px;max-width:1200px;width:100%}
+.step-item{text-align:center;padding:16px 10px;background:rgba(255,255,255,.02);border-radius:10px;border:1px solid rgba(255,255,255,.05)}
+.step-n{font-size:14px;font-weight:700;color:#4f8eff;letter-spacing:1px;margin-bottom:8px}
+.step-item h4{font-size:16px;font-weight:600;margin-bottom:6px}
+.step-item p{font-size:13px;color:#777;line-height:1.5}
+.key-hint{position:fixed;bottom:20px;right:20px;font-size:12px;color:#444;background:rgba(255,255,255,.05);padding:8px 16px;border-radius:8px}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">LEVANGIE LABORATORIES</div>
+  <div class="nav-progress" id="navDots"></div>
+</nav>
+
+<!-- S0: Title -->
+<section class="slide" id="s0">
+  <canvas class="bg-canvas" id="c0"></canvas>
+  <div class="slide-label">Cognitive Architecture Overview</div>
+  <h2>The Third Category<br>of Enterprise AI</h2>
+  <p class="subtitle">We built a new type of learning system. It goes into any organization, learns how that business works, and grows into the specialized solution they need.</p>
+</section>
+
+<!-- S1: Three Categories -->
+<section class="slide" id="s1">
+  <div class="slide-label">The Market Today</div>
+  <h2>Three Categories of Enterprise AI</h2>
+  <p class="subtitle">Two established approaches, and a new one.</p>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h3>Workflow Builders</h3>
+      <div class="tag">Category 1</div>
+      <ul>
+        <li><span class="icon-x">&#10005;</span> Rigid DAG execution designed by humans</li>
+        <li><span class="icon-x">&#10005;</span> Every new problem type needs new human-built logic</li>
+        <li><span class="icon-x">&#10005;</span> No feedback loop from execution back to design</li>
+        <li><span class="icon-x">&#10005;</span> The human builder is the bottleneck</li>
+        <li>Zapier, n8n, Make</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h3>Generalist Platforms</h3>
+      <div class="tag">Category 2</div>
+      <ul>
+        <li><span class="icon-x">&#10005;</span> Broad capability, shallow specialization</li>
+        <li><span class="icon-x">&#10005;</span> Memory via flat text summaries and retrieval</li>
+        <li><span class="icon-x">&#10005;</span> Customizable via prompts, not from operational experience</li>
+        <li><span class="icon-x">&#10005;</span> No structured capture of reasoning or decision process</li>
+        <li>Claude, GPT Agents, Perplexity</li>
+      </ul>
+    </div>
+    <div class="compare-card highlight">
+      <h3>Cognitive Architecture</h3>
+      <div class="tag">Category 3 &ndash; LLABS</div>
+      <ul>
+        <li><span class="icon-check">&#10003;</span> Structured episodic memory with trajectory capture</li>
+        <li><span class="icon-check">&#10003;</span> Learns from operational experience, no weight changes</li>
+        <li><span class="icon-check">&#10003;</span> Persistent knowledge base grows through operational experience</li>
+        <li><span class="icon-check">&#10003;</span> Performance improves measurably over time</li>
+        <li>Levangie Laboratories</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- S2: Memory is Broken -->
+<section class="slide" id="s2">
+  <div class="slide-label">The Core Problem</div>
+  <h2>Current AI Memory Captures<br>Outcomes, Not Process</h2>
+  <p class="subtitle">The latest memory systems from Anthropic and OpenAI embed text summaries of what happened. They don't capture the reasoning process, the decision points, or the consequences that led to each outcome.</p>
+  <div class="memory-compare">
+    <div class="memory-side old">
+      <h3>RAG-Based Memory</h3>
+      <div class="label">How everyone else does it</div>
+      <canvas class="card-canvas" id="c2a"></canvas>
+      <div class="memory-item">Stores text summaries: "Patient prefers morning appointments" or "Treatment plan was updated"</div>
+      <div class="memory-item">Embeddings on text summaries, not on the reasoning process. One vector per memory entry.</div>
+      <div class="memory-item">Records that a treatment plan was created. Not why that specific combination was chosen over alternatives.</div>
+      <div class="memory-item">Can store "avoid Drug X with Drug Y" as a rule. Can't learn the diagnostic pattern that led to discovering that interaction.</div>
+    </div>
+    <div class="memory-side new">
+      <h3>Episodic Memory</h3>
+      <div class="label">The LLABS approach</div>
+      <canvas class="card-canvas" id="c2b"></canvas>
+      <div class="memory-item">Captures the full clinical reasoning trajectory: lab analysis, drug interaction checks, treatment selection, patient response</div>
+      <div class="memory-item">Hierarchical structure: patient engagements, clinical sessions, reasoning iterations, individual EMR queries and actions</div>
+      <div class="memory-item">Four named vectors per experience. "Show me every time the agent reasoned about lipid panel abnormalities" is a single search.</div>
+      <div class="memory-item">When a protocol changes or a contraindication is discovered, that specific learning is updated. Everything else stays.</div>
+    </div>
+  </div>
+</section>
+
+<!-- S3: How Episodic Memory Works -->
+<section class="slide" id="s3">
+  <div class="slide-label">Technical Architecture</div>
+  <h2>How Episodic Memory Works</h2>
+  <p class="subtitle">Every time the agent works on something, the system captures the full decision-making process. Not a summary. The actual trajectory.</p>
+  <canvas class="viz-canvas" id="c3"></canvas>
+  <div class="step-strip">
+    <div class="step-item"><div class="step-n">01</div><h4>Loop Decomposed</h4><p>Each agentic reasoning loop stored as an independent record with its own embeddings</p></div>
+    <div class="step-item"><div class="step-n">02</div><h4>Actions Recorded</h4><p>Every tool call, its parameters, and its result linked to the reasoning that triggered it</p></div>
+    <div class="step-item"><div class="step-n">03</div><h4>Results Captured</h4><p>Environmental responses, user feedback, error states. The full consequence chain.</p></div>
+    <div class="step-item"><div class="step-n">04</div><h4>Trajectory Encoded</h4><p>Each iteration embedded into multi-dimensional vector representations and stored in a searchable index</p></div>
+  </div>
+</section>
+
+<!-- S4: Four-Dimensional Encoding -->
+<section class="slide" id="s4">
+  <div class="slide-label">The Technical Innovation</div>
+  <h2>Four-Dimensional<br>Experience Encoding</h2>
+  <p class="subtitle">Most systems store one embedding per experience. We store four. Each one captures a different dimension of how the agent thought and what happened.</p>
+  <div class="vector-grid">
+    <div class="vector-card">
+      <div class="vector-label">Dimension 01</div>
+      <h4>Combined Trajectory</h4>
+      <canvas class="card-canvas" id="c4a"></canvas>
+      <p>Reasoning + outcome concatenated. "Find all past sessions related to prior art analysis." General similarity across 15 patent analysis sessions.</p>
+    </div>
+    <div class="vector-card">
+      <div class="vector-label">Dimension 02</div>
+      <h4>Reasoning Patterns</h4>
+      <canvas class="card-canvas" id="c4b"></canvas>
+      <p>Thinking process only. Same 15 sessions now cluster by analytical approach: claim construction, prior art search, and obviousness analysis. Outcome doesn't matter here.</p>
+    </div>
+    <div class="vector-card">
+      <div class="vector-label">Dimension 03</div>
+      <h4>Outcome Space</h4>
+      <canvas class="card-canvas" id="c4c"></canvas>
+      <p>Results only. Same sessions arranged by what actually happened on a continuous spectrum. Missed references on one end, valid arguments on the other, partial outcomes in between. Not binary.</p>
+    </div>
+    <div class="vector-card">
+      <div class="vector-label">Dimension 04</div>
+      <h4>Contextualized</h4>
+      <canvas class="card-canvas" id="c4d"></canvas>
+      <p>Post-engagement re-embedding. Each iteration re-encoded with awareness of every other step in the same patent engagement. Lines show sibling relationships.</p>
+    </div>
+  </div>
+</section>
+
+<!-- S5: Recursive Trajectory Learning -->
+<section class="slide" id="s5">
+  <div class="slide-label">The Breakthrough</div>
+  <h2>Recursive Trajectory Learning</h2>
+  <p class="subtitle">When the system gets feedback, it extracts learnings and stores them as persistent knowledge. That knowledge is then automatically surfaced alongside every related experience in all future sessions. The agent can also go back and audit its own history.</p>
+  <canvas class="viz-canvas" id="c5"></canvas>
+  <div class="step-strip">
+    <div class="step-item"><div class="step-n">01</div><h4>Experience</h4><p>Agent works a task. Full trajectory captured with four named vectors.</p></div>
+    <div class="step-item"><div class="step-n">02</div><h4>Feedback</h4><p>Human gives contextual guidance. "You missed X, try Y instead." Not a scalar reward.</p></div>
+    <div class="step-item"><div class="step-n">03</div><h4>Retrieval</h4><p>System searches all four vector dimensions for semantically related past trajectories.</p></div>
+    <div class="step-item"><div class="step-n">04</div><h4>Re-evaluation</h4><p>Agent compares trajectories, identifies where reasoning diverged, extracts causal chains.</p></div>
+    <div class="step-item"><div class="step-n">05</div><h4>Propagation</h4><p>Learnings stored as persistent knowledge. Proactively surfaced in all future sessions.</p></div>
+  </div>
+</section>
+
+<!-- S6: Cognitive Architecture Stack -->
+<section class="slide" id="s6">
+  <div class="slide-label">System Architecture</div>
+  <h2>The Cognitive Architecture Stack</h2>
+  <p class="subtitle">There are four layers to this. Each one builds on the last, and together they turn a language model into something that actually gets better over time.</p>
+  <canvas class="viz-canvas" id="c6"></canvas>
+  <div class="step-strip">
+    <div class="step-item"><div class="step-n">01</div><h4>Trajectory Capture</h4><p>Episode &gt; session &gt; iteration &gt; action. Four vectors per iteration. Crash-recovered writes.</p></div>
+    <div class="step-item"><div class="step-n">02</div><h4>Knowledge Base</h4><p>Five entry types: learnings, decisions, causal chains, procedures, logs. Individually addressable.</p></div>
+    <div class="step-item"><div class="step-n">03</div><h4>Proactive Cognition</h4><p>Composite scoring (vector similarity + time decay + outcome reliability). Contrastive pairs. Token-budgeted injection.</p></div>
+    <div class="step-item"><div class="step-n">04</div><h4>Self-Improvement</h4><p>Automatic outcome classification, causal chain extraction, procedure distillation, and admission control.</p></div>
+  </div>
+</section>
+
+<!-- S7: vs RL -->
+<section class="slide" id="s7">
+  <div class="slide-label">vs. Reinforcement Learning</div>
+  <h2>Beyond Scalar Rewards</h2>
+  <p class="subtitle">Both RL and episodic trajectory learning aim to improve agent performance over time. The approach is fundamentally different. RLHF gives you a scalar score or preference ranking. It tells the model something was wrong, but not what, why, or how to fix it.</p>
+  <div class="memory-compare">
+    <div class="memory-side old">
+      <h3>Reinforcement Learning</h3>
+      <div class="label">RLHF / DPO / PPO</div>
+      <div class="memory-item">Reward signal: scalar score or preference pair. No context for what to change.</div>
+      <div class="memory-item">Needs thousands of examples to shift model behavior distribution</div>
+      <div class="memory-item">Modifies base model weights. Expensive compute, risk of capability regression.</div>
+      <div class="memory-item">Training errors bake into the weights permanently. Corrections require retraining.</div>
+      <div class="memory-item">No reasoning trace. Can't explain its own decision process.</div>
+      <div class="memory-item">Unlearning a specific behavior requires retraining on modified data</div>
+    </div>
+    <div class="memory-side new">
+      <h3>Episodic Trajectory Learning</h3>
+      <div class="label">The LLABS approach</div>
+      <div class="memory-item">Full contextual feedback. The system knows what to change and why.</div>
+      <div class="memory-item">Learns from a single interaction. One piece of feedback creates knowledge that surfaces alongside every related future session.</div>
+      <div class="memory-item">No weight modification. Runs on top of any cloud model. Model-agnostic.</div>
+      <div class="memory-item">Fix one specific learning without affecting anything else. Deprecate, update, or supersede.</div>
+      <div class="memory-item">Full reasoning trace stored at every decision point. Auditable.</div>
+      <div class="memory-item">Agent searches its own trajectory history, compares past reasoning, refines its knowledge base.</div>
+    </div>
+  </div>
+</section>
+
+<!-- S8: Results -->
+<section class="slide" id="s8">
+  <div class="slide-label">Proof Points</div>
+  <h2>Real-World Results</h2>
+  <p class="subtitle">This isn't theory. It's deployed in production across regulated industries.</p>
+  <div class="recursive-stages">
+    <div class="stage-card">
+      <div class="stage-num">Patent Law</div>
+      <h4>Level 3 &rarr; Level 5</h4>
+      <p>Leading SF patent firm (clients: Twilio, Cerebras). Agent evaluated on their internal attorney competency rubric. A few sentences of partner feedback on prior art methodology. Jumped from Level 3 to Level 5. That normally takes an associate 10 years.</p>
+    </div>
+    <div class="stage-card">
+      <div class="stage-num">Healthcare</div>
+      <h4>Autonomous Operations</h4>
+      <p>HIPAA-compliant deployment at a Bay Area longevity clinic. In one afternoon, the agent mapped 10-15 year old EMR/EHR APIs, built integration access points autonomously, and took over scheduling, treatment plan drafting, and lab analysis workflows.</p>
+    </div>
+    <div class="stage-card">
+      <div class="stage-num">Telecom</div>
+      <h4>Full Stack Simulation</h4>
+      <p>One of Canada's largest telecoms (8,000+ SME customers). One 30-minute Zoom walkthrough of 6 legacy SOAP-based application stacks. The agent built a working end-to-end simulation and replicated a 20-person team's operational workflow.</p>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Summary -->
+<section class="slide" id="s9">
+  <div class="slide-label">Summary</div>
+  <h2>The Cognitive Architecture</h2>
+  <p class="subtitle">We built a new layer on top of language models. One that learns, adapts, and gets better with every interaction.</p>
+  <div class="arch-flow">
+    <div class="arch-step"><div class="arch-num">&#9889;</div><div class="arch-content"><h4>Model Agnostic</h4><p>We use any cloud LLM without touching the weights. When the models get better, our system gets better automatically.</p></div></div>
+    <div class="arch-step"><div class="arch-num">&#129504;</div><div class="arch-content"><h4>Episodic Memory</h4><p>Full trajectory capture across four vector dimensions. You can search by how the agent thought, what happened, or the complete context.</p></div></div>
+    <div class="arch-step"><div class="arch-num">&#128257;</div><div class="arch-content"><h4>Measurable Improvement</h4><p>The system extracts its own knowledge, learns from successes and failures, and can audit its own past work. Performance tracked through outcome classification and retrieval metrics.</p></div></div>
+    <div class="arch-step"><div class="arch-num">&#128274;</div><div class="arch-content"><h4>Patent Pending</h4><p>The episodic memory system and trajectory embeddings are patent pending. SOC 2 and HIPAA compliant.</p></div></div>
+  </div>
+</section>
+
+<div class="key-hint">Use &uarr;&darr; arrow keys or scroll to navigate</div>
+
+<script>
+// === CANVAS SETUP ===
+function IC(id) {
+  const c = document.getElementById(id);
+  if (!c) return null;
+  const dpr = window.devicePixelRatio || 1;
+  const r = c.getBoundingClientRect();
+  c.width = r.width * dpr; c.height = r.height * dpr;
+  const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { c, ctx, w: r.width, h: r.height };
+}
+
+// === PARTICLE NETWORK (S0 background) ===
+function initNetwork(w, h) {
+  const pts = [];
+  for (let i = 0; i < 50; i++) pts.push({ x: Math.random()*w, y: Math.random()*h, vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3 });
+  return pts;
+}
+function drawNetwork(ctx, w, h, pts) {
+  ctx.clearRect(0, 0, w, h);
+  for (const p of pts) { p.x += p.vx; p.y += p.vy; if (p.x<0||p.x>w) p.vx*=-1; if (p.y<0||p.y>h) p.vy*=-1; }
+  for (let i = 0; i < pts.length; i++) for (let j = i+1; j < pts.length; j++) {
+    const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy);
+    if (d < 150) { ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.strokeStyle=`rgba(79,142,255,${.12*(1-d/150)})`; ctx.lineWidth=.5; ctx.stroke(); }
+  }
+  for (const p of pts) { ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fillStyle='rgba(79,142,255,.5)'; ctx.fill(); }
+}
+
+// === MEMORY COMPARISON (S2) ===
+function drawRAG(ctx, w, h, t) {
+  ctx.clearRect(0, 0, w, h);
+  const docs = [[.15,.25],[.7,.18],[.4,.55],[.82,.65],[.25,.78],[.6,.38],[.12,.5],[.88,.45],[.5,.2],[.35,.7]];
+  for (const d of docs) { ctx.fillStyle='rgba(255,255,255,.06)'; ctx.fillRect(d[0]*w-14,d[1]*h-9,28,18); ctx.strokeStyle='rgba(255,255,255,.1)'; ctx.lineWidth=1.5; ctx.strokeRect(d[0]*w-14,d[1]*h-9,28,18); }
+  const qx=.5*w, qy=.42*h;
+  ctx.beginPath(); ctx.arc(qx,qy,6,0,Math.PI*2); ctx.fillStyle='rgba(255,80,80,.5)'; ctx.fill();
+  for (let i=0;i<3;i++) { ctx.beginPath(); ctx.moveTo(qx,qy); ctx.lineTo(docs[i][0]*w,docs[i][1]*h); ctx.strokeStyle='rgba(255,80,80,.12)'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]); }
+  ctx.font='12px system-ui'; ctx.fillStyle='rgba(255,80,80,.5)'; ctx.textAlign='center';
+  ctx.fillText('query', qx, qy-10);
+  ctx.fillStyle='rgba(255,255,255,.3)'; ctx.fillText('flat documents, no structure', w/2, h-6);
+}
+function drawEpMini(ctx, w, h, t) {
+  ctx.clearRect(0, 0, w, h);
+  const n=[[.5,.12],[.25,.35],[.75,.35],[.12,.6],[.38,.6],[.62,.6],[.88,.6],[.08,.85],[.18,.85],[.32,.85],[.44,.85],[.56,.85],[.68,.85],[.82,.85],[.92,.85]];
+  const e=[[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7],[3,8],[4,9],[4,10],[5,11],[5,12],[6,13],[6,14]];
+  for (const[a,b] of e) { ctx.beginPath(); ctx.moveTo(n[a][0]*w,n[a][1]*h); ctx.lineTo(n[b][0]*w,n[b][1]*h); ctx.strokeStyle='rgba(79,142,255,.25)'; ctx.lineWidth=1.5; ctx.stroke(); }
+  const pulse=Math.sin(t/1000)*.2+.8;
+  for (let i=0;i<n.length;i++) {
+    const r=i<1?8:i<3?5.5:i<7?4:3, col=i<3?'#4f8eff':i<7?'#3db8e8':'#44ff88';
+    ctx.beginPath(); ctx.arc(n[i][0]*w,n[i][1]*h,r*2.2,0,Math.PI*2); ctx.fillStyle=col+'18'; ctx.fill();
+    ctx.beginPath(); ctx.arc(n[i][0]*w,n[i][1]*h,r,0,Math.PI*2); ctx.fillStyle=col; ctx.globalAlpha=pulse; ctx.fill(); ctx.globalAlpha=1;
+  }
+  // Labels
+  ctx.globalAlpha=1; ctx.font='12px system-ui'; ctx.fillStyle='rgba(255,255,255,.3)'; ctx.textAlign='center';
+  ctx.fillText('structured hierarchy', w/2, h-6);
+}
+
+// === HIERARCHY TREE (S3) ===
+const TN = [
+  [.5,.13,18,-1,'#4f8eff'],[.2,.36,12,0,'#4f8eff'],[.5,.36,12,0,'#4f8eff'],[.8,.36,12,0,'#4f8eff'],
+  [.12,.59,7,1,'#3db8e8'],[.28,.59,7,1,'#3db8e8'],[.42,.59,7,2,'#3db8e8'],[.58,.59,7,2,'#3db8e8'],[.72,.59,7,3,'#3db8e8'],[.88,.59,7,3,'#3db8e8'],
+  [.08,.82,4,4,'#44ff88'],[.16,.82,4,4,'#44ff88'],[.24,.82,4,5,'#44ff88'],[.32,.82,4,5,'#44ff88'],[.38,.82,4,6,'#44ff88'],[.46,.82,4,6,'#44ff88'],
+  [.54,.82,4,7,'#44ff88'],[.62,.82,4,7,'#44ff88'],[.68,.82,4,8,'#44ff88'],[.76,.82,4,8,'#44ff88'],[.84,.82,4,9,'#44ff88'],[.92,.82,4,9,'#44ff88']
+];
+function getTreePaths() {
+  const paths = [];
+  for (let i=0;i<TN.length;i++) { if (TN.some(n=>n[3]===i)) continue; if (TN[i][3]<0) continue; const p=[]; let idx=i; while(idx>=0){p.unshift(idx);idx=TN[idx][3];} paths.push(p); }
+  return paths;
+}
+function initTreeParts(paths) { return Array.from({length:10},()=>({path:paths[Math.floor(Math.random()*paths.length)],prog:Math.random()*3,spd:.008+Math.random()*.008})); }
+function drawTree(ctx, w, h, parts, t) {
+  ctx.clearRect(0, 0, w, h);
+  // Edges
+  for (const n of TN) { if(n[3]<0) continue; const p=TN[n[3]]; ctx.beginPath(); ctx.moveTo(p[0]*w,p[1]*h); const my=(p[1]+n[1])/2*h; ctx.quadraticCurveTo(p[0]*w,my,n[0]*w,n[1]*h); ctx.strokeStyle='rgba(79,142,255,.15)'; ctx.lineWidth=1.5; ctx.stroke(); }
+  // Level labels
+  ctx.font='14px system-ui'; ctx.textAlign='left'; ctx.fillStyle='rgba(255,255,255,.3)';
+  const labels=['Episode','Session','Iteration','Action'];
+  const labelY=[.03,.22,.45,.68]; // labels positioned ABOVE the node rows
+  const examples=[
+    'Patient onboarding workflow \u2014 Longevity Clinic',
+    '"Review labs and treatment plan for patient #4721"',
+    'analyze lipid panel \u2192 check drug interactions \u2192 draft plan update',
+    'query_emr({patient: 4721, panel: "lipid"}) \u2192 12 results'
+  ];
+  for (let i=0;i<4;i++) {
+    ctx.textAlign='left'; ctx.font='bold 15px system-ui'; ctx.fillStyle='rgba(255,255,255,.55)';
+    ctx.fillText(labels[i], 8, labelY[i]*h);
+    ctx.font='12px system-ui'; ctx.fillStyle='rgba(79,142,255,.55)';
+    ctx.fillText(examples[i], 8, labelY[i]*h+16);
+  }
+  // Nodes
+  for (const n of TN) {
+    const x=n[0]*w,y=n[1]*h,r=n[2];
+    ctx.beginPath(); ctx.arc(x,y,r*2.5,0,Math.PI*2);
+    const g=ctx.createRadialGradient(x,y,0,x,y,r*2.5); g.addColorStop(0,n[4]+'25'); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle=n[4]; ctx.fill();
+  }
+  // Particles
+  for (const p of parts) {
+    p.prog += p.spd; if (p.prog >= p.path.length-1) { p.prog=0; p.path=treePaths[Math.floor(Math.random()*treePaths.length)]; }
+    const seg=Math.floor(p.prog), fr=p.prog-seg;
+    const n1=TN[p.path[seg]], n2=TN[p.path[Math.min(seg+1,p.path.length-1)]];
+    const px=(n1[0]+(n2[0]-n1[0])*fr)*w, py=(n1[1]+(n2[1]-n1[1])*fr)*h;
+    ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,.8)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(px,py,12,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,.1)'; ctx.fill();
+  }
+}
+
+// === VECTOR SPACE (S4) ===
+// Trajectory data for combined/reasoning (vertical, 4 nodes, well-spaced)
+const CMAIN = [[.1,.1],[.13,.37],[.08,.63],[.12,.9]];
+const CMATCHES = [
+  [[.36,.1],[.39,.37],[.34,.63],[.37,.9]],
+  [[.58,.1],[.62,.37],[.56,.63],[.6,.9]],
+  [[.82,.1],[.86,.37],[.8,.63],[.84,.9]]
+];
+// Connection maps: which query node connects to which match node (non-uniform)
+// [queryNodeIdx, matchNodeIdx] pairs per match — shows distributed learning
+const CLINKS = [
+  [[0,0],[1,1],[2,3],[3,2]], // match 0: nodes mostly align but 2<->3 swap
+  [[0,1],[1,2],[2,0],[3,3]], // match 1: reasoning steps mapped across different positions
+  [[1,0],[2,2],[3,1]]        // match 2: only 3 connections (partial match)
+];
+const RCLUSTERS = [
+  {col:'#4f8eff', trajs:[[[.08,.1],[.11,.37],[.06,.63],[.1,.9]],[[.2,.1],[.23,.37],[.18,.63],[.22,.9]]]},
+  {col:'#3db8e8', trajs:[[[.4,.1],[.43,.37],[.38,.63],[.42,.9]],[[.52,.1],[.55,.37],[.5,.63],[.54,.9]]]},
+  {col:'#a855f7', trajs:[[[.72,.1],[.75,.37],[.7,.63],[.74,.9]],[[.84,.1],[.87,.37],[.82,.63],[.86,.9]]]}
+];
+
+const VS = [.15,.72,.38,.91,.53,.24,.67,.81,.46,.33,.59,.88,.11,.76,.42];
+function genDots(type) {
+  const dots = [];
+  for (let i=0;i<15;i++) {
+    const grp=i%3, out=i<8?1:0; let x,y;
+    if (type==='outcome') { x=.1+(.8*i/14); y=.2+VS[(i+5)%15]*.6+Math.sin(i*1.2)*.08; }
+    else { x=.1+VS[i]*.8; y=.1+VS[(i+7)%15]*.8; }
+    dots.push({x,y,grp,out,ox:x,oy:y});
+  }
+  return dots;
+}
+
+function _drawPath(ctx, pts, w, h, color, lw, alpha) {
+  ctx.beginPath(); ctx.moveTo(pts[0][0]*w, pts[0][1]*h);
+  for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0]*w, pts[i][1]*h);
+  ctx.strokeStyle=color; ctx.globalAlpha=alpha; ctx.lineWidth=lw; ctx.stroke(); ctx.globalAlpha=1;
+}
+function _drawDots(ctx, pts, w, h, color, r, alpha) {
+  for (const p of pts) {
+    ctx.beginPath(); ctx.arc(p[0]*w, p[1]*h, r*1.8, 0, Math.PI*2);
+    ctx.fillStyle=color; ctx.globalAlpha=alpha*.25; ctx.fill();
+    ctx.beginPath(); ctx.arc(p[0]*w, p[1]*h, r, 0, Math.PI*2);
+    ctx.fillStyle=color; ctx.globalAlpha=alpha; ctx.fill();
+  }
+  ctx.globalAlpha=1;
+}
+
+function drawVec(ctx, w, h, dots, type, t) {
+  ctx.clearRect(0, 0, w, h);
+  const cols=['#4f8eff','#3db8e8','#a855f7'];
+
+  // === COMBINED: connections spawn as pulse passes each node ===
+  if (type==='combined') {
+    const cycle=3500; // ms per full sweep
+    const prog=(t/cycle)%1; // 0=top, 1=bottom+pause
+    const sweep=Math.min(prog/.75,1); // pulse reaches bottom at 75% of cycle, last 25% = hold+fade
+    const holdFade=prog>.75?1-(prog-.75)/.25:1; // fade everything out in final 25%
+
+    // Matched trajectories: draw paths dim (always visible as scaffolding)
+    const matchAlphas=[.6,.4,.25];
+    for (let mi=0;mi<3;mi++) {
+      _drawPath(ctx, CMATCHES[mi], w, h, '#4f8eff', 1.5, matchAlphas[mi]*.3);
+      // Dim dots always
+      for (const p of CMATCHES[mi]) {
+        ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,3,0,Math.PI*2);
+        ctx.fillStyle='#4f8eff'; ctx.globalAlpha=matchAlphas[mi]*.2; ctx.fill(); ctx.globalAlpha=1;
+      }
+    }
+
+    // Query trajectory (always bright)
+    _drawPath(ctx, CMAIN, w, h, '#4f8eff', 3.5, .9);
+    _drawDots(ctx, CMAIN, w, h, '#4f8eff', 6, 1);
+
+    // Traveling pulse on query
+    if (sweep<1) {
+      const seg=Math.floor(sweep*3), fr=sweep*3-seg;
+      const a=CMAIN[seg], b=CMAIN[Math.min(seg+1,3)];
+      const px=(a[0]+(b[0]-a[0])*fr)*w, py=(a[1]+(b[1]-a[1])*fr)*h;
+      ctx.beginPath(); ctx.arc(px,py,16,0,Math.PI*2); ctx.fillStyle='rgba(79,142,255,.1)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(px,py,5,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+    }
+
+    // Connections spawn as pulse passes each query node — links are non-uniform
+    for (let mi=0;mi<3;mi++) {
+      const links=CLINKS[mi], ma0=matchAlphas[mi];
+      for (const [qi,mi2] of links) {
+        const nodeT=qi/3;
+        const elapsed=sweep-nodeT;
+        if (elapsed<=0) continue;
+        const fadeIn=Math.min(1,elapsed*6);
+        const a=fadeIn*holdFade*ma0;
+        const qp=CMAIN[qi], mp=CMATCHES[mi][mi2];
+        // Connection line
+        ctx.beginPath(); ctx.moveTo(qp[0]*w,qp[1]*h); ctx.lineTo(mp[0]*w,mp[1]*h);
+        ctx.strokeStyle=`rgba(255,200,50,${a*.4})`; ctx.lineWidth=1.5; ctx.setLineDash([3,4]); ctx.stroke(); ctx.setLineDash([]);
+        // Matched node glow
+        ctx.beginPath(); ctx.arc(mp[0]*w,mp[1]*h,10,0,Math.PI*2);
+        ctx.fillStyle=`rgba(79,142,255,${a*.15})`; ctx.fill();
+        ctx.beginPath(); ctx.arc(mp[0]*w,mp[1]*h,4.5,0,Math.PI*2);
+        ctx.fillStyle='#4f8eff'; ctx.globalAlpha=a; ctx.fill(); ctx.globalAlpha=1;
+        // Query node ring
+        ctx.beginPath(); ctx.arc(qp[0]*w,qp[1]*h,9,0,Math.PI*2);
+        ctx.strokeStyle=`rgba(255,200,50,${a*.3})`; ctx.lineWidth=1.5; ctx.stroke();
+      }
+    }
+    return;
+  }
+
+  // === REASONING: connections spawn as dots travel down each cluster ===
+  if (type==='reasoning') {
+    const cycle=3200;
+    for (let ci=0;ci<RCLUSTERS.length;ci++) {
+      const cl=RCLUSTERS[ci];
+      const prog=((t/cycle)+ci*.33)%1;
+      const sweep=Math.min(prog/.75,1);
+      const holdFade=prog>.75?1-(prog-.75)/.25:1;
+
+      // Draw trajectory paths (always visible, dim)
+      for (const tr of cl.trajs) { _drawPath(ctx, tr, w, h, cl.col, 2, .35); _drawDots(ctx, tr, w, h, cl.col, 4, .3); }
+
+      // Traveling dot on first trajectory
+      if (sweep<1) {
+        const seg=Math.floor(sweep*3), fr=sweep*3-seg;
+        const a=cl.trajs[0][seg], b=cl.trajs[0][Math.min(seg+1,3)];
+        const px=(a[0]+(b[0]-a[0])*fr)*w, py=(a[1]+(b[1]-a[1])*fr)*h;
+        ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.globalAlpha=.7; ctx.fill(); ctx.globalAlpha=1;
+      }
+
+      // Connections spawn between cluster siblings as dot passes each node
+      for (let pi=0;pi<4;pi++) {
+        const nodeT=pi/3;
+        const elapsed=sweep-nodeT;
+        if (elapsed<=0) continue;
+        const a=Math.min(1,elapsed*6)*holdFade;
+        const p0=cl.trajs[0][pi], p1=cl.trajs[1][pi];
+        // Connection line
+        ctx.beginPath(); ctx.moveTo(p0[0]*w,p0[1]*h); ctx.lineTo(p1[0]*w,p1[1]*h);
+        ctx.strokeStyle=cl.col; ctx.globalAlpha=a*.3; ctx.lineWidth=1.5; ctx.setLineDash([2,3]); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
+        // Both nodes light up
+        for (const p of [p0,p1]) {
+          ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,8,0,Math.PI*2);
+          ctx.fillStyle=cl.col; ctx.globalAlpha=a*.12; ctx.fill();
+          ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,4.5,0,Math.PI*2);
+          ctx.fillStyle=cl.col; ctx.globalAlpha=a*.7; ctx.fill(); ctx.globalAlpha=1;
+        }
+      }
+    }
+    return;
+  }
+
+  // === OUTCOME / CONTEXT: existing dot-based visualization ===
+  if (type==='context') { for(let i=0;i<dots.length;i++) for(let j=i+1;j<dots.length;j++) if(dots[i].grp===dots[j].grp) { ctx.beginPath(); ctx.moveTo(dots[i].x*w,dots[i].y*h); ctx.lineTo(dots[j].x*w,dots[j].y*h); ctx.strokeStyle='rgba(79,142,255,.18)'; ctx.lineWidth=1.5; ctx.stroke(); } }
+  for (const d of dots) {
+    d.x=d.ox+Math.sin(t/2000+d.ox*10)*.015; d.y=d.oy+Math.cos(t/2500+d.oy*10)*.015;
+    let col;
+    if (type==='outcome') {
+      const ratio = (d.ox - .1) / .8;
+      const r = Math.round(255 * (1 - ratio));
+      const g = Math.round(80 + 175 * ratio);
+      const b = Math.round(68 * ratio);
+      col = `rgb(${r},${g},${b})`;
+    } else { col = cols[d.grp]; }
+    ctx.beginPath(); ctx.arc(d.x*w,d.y*h,12,0,Math.PI*2);
+    ctx.fillStyle = type==='outcome' ? col.replace('rgb','rgba').replace(')',',0.12)') : col+'20';
+    ctx.fill();
+    ctx.beginPath(); ctx.arc(d.x*w,d.y*h,6,0,Math.PI*2); ctx.fillStyle=col; ctx.fill();
+  }
+  if (type==='outcome') {
+    const grd=ctx.createLinearGradient(14,0,w-14,0);
+    grd.addColorStop(0,'rgba(255,80,68,.3)'); grd.addColorStop(.5,'rgba(255,180,50,.3)'); grd.addColorStop(1,'rgba(68,255,136,.3)');
+    ctx.fillStyle=grd; ctx.fillRect(14,h-20,w-28,5); ctx.fillStyle='rgba(255,80,68,.6)';
+    ctx.font='12px system-ui'; ctx.textAlign='left'; ctx.fillText('Missed references', 14, h-26);
+    ctx.fillStyle='rgba(255,180,50,.6)'; ctx.textAlign='center'; ctx.fillText('Partial / rework', w/2, h-26);
+    ctx.fillStyle='rgba(68,255,136,.6)'; ctx.textAlign='right'; ctx.fillText('Valid argument', w-14, h-26);
+  }
+  else if (type==='context') { ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='12px system-ui'; ctx.fillText('Lines = iterations from same patent engagement', w/2, h-8); }
+}
+
+// === RECURSIVE LEARNING (S5) ===
+const TRAJ = [
+  [[.08,.15],[.25,.18],[.45,.12],[.65,.2],[.85,.16]],
+  [[.08,.32],[.28,.36],[.48,.3],[.68,.38],[.88,.34]],
+  [[.08,.48],[.22,.52],[.42,.46],[.58,.53],[.78,.48]],
+  [[.08,.64],[.3,.68],[.5,.62],[.72,.68],[.92,.65]],
+  [[.1,.82],[.3,.85],[.5,.78],[.72,.84],[.9,.8]]
+];
+function drawRecursive(ctx, w, h, t) {
+  ctx.clearRect(0, 0, w, h);
+  const pulse = Math.sin(t/800)*.3+.7;
+  // Past trajectories
+  for (let ti=0;ti<4;ti++) {
+    const path=TRAJ[ti], sim=(ti===1||ti===2), alpha=sim?.35*pulse:.12;
+    ctx.beginPath(); ctx.moveTo(path[0][0]*w,path[0][1]*h);
+    for(let i=1;i<path.length;i++) ctx.lineTo(path[i][0]*w,path[i][1]*h);
+    ctx.strokeStyle=`rgba(79,142,255,${alpha})`; ctx.lineWidth=3; ctx.stroke();
+    for(const p of path) { ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,sim?6:4,0,Math.PI*2); ctx.fillStyle=`rgba(79,142,255,${alpha+.15})`; ctx.fill(); }
+    if (sim) { for(let i=0;i<path.length;i++) { const cp=TRAJ[4][i]; ctx.beginPath(); ctx.moveTo(path[i][0]*w,path[i][1]*h); ctx.lineTo(cp[0]*w,cp[1]*h); ctx.strokeStyle=`rgba(255,200,50,${.12*pulse})`; ctx.lineWidth=1.5; ctx.setLineDash([5,5]); ctx.stroke(); ctx.setLineDash([]); } }
+  }
+  // Current trajectory
+  const curr=TRAJ[4];
+  ctx.beginPath(); ctx.moveTo(curr[0][0]*w,curr[0][1]*h);
+  for(let i=1;i<curr.length;i++) ctx.lineTo(curr[i][0]*w,curr[i][1]*h);
+  ctx.strokeStyle='#4f8eff'; ctx.lineWidth=4; ctx.stroke();
+  for(const p of curr) {
+    ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,16,0,Math.PI*2); ctx.fillStyle='rgba(79,142,255,.12)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,7,0,Math.PI*2); ctx.fillStyle='#4f8eff'; ctx.fill();
+  }
+  // Knowledge node
+  const kx=.5*w, ky=.95*h;
+  ctx.beginPath(); ctx.arc(kx,ky,14*pulse,0,Math.PI*2); ctx.fillStyle=`rgba(68,255,136,${.18*pulse})`; ctx.fill();
+  ctx.beginPath(); ctx.arc(kx,ky,7,0,Math.PI*2); ctx.fillStyle='#44ff88'; ctx.fill();
+  // Trajectory labels (patent law scenario)
+  ctx.font='13px system-ui'; ctx.textAlign='left';
+  const tLabels=[
+    'Past: Claim construction \u2014 US 10,892,xxx',
+    'Past: Prior art analysis \u2014 US 11,234,xxx (missed dependent claims)',
+    'Past: Prior art analysis \u2014 US 10,447,xxx (found key ref late)',
+    'Past: Obviousness argument \u2014 EP 3,891,xxx',
+    'Current: Prior art analysis \u2014 US 11,891,xxx'
+  ];
+  for(let ti=0;ti<5;ti++) {
+    const isSim=(ti===1||ti===2), isCurr=(ti===4);
+    const path=TRAJ[ti];
+    ctx.fillStyle=isCurr?'rgba(79,142,255,.7)':isSim?'rgba(255,200,50,.55)':'rgba(255,255,255,.3)';
+    ctx.fillText(tLabels[ti], path[0][0]*w+16, path[0][1]*h-6);
+  }
+  // Knowledge label
+  ctx.textAlign='center'; ctx.fillStyle='rgba(68,255,136,.6)'; ctx.font='bold 13px system-ui';
+  ctx.fillText('Extracted: "Always analyze dependent claims before narrowing prior art scope"', kx, ky-20);
+  // Retrieval markers with similarity scores
+  ctx.fillStyle='rgba(255,200,50,.55)'; ctx.font='12px system-ui'; ctx.textAlign='right';
+  ctx.fillText('cos=0.91 (prior art, same claim type)', TRAJ[1][4][0]*w-4, TRAJ[1][4][1]*h+16);
+  ctx.fillText('cos=0.84 (prior art, similar patent class)', TRAJ[2][4][0]*w-4, TRAJ[2][4][1]*h+16);
+}
+
+// === STACK FLOW (S6) ===
+function initStackParts() {
+  return Array.from({length:25},()=>({x:Math.random(),y:-Math.random()*.3,spd:.0015+Math.random()*.002,stuck:false,sy:0,col:'#4f8eff'}));
+}
+function drawStack(ctx, w, h, parts, t) {
+  ctx.clearRect(0, 0, w, h);
+  const layers=[
+    {y:0,hh:.25,col:'rgba(79,142,255,.05)',lbl:'Trajectory Capture',detail:'patient encounters, lab reviews, treatment decisions \u2192 4 named vectors per reasoning step'},
+    {y:.25,hh:.25,col:'rgba(61,184,232,.05)',lbl:'Persistent Knowledge',detail:'drug interaction patterns, diagnostic procedures, treatment protocols, contraindication chains'},
+    {y:.5,hh:.25,col:'rgba(79,200,255,.05)',lbl:'Proactive Cognition',detail:'similar patient cases + past treatment outcomes surfaced before each clinical reasoning step'},
+    {y:.75,hh:.25,col:'rgba(68,255,136,.05)',lbl:'Self-Improvement',detail:'treatment outcome tracking \u2192 protocol refinement \u2192 contraindication extraction \u2192 procedure distillation'}
+  ];
+  for(const l of layers) {
+    ctx.fillStyle=l.col; ctx.fillRect(0,l.y*h,w,l.hh*h);
+    ctx.beginPath(); ctx.moveTo(0,(l.y+l.hh)*h); ctx.lineTo(w,(l.y+l.hh)*h); ctx.strokeStyle='rgba(255,255,255,.04)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.font='bold 16px system-ui'; ctx.fillStyle='rgba(255,255,255,.6)'; ctx.textAlign='left'; ctx.fillText(l.lbl,16,l.y*h+24);
+    ctx.font='13px system-ui'; ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fillText(l.detail,16,l.y*h+42);
+  }
+  const pulse=Math.sin(t/1000)*.3+.7;
+  for(const p of parts) {
+    if(p.stuck) { ctx.beginPath(); ctx.arc(p.x*w,p.sy*h,4.5,0,Math.PI*2); ctx.fillStyle=`rgba(68,255,136,${.45*pulse})`; ctx.fill(); continue; }
+    p.y+=p.spd;
+    if(p.y<.25) p.col='#4f8eff'; else if(p.y<.5) p.col='#3db8e8'; else if(p.y<.75) p.col='#4fc8ff'; else p.col='#44ff88';
+    if(p.y>.33&&p.y<.42&&Math.random()<.003) { p.stuck=true; p.sy=p.y; }
+    if(p.y>1.05) { p.y=-Math.random()*.15; p.x=Math.random(); }
+    ctx.beginPath(); ctx.arc(p.x*w,p.y*h,4,0,Math.PI*2); ctx.fillStyle=p.col; ctx.globalAlpha=.65; ctx.fill(); ctx.globalAlpha=1;
+  }
+}
+
+// === LIFECYCLE ===
+let treePaths, treeParts, netPts, stackParts;
+const vecData = {};
+const vizMap = {}; // slideId -> array of draw fns
+const canvasMap = {}; // slideId -> array of {ctx,w,h}
+const activeSlides = new Set();
+let rafId;
+
+function initAll() {
+  // S0: Network
+  const s0 = IC('c0');
+  if (s0) { netPts = initNetwork(s0.w, s0.h); vizMap['s0'] = [(t) => drawNetwork(s0.ctx,s0.w,s0.h,netPts)]; }
+  // S2: Memory compare
+  const s2a = IC('c2a'), s2b = IC('c2b');
+  if (s2a && s2b) { vizMap['s2'] = [(t) => { drawRAG(s2a.ctx,s2a.w,s2a.h,t); drawEpMini(s2b.ctx,s2b.w,s2b.h,t); }]; }
+  // S3: Hierarchy
+  const s3 = IC('c3');
+  if (s3) { treePaths = getTreePaths(); treeParts = initTreeParts(treePaths); vizMap['s3'] = [(t) => drawTree(s3.ctx,s3.w,s3.h,treeParts,t)]; }
+  // S4: Vectors
+  const types = [['c4a','combined'],['c4b','reasoning'],['c4c','outcome'],['c4d','context']];
+  const vecFns = [];
+  for (const [id, type] of types) {
+    const cv = IC(id);
+    if (cv) { vecData[type] = genDots(type); vecFns.push((t) => drawVec(cv.ctx,cv.w,cv.h,vecData[type],type,t)); }
+  }
+  if (vecFns.length) vizMap['s4'] = vecFns;
+  // S5: Recursive
+  const s5 = IC('c5');
+  if (s5) { vizMap['s5'] = [(t) => drawRecursive(s5.ctx,s5.w,s5.h,t)]; }
+  // S6: Stack
+  const s6 = IC('c6');
+  if (s6) { stackParts = initStackParts(); vizMap['s6'] = [(t) => drawStack(s6.ctx,s6.w,s6.h,stackParts,t)]; }
+}
+
+function tick(t) {
+  for (const sid of activeSlides) { const fns = vizMap[sid]; if (fns) for (const fn of fns) fn(t); }
+  if (activeSlides.size) rafId = requestAnimationFrame(tick);
+}
+
+function startSlide(id) {
+  if (!vizMap[id]) return;
+  activeSlides.add(id);
+  if (!rafId) rafId = requestAnimationFrame(tick);
+}
+function stopSlide(id) {
+  activeSlides.delete(id);
+  if (!activeSlides.size) { cancelAnimationFrame(rafId); rafId = 0; }
+}
+
+// === NAV + OBSERVER ===
+const slides = document.querySelectorAll('.slide');
+const navDots = document.getElementById('navDots');
+let currentSlide = 0;
+slides.forEach((_, i) => { const d = document.createElement('div'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.onclick = () => goToSlide(i); navDots.appendChild(d); });
+function goToSlide(i) { currentSlide = i; slides[i].scrollIntoView({ behavior: 'smooth' }); updateDots(); }
+function updateDots() { document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide)); }
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    const id = e.target.id;
+    if (e.isIntersecting) { e.target.classList.add('visible'); currentSlide = Array.from(slides).indexOf(e.target); updateDots(); startSlide(id); }
+    else { stopSlide(id); }
+  });
+}, { threshold: 0.3 });
+slides.forEach(s => obs.observe(s));
+document.addEventListener('keydown', e => { if (e.key==='ArrowDown'||e.key==='ArrowRight') { e.preventDefault(); if (currentSlide<slides.length-1) goToSlide(currentSlide+1); } else if (e.key==='ArrowUp'||e.key==='ArrowLeft') { e.preventDefault(); if (currentSlide>0) goToSlide(currentSlide-1); } });
+slides[0].classList.add('visible');
+
+// Init after layout
+window.addEventListener('load', () => { initAll(); startSlide('s0'); });
+window.addEventListener('resize', () => { cancelAnimationFrame(rafId); rafId=0; activeSlides.clear(); initAll(); startSlide(slides[currentSlide].id); });
+</script>
+</body>
+</html>
