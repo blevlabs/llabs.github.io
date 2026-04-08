@@ -683,6 +683,351 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <div class="key-hint">Use &uarr;&darr; arrow keys or scroll to navigate</div>
 
+<script>
+(function(){
+/* ── Slides & Nav ── */
+const slides=document.querySelectorAll('.slide');
+const dotsWrap=document.getElementById('navDots');
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='nav-dot';d.addEventListener('click',()=>slides[i].scrollIntoView({behavior:'smooth'}));dotsWrap.appendChild(d)});
+const dots=dotsWrap.querySelectorAll('.nav-dot');
 
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.15});
+slides.forEach(s=>obs.observe(s));
+
+const activeObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){
+    const idx=[...slides].indexOf(e.target);
+    dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
+  }});
+},{threshold:0.5});
+slides.forEach(s=>activeObs.observe(s));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();const c=currentSlide();if(c<slides.length-1)slides[c+1].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();const c=currentSlide();if(c>0)slides[c-1].scrollIntoView({behavior:'smooth'})}
+});
+function currentSlide(){let best=0,min=Infinity;slides.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top);if(d<min){min=d;best=i}});return best}
+
+/* ── Canvas Helpers ── */
+const dpr=window.devicePixelRatio||1;
+function initCanvas(id){
+  const c=document.getElementById(id);if(!c)return null;
+  const r=c.getBoundingClientRect();
+  c.width=r.width*dpr;c.height=r.height*dpr;
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  return{c,ctx,w:r.width,h:r.height};
+}
+
+/* ── c0: Particle Network Background ── */
+(function(){
+  const o=initCanvas('c0');if(!o)return;
+  const{ctx,w,h}=o;
+  const pts=[];for(let i=0;i<60;i++)pts.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*2+1});
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(79,142,255,.35)';ctx.fill();
+    });
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(79,142,255,${.12*(1-d/120)})`;ctx.stroke()}
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Card canvases: c2a (scattered dots), c2b (connected hierarchy) ── */
+function drawScatter(id,color,connected){
+  const o=initCanvas(id);if(!o)return;
+  const{ctx,w,h}=o;
+  const pts=[];for(let i=0;i<20;i++)pts.push({x:20+Math.random()*(w-40),y:20+Math.random()*(h-40)});
+  pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill()});
+  if(connected)for(let i=0;i<pts.length-1;i++){
+    const j=Math.min(i+1+Math.floor(Math.random()*3),pts.length-1);
+    ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=color.replace(/[\d.]+\)$/,'.25)');ctx.stroke();
+  }
+}
+drawScatter('c2a','rgba(255,68,68,.5)',false);
+drawScatter('c2b','rgba(79,142,255,.5)',true);
+
+/* ── c3: Trajectory Timeline ── */
+(function(){
+  const o=initCanvas('c3');if(!o)return;
+  const{ctx,w,h}=o;
+  const steps=8,gap=w/(steps+1);
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const cy=h/2;
+    ctx.strokeStyle='rgba(79,142,255,.15)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(gap,cy);ctx.lineTo(gap*steps,cy);ctx.stroke();
+    for(let i=1;i<=steps;i++){
+      const x=gap*i,pulse=Math.sin(t*.02+i*.7)*.5+.5;
+      ctx.beginPath();ctx.arc(x,cy,6+pulse*4,0,Math.PI*2);
+      ctx.fillStyle=`rgba(79,142,255,${.3+pulse*.4})`;ctx.fill();
+      ctx.beginPath();ctx.arc(x,cy,3,0,Math.PI*2);ctx.fillStyle='#4f8eff';ctx.fill();
+      if(i<steps){
+        const ax=x+gap*.3,bx=x+gap*.7;
+        ctx.beginPath();ctx.moveTo(ax,cy);ctx.lineTo(bx,cy);
+        ctx.strokeStyle=`rgba(79,142,255,${.2+pulse*.3})`;ctx.lineWidth=1.5;ctx.stroke();
+        ctx.beginPath();ctx.moveTo(bx,cy);ctx.lineTo(bx-6,cy-4);ctx.lineTo(bx-6,cy+4);ctx.closePath();
+        ctx.fillStyle=`rgba(79,142,255,${.3+pulse*.3})`;ctx.fill();
+      }
+      const labels=['Input','Reason','Act','Observe','Reason','Act','Encode','Store'];
+      ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='11px sans-serif';ctx.textAlign='center';
+      ctx.fillText(labels[i-1]||'',x,cy+24);
+    }
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── c4a-c4d: Dimension cluster cards ── */
+function drawCluster(id,mode){
+  const o=initCanvas(id);if(!o)return;
+  const{ctx,w,h}=o;
+  const clusters=[[w*.3,h*.4],[w*.7,h*.6]];
+  if(mode===1)clusters.push([w*.5,h*.3]);
+  clusters.forEach((cl,ci)=>{
+    const col=ci===0?'rgba(79,142,255,.5)':'rgba(68,255,136,.5)';
+    for(let i=0;i<8;i++){
+      const x=cl[0]+(Math.random()-.5)*60,y=cl[1]+(Math.random()-.5)*40;
+      ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();
+    }
+  });
+  if(mode>=2){
+    ctx.strokeStyle='rgba(79,142,255,.15)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(clusters[0][0],clusters[0][1]);ctx.lineTo(clusters[1][0],clusters[1][1]);ctx.stroke();
+  }
+  if(mode===3){
+    clusters.forEach(cl=>{ctx.beginPath();ctx.arc(cl[0],cl[1],30,0,Math.PI*2);ctx.strokeStyle='rgba(79,142,255,.1)';ctx.stroke()});
+  }
+}
+drawCluster('c4a',0);drawCluster('c4b',1);drawCluster('c4c',2);drawCluster('c4d',3);
+
+/* ── c5: Recursive Loop ── */
+(function(){
+  const o=initCanvas('c5');if(!o)return;
+  const{ctx,w,h}=o;
+  let t=0;
+  const nodes=[{x:w*.15,y:h*.5,l:'Experience'},{x:w*.35,y:h*.5,l:'Feedback'},{x:w*.55,y:h*.5,l:'Retrieve'},{x:w*.75,y:h*.5,l:'Compare'},{x:w*.9,y:h*.5,l:'Propagate'}];
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(let i=0;i<nodes.length-1;i++){
+      const a=nodes[i],b=nodes[i+1];
+      ctx.beginPath();ctx.moveTo(a.x+20,a.y);ctx.lineTo(b.x-20,b.y);
+      ctx.strokeStyle='rgba(79,142,255,.25)';ctx.lineWidth=2;ctx.stroke();
+      const prog=((t*.005+i*.2)%1);
+      const px=a.x+20+(b.x-20-a.x-20)*prog,py=a.y;
+      ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);ctx.fillStyle='rgba(79,142,255,.8)';ctx.fill();
+    }
+    // Feedback loop arrow
+    ctx.beginPath();ctx.setLineDash([4,4]);
+    ctx.moveTo(nodes[4].x,nodes[4].y-20);
+    ctx.quadraticCurveTo(w*.5,h*.1,nodes[0].x,nodes[0].y-20);
+    ctx.strokeStyle='rgba(68,255,136,.15)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='rgba(68,255,136,.3)';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('knowledge compounds',w*.5,h*.15);
+    nodes.forEach(n=>{
+      ctx.beginPath();ctx.arc(n.x,n.y,16,0,Math.PI*2);
+      ctx.fillStyle='rgba(79,142,255,.12)';ctx.fill();
+      ctx.beginPath();ctx.arc(n.x,n.y,6,0,Math.PI*2);
+      ctx.fillStyle='#4f8eff';ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='11px sans-serif';ctx.textAlign='center';
+      ctx.fillText(n.l,n.x,n.y+30);
+    });
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── c6: Architecture Stack Layers ── */
+(function(){
+  const o=initCanvas('c6');if(!o)return;
+  const{ctx,w,h}=o;
+  const layers=[
+    {label:'Self-Improvement',color:'rgba(79,142,255,.5)'},
+    {label:'Proactive Cognition',color:'rgba(79,142,255,.4)'},
+    {label:'Knowledge Base',color:'rgba(79,142,255,.3)'},
+    {label:'Trajectory Capture',color:'rgba(79,142,255,.2)'}
+  ];
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    const lh=h*.18,pad=12,startY=h*.1;
+    const lw=w*.7,lx=(w-lw)/2;
+    layers.forEach((l,i)=>{
+      const y=startY+i*(lh+pad);
+      const shimmer=Math.sin(t*.015+i)*.03;
+      ctx.fillStyle=l.color.replace(/[\d.]+\)$/,`${parseFloat(l.color.match(/[\d.]+\)$/)[0])+shimmer})`);
+      ctx.beginPath();
+      ctx.roundRect(lx,y,lw,lh,8);
+      ctx.fill();
+      ctx.strokeStyle='rgba(79,142,255,.15)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.roundRect(lx,y,lw,lh,8);ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='bold 14px sans-serif';ctx.textAlign='center';
+      ctx.fillText(l.label,w/2,y+lh/2+5);
+    });
+    // arrows between layers
+    for(let i=0;i<layers.length-1;i++){
+      const y=startY+(i+1)*(lh+pad)-pad/2;
+      ctx.beginPath();ctx.moveTo(w/2,y-4);ctx.lineTo(w/2-5,y-10);ctx.moveTo(w/2,y-4);ctx.lineTo(w/2+5,y-10);
+      ctx.strokeStyle='rgba(79,142,255,.3)';ctx.lineWidth=1.5;ctx.stroke();
+    }
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── csa: Embedding Space ── */
+(function(){
+  const o=initCanvas('csa');if(!o)return;
+  const{ctx,w,h}=o;
+  let t=0;
+  const isolated=[],connected=[];
+  for(let i=0;i<15;i++){
+    isolated.push({x:w*.1+Math.random()*w*.3,y:h*.2+Math.random()*h*.6});
+    connected.push({x:w*.6+Math.random()*w*.3,y:h*.2+Math.random()*h*.6});
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='rgba(255,255,255,.15)';ctx.font='12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('Isolated Embeddings',w*.25,h*.12);
+    ctx.fillText('Trajectory Embeddings',w*.75,h*.12);
+    ctx.strokeStyle='rgba(255,255,255,.06)';ctx.setLineDash([2,4]);
+    ctx.beginPath();ctx.moveTo(w*.5,0);ctx.lineTo(w*.5,h);ctx.stroke();ctx.setLineDash([]);
+    isolated.forEach(p=>{
+      const pulse=Math.sin(t*.02+p.x)*.5+.5;
+      ctx.beginPath();ctx.arc(p.x,p.y,3+pulse,0,Math.PI*2);ctx.fillStyle='rgba(255,68,68,.4)';ctx.fill();
+    });
+    connected.forEach((p,i)=>{
+      const pulse=Math.sin(t*.02+p.x)*.5+.5;
+      ctx.beginPath();ctx.arc(p.x,p.y,3+pulse,0,Math.PI*2);ctx.fillStyle='rgba(79,142,255,.5)';ctx.fill();
+      if(i<connected.length-1){
+        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(connected[i+1].x,connected[i+1].y);
+        ctx.strokeStyle='rgba(79,142,255,.12)';ctx.lineWidth=1;ctx.stroke();
+      }
+    });
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── csb: Benchmark Bar Chart ── */
+(function(){
+  const o=initCanvas('csb');if(!o)return;
+  const{ctx,w,h}=o;
+  const bars=[
+    {label:'Full-Context',val:72.9,color:'#44ff88'},
+    {label:'Mem0+Graph',val:68.4,color:'#4fc8ff'},
+    {label:'Mem0',val:66.9,color:'#4f8eff'},
+    {label:'RAG',val:61.0,color:'#ff8844'},
+    {label:'OpenAI',val:52.9,color:'#ff4444'}
+  ];
+  const pad=60,barW=(w-pad*2-bars.length*12)/(bars.length),maxH=h-100;
+  let animT=0,drawn=false;
+  function draw(){
+    if(animT>100&&drawn)return;
+    ctx.clearRect(0,0,w,h);
+    const ease=Math.min(animT/60,1);
+    bars.forEach((b,i)=>{
+      const x=pad+i*(barW+12),bh=maxH*(b.val/100)*ease,y=h-40-bh;
+      ctx.fillStyle=b.color+'33';ctx.beginPath();ctx.roundRect(x,y,barW,bh,4);ctx.fill();
+      ctx.fillStyle=b.color;ctx.beginPath();ctx.roundRect(x,y,barW,Math.min(bh,3),4);ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+      ctx.fillText(b.val+'%',x+barW/2,y-8);
+      ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='11px sans-serif';
+      ctx.fillText(b.label,x+barW/2,h-20);
+    });
+    ctx.fillStyle='rgba(255,255,255,.08)';ctx.font='11px sans-serif';ctx.textAlign='left';
+    ctx.fillText('LOCOMO Benchmark (ECAI 2025)',pad,24);
+    animT++;if(animT<=100)requestAnimationFrame(draw);else drawn=true;
+  }
+  const sbObs=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){animT=0;drawn=false;draw();sbObs.unobserve(entries[0].target)}
+  },{threshold:.3});
+  sbObs.observe(o.c);
+})();
+
+/* ── csc: Retroactive Learning Propagation ── */
+(function(){
+  const o=initCanvas('csc');if(!o)return;
+  const{ctx,w,h}=o;
+  let t=0;
+  const nodes=[];
+  for(let i=0;i<7;i++)nodes.push({x:w*.12+i*(w*.76/6),y:h*.5+(Math.random()-.5)*h*.3});
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    // connections
+    for(let i=0;i<nodes.length-1;i++){
+      ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[i+1].x,nodes[i+1].y);
+      ctx.strokeStyle='rgba(79,142,255,.15)';ctx.lineWidth=1.5;ctx.stroke();
+    }
+    // feedback wave
+    const waveX=((t*1.5)%(w+100))-50;
+    ctx.beginPath();ctx.arc(waveX,h*.5,8,0,Math.PI*2);ctx.fillStyle='rgba(68,255,136,.3)';ctx.fill();
+    ctx.beginPath();ctx.arc(waveX,h*.5,20,0,Math.PI*2);ctx.strokeStyle='rgba(68,255,136,.1)';ctx.stroke();
+    nodes.forEach((n,i)=>{
+      const hit=Math.abs(n.x-waveX)<30;
+      const r=hit?8:5;
+      ctx.beginPath();ctx.arc(n.x,n.y,r,0,Math.PI*2);
+      ctx.fillStyle=hit?'rgba(68,255,136,.6)':'rgba(79,142,255,.4)';ctx.fill();
+      if(hit){ctx.beginPath();ctx.arc(n.x,n.y,14,0,Math.PI*2);ctx.strokeStyle='rgba(68,255,136,.2)';ctx.stroke()}
+    });
+    ctx.fillStyle='rgba(255,255,255,.15)';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('Feedback propagates backward through related trajectories',w/2,h-12);
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── cse: Context Window vs Memory viz ── */
+(function(){
+  const o=initCanvas('cse');if(!o)return;
+  const{ctx,w,h}=o;
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    // Context window - emptying bucket
+    const cx=w*.25,cy=h*.5;
+    ctx.strokeStyle='rgba(255,68,68,.2)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.rect(cx-60,cy-40,120,80);ctx.stroke();
+    const fill=Math.abs(Math.sin(t*.015));
+    ctx.fillStyle='rgba(255,68,68,.1)';ctx.fillRect(cx-58,cy+38-fill*76,116,fill*76);
+    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='12px sans-serif';ctx.textAlign='center';
+    ctx.fillText('Context Window',cx,cy-52);
+    ctx.fillText('Resets each call',cx,cy+60);
+
+    // Trajectory memory - growing structure
+    const mx=w*.75,my=h*.5;
+    const count=5+Math.floor(Math.abs(Math.sin(t*.008))*8);
+    for(let i=0;i<count;i++){
+      const angle=(i/count)*Math.PI*2,r=25+i*2;
+      const nx=mx+Math.cos(angle+t*.005)*r,ny=my+Math.sin(angle+t*.005)*r;
+      ctx.beginPath();ctx.arc(nx,ny,3,0,Math.PI*2);ctx.fillStyle='rgba(79,142,255,.4)';ctx.fill();
+      if(i>0){
+        const pa=(i-1)/count*Math.PI*2,pr=25+(i-1)*2;
+        ctx.beginPath();ctx.moveTo(mx+Math.cos(pa+t*.005)*pr,my+Math.sin(pa+t*.005)*pr);
+        ctx.lineTo(nx,ny);ctx.strokeStyle='rgba(79,142,255,.12)';ctx.lineWidth=1;ctx.stroke();
+      }
+    }
+    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='12px sans-serif';
+    ctx.fillText('Trajectory Memory',mx,my-52);
+    ctx.fillText('Persists & compounds',mx,my+60);
+
+    ctx.strokeStyle='rgba(255,255,255,.06)';ctx.setLineDash([3,5]);
+    ctx.beginPath();ctx.moveTo(w*.5,h*.1);ctx.lineTo(w*.5,h*.9);ctx.stroke();ctx.setLineDash([]);
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+})();
+</script>
 </body>
 </html>
