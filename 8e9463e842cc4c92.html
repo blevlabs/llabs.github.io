@@ -261,6 +261,389 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
   </div>
 </section>
 
+
+<!-- SA: Trajectory Embedding Mechanics -->
+<section class="slide" id="sa">
+  <div class="slide-label">Deep Dive: Embeddings</div>
+  <h2>How Trajectory Embeddings<br>Actually Work</h2>
+  <p class="subtitle">Standard systems embed each memory entry in isolation. We embed each step in the context of the full causal chain — the same breakthrough that transformed document retrieval, applied to agent reasoning.</p>
+  <canvas class="viz-canvas" id="csa"></canvas>
+  <div class="memory-compare">
+    <div class="memory-side old">
+      <h3>Isolated Embeddings</h3>
+      <div class="label">How everyone else does it</div>
+      <div class="memory-item">Each memory entry embedded independently. “Agent concluded X” — no context for what reasoning led to that conclusion.</div>
+      <div class="memory-item">Retrieval finds semantically similar outcomes. Not similar reasoning patterns or causal chains. You find what happened, not why.</div>
+      <div class="memory-item">Like embedding a document chunk in isolation — it loses the surrounding context. “Revenue grew 3%” doesn’t know it’s about ACME Corp in Q2 2023.</div>
+      <div class="memory-item">Can’t propagate new insights backward — no mechanism to find related past experiences by causal pattern.</div>
+    </div>
+    <div class="memory-side new">
+      <h3>Trajectory Embeddings</h3>
+      <div class="label">The LLABS approach</div>
+      <div class="memory-item">Each step embedded in context of the full causal chain. The model sees the entire trajectory and injects global context into each step’s embedding.</div>
+        <div class="memory-item">Retrieval can target similar decision patterns and failure modes — not just similar outcomes. Useful when the process matters as much as the result.</div>
+        <div class="memory-item">Four named vectors per experience: reasoning trace, action sequence, environment response, contextualized session embedding. Each queryable independently.</div>
+        <div class="memory-item">Enables memory-level adaptation: attach new lessons to related past trajectories and make them available in future decisions. The underlying model is unchanged.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SG: Trajectory Embedding Construction (REVISED - honest) -->
+<section class="slide" id="sg">
+  <div class="slide-label">The Architecture</div>
+  <h2>How Trajectory Embeddings<br>Are Structured</h2>
+  <p class="subtitle">Each agent iteration is represented across multiple dimensions rather than a single flat memory vector. This makes it possible to retrieve similar decision patterns and failure modes — not just similar outcomes.</p>
+  <div style="max-width:1100px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:32px">
+    <div style="background:rgba(255,68,68,.04);border:1px solid rgba(255,68,68,.15);border-radius:12px;padding:28px">
+      <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#ff4444;margin-bottom:14px">Standard Memory</div>
+      <div style="font-family:monospace;font-size:17px;color:#ccc;line-height:2.2;padding:12px 0">
+        m_i = f(step_i)
+      </div>
+      <p style="font-size:14px;color:#666;margin-top:8px;line-height:1.7">Each memory entry embedded in isolation. The vector represents what happened — but not why it happened, what alternatives were considered, or how the environment shaped the result.</p>
+      <div style="font-family:monospace;font-size:13px;color:#555;margin-top:14px;line-height:2;border-top:1px solid rgba(255,255,255,.05);padding-top:14px">
+        score(q, m_i) = q · m_i<br>
+        → retrieves similar <em>outcomes</em><br>
+        → misses similar <em>failure modes</em><br>
+        → misses similar <em>decision patterns</em>
+      </div>
+    </div>
+    <div style="background:rgba(79,142,255,.04);border:1px solid rgba(79,142,255,.2);border-radius:12px;padding:28px">
+      <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#4f8eff;margin-bottom:14px">Trajectory Representation</div>
+      <div style="font-family:monospace;font-size:17px;color:#ccc;line-height:2.2;padding:12px 0">
+        t_i = {v_R, v_A, v_E, v_C}
+      </div>
+      <p style="font-size:14px;color:#888;margin-top:8px;line-height:1.7">Each iteration represented across four dimensions. Retrieval can target any combination — by how the agent approached the problem, what it tried, what followed, or the session-level context.</p>
+      <div style="font-family:monospace;font-size:13px;color:rgba(79,142,255,.7);margin-top:14px;line-height:2;border-top:1px solid rgba(79,142,255,.1);padding-top:14px">
+        score(q, t_i) = combine(sim(q_R, v_R), sim(q_A, v_A),<br>
+                             sim(q_E, v_E), sim(q_C, v_C))<br>
+        <span style="color:#555">The combine function can be tuned, learned, or reranked.</span>
+      </div>
+    </div>
+  </div>
+  <div class="vector-grid" style="max-width:1100px">
+    <div class="vector-card">
+      <div class="vector-label">v_R — Reasoning Trace</div>
+      <h4>embed(reasoning_trace)</h4>
+      <p>The agent’s explicit working rationale, intermediate hypotheses, or decision framing. An approximation of how the agent approached the problem — not a guaranteed record of true internal causality.</p>
+    </div>
+    <div class="vector-card">
+      <div class="vector-label">v_A — Action Sequence</div>
+      <h4>embed(action_sequence)</h4>
+      <p>Every tool call, parameter, and execution step. Linked to the reasoning that triggered it. Enables retrieval by what the agent actually did, independent of outcome.</p>
+    </div>
+    <div class="vector-card">
+      <div class="vector-label">v_E — Environment Response</div>
+      <h4>embed(env_response)</h4>
+      <p>The observed consequences: tool outputs, user reactions, errors, state changes. Enables retrieval by what happened as a result — useful for finding similar failure modes and recurring patterns.</p>
+    </div>
+    <div class="vector-card">
+      <div class="vector-label">v_C — Contextualized</div>
+      <h4>contextualize(step_i, session)</h4>
+      <p>The step re-embedded in the context of the surrounding session. The direct descendant of contextualized chunk embeddings — captures cross-step dependencies invisible to isolated embeddings.</p>
+    </div>
+  </div>
+  <p style="text-align:center;color:#444;font-size:14px;margin-top:28px;max-width:1000px">Trajectory embeddings build on contextualized chunk embeddings by treating each step as a session-aware unit, then decomposing that unit into reasoning, action, outcome, and contextual representations for more precise retrieval over recurring decision patterns.</p>
+  <div style="max-width:1100px;width:100%;margin-top:32px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:32px">
+    <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:22px">The Mechanics — How Embeddings Are Computed and Searched</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px">
+      <div>
+        <h4 style="font-size:15px;margin-bottom:10px;color:#bbb">What is an embedding?</h4>
+        <p style="font-size:13px;color:#666;line-height:1.8">An embedding model takes text and outputs a vector — a list of numbers, typically 1,000–2,000 dimensions. Similar meanings land near each other in that space. Similarity is measured with cosine similarity: vectors pointing in the same direction are similar; vectors pointing in different directions are not.</p>
+        <div style="font-family:monospace;font-size:11px;color:#444;margin-top:10px;line-height:1.9;background:rgba(0,0,0,.2);padding:10px;border-radius:6px">
+          “Agent analyzed the patent claim” → [0.23, -0.41, 0.87, ...]<br>
+          “Prior art search methodology” → [0.21, -0.38, 0.84, ...]<br>
+          cos_sim = 0.97 → highly similar
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:15px;margin-bottom:10px;color:#bbb">Computing the four vectors</h4>
+        <p style="font-size:13px;color:#666;line-height:1.8">For each agent iteration, four separate embedding calls are made — each on a different part of the trace:</p>
+        <div style="font-family:monospace;font-size:11px;color:#444;margin-top:10px;line-height:2;background:rgba(0,0,0,.2);padding:10px;border-radius:6px">
+          v_R = embed(reasoning_text)<br>
+          v_A = embed(tool_calls + params)<br>
+          v_E = embed(tool_outputs + feedback)<br>
+          v_C = embed(step_i + session_context)
+        </div>
+        <p style="font-size:12px;color:#555;margin-top:8px;line-height:1.7">v_C is computed with the full session as context, so the vector for step 3 “knows” what happened in steps 1, 2, and 4.</p>
+      </div>
+      <div>
+        <h4 style="font-size:15px;margin-bottom:10px;color:#bbb">How retrieval works</h4>
+        <p style="font-size:13px;color:#666;line-height:1.8">All four vectors are stored in a vector database. At retrieval time, a query is embedded and compared against stored vectors using cosine similarity. The system returns the top-k most similar past iterations.</p>
+        <div style="font-family:monospace;font-size:11px;color:#444;margin-top:10px;line-height:1.9;background:rgba(0,0,0,.2);padding:10px;border-radius:6px">
+          query = embed(“how did agent approach claim construction?”)<br>
+          results = vector_db.search(query, dim=“v_R”, top_k=5)<br>
+          → 5 past iterations with similar reasoning
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:15px;margin-bottom:10px;color:#bbb">Why four vectors instead of one?</h4>
+        <p style="font-size:13px;color:#666;line-height:1.8">A single vector compresses everything into one point in space — you lose the ability to distinguish “similar reasoning, different outcome” from “different reasoning, same outcome.” Four separate vectors let you search along any dimension independently. You can find all past iterations where the agent reasoned similarly about a problem, regardless of what it actually did or what happened next.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SH: Recursive Trajectory Learning Algorithm -->
+<section class="slide" id="sh">
+  <div class="slide-label">The Learning Mechanism</div>
+  <h2>Memory-Level Adaptation:<br>The Update Loop</h2>
+  <p class="subtitle">When feedback arrives, the goal is to identify related prior trajectories, attach the new lesson to them, and make that lesson available in future decisions. This is memory-level adaptation — not weight-level learning.</p>
+  <div style="max-width:1100px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:32px">
+    <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:28px">
+      <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#4f8eff;margin-bottom:16px">The Update Loop</div>
+      <div style="font-family:monospace;font-size:13px;color:#aaa;line-height:2.4">
+        <span style="color:#4f8eff">1.</span> f = embed(feedback, local_context)<br>
+        <span style="color:#4f8eff">2.</span> S = retrieve_related(f, threshold=θ)<br>
+        <span style="color:#4f8eff">3.</span> <span style="color:#888">for each</span> t_i <span style="color:#888">in</span> S:<br>
+        <span style="color:#4f8eff">4.</span>   lesson = derive_lesson(t_i, f)<br>
+        <span style="color:#4f8eff">5.</span>   memory_store.update(t_i, lesson)<br>
+        <span style="color:#4f8eff">6.</span> future_context.inject(S, lessons)
+      </div>
+      <p style="font-size:13px;color:#555;margin-top:16px;line-height:1.7;border-top:1px solid rgba(255,255,255,.05);padding-top:14px">The underlying model is unchanged. This is inference-time adaptation via structured memory — faster to update than retraining, more traceable than weight changes.</p>
+    </div>
+    <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:28px">
+      <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:16px">Honest Comparison</div>
+      <div style="font-size:14px;color:#777;line-height:2.1">
+        <div style="margin-bottom:10px"><span style="color:#ff4444;font-family:monospace">RLHF / DPO:</span> modifies model weights — broader generalization, but requires many examples and compute. Slower to update. More reliable at scale.</div>
+        <div style="margin-bottom:10px"><span style="color:#ff8844;font-family:monospace">Rules:</span> fast to add, but requires explicit enumeration. Doesn’t generalize beyond exact matches without additional classifiers.</div>
+        <div style="margin-bottom:10px"><span style="color:#44ff88;font-family:monospace">Trajectory:</span> faster to update than retraining, more interpretable. If retrieval is good enough, a lesson from one episode can improve how related episodes are handled in the future.</div>
+        <div style="font-size:12px;color:#444;margin-top:14px;border-top:1px solid rgba(255,255,255,.05);padding-top:14px">The value depends on retrieval quality, lesson extraction, and memory hygiene. Without those, the system either misses relevant patterns or generalizes the wrong lesson.</div>
+      </div>
+    </div>
+  </div>
+  <div class="step-strip">
+    <div class="step-item"><div class="step-n">θ</div><h4>Retrieval Threshold</h4><p>Similarity in trajectory vector space. Cross-domain transfer is fragile — the value depends heavily on embedding quality and how well the retrieval system is tuned.</p></div>
+    <div class="step-item"><div class="step-n">∂</div><h4>Lesson Extraction</h4><p>Deriving a useful lesson from the comparison of feedback to past trajectory. The hardest part — requires careful design to avoid overgeneralizing one correction.</p></div>
+    <div class="step-item"><div class="step-n">⚙</div><h4>Memory Hygiene</h4><p>Without pruning, conflict resolution, and uncertainty tracking, the memory store can accumulate drift, redundant traces, and bad abstractions over time.</p></div>
+    <div class="step-item"><div class="step-n">→</div><h4>Practical Scope</h4><p>A practical path to faster adaptation with less retraining and more traceable updates — not a substitute for model training, but a complement to it.</p></div>
+  </div>
+  <div style="max-width:1100px;width:100%;margin-top:32px;background:rgba(255,255,255,.015);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:32px">
+    <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:22px">The Mechanics — What Each Step of the Update Loop Actually Does</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px">
+      <div>
+        <h4 style="font-size:15px;margin-bottom:10px;color:#bbb">Step 1: embed(feedback, local_context)</h4>
+        <p style="font-size:13px;color:#666;line-height:1.8">The feedback text is embedded together with the local context of the current task — what the agent was doing when the feedback arrived. This produces a vector that represents not just “what was said” but “what was said about this kind of task.” Embedding both together means the retrieval step will find past iterations that are similar in both content and task context.</p>
+      </div>
+      <div>
+        <h4 style="font-size:15px;margin-bottom:10px;color:#bbb">Step 2: retrieve_related(f, threshold=θ)</h4>
+        <p style="font-size:13px;color:#666;line-height:1.8">The feedback vector is compared against all stored trajectory vectors using cosine similarity. Any past iteration with similarity above threshold θ is included in set S. θ is a tunable parameter — higher means fewer, more precise matches; lower means broader but potentially noisier retrieval. This is standard approximate nearest-neighbor search over a vector database.</p>
+        <div style="font-family:monospace;font-size:11px;color:#444;margin-top:10px;line-height:1.9;background:rgba(0,0,0,.2);padding:10px;border-radius:6px">
+          S = [t_i for t_i in trajectory_store<br>
+               if cos_sim(f, t_i) > θ]<br>
+          → returns set of related past iterations
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:15px;margin-bottom:10px;color:#bbb">Steps 3–5: derive_lesson and update</h4>
+        <p style="font-size:13px;color:#666;line-height:1.8">For each retrieved trajectory, the system compares the feedback to what the agent did in that past iteration. A lesson is derived — a structured annotation describing what should have been done differently. This lesson is stored alongside the original trajectory, not replacing it. The original trace is preserved; the lesson is an addendum.</p>
+        <div style="font-family:monospace;font-size:11px;color:#444;margin-top:10px;line-height:1.9;background:rgba(0,0,0,.2);padding:10px;border-radius:6px">
+          lesson = {<br>
+            “original_trace”: t_i,<br>
+            “correction”: derived_from_feedback,<br>
+            “confidence”: cos_sim(f, t_i)<br>
+          }<br>
+          memory_store.attach(t_i.id, lesson)
+        </div>
+      </div>
+      <div>
+        <h4 style="font-size:15px;margin-bottom:10px;color:#bbb">Step 6: future_context.inject(S, lessons)</h4>
+        <p style="font-size:13px;color:#666;line-height:1.8">When the agent starts a new task, the system searches its trajectory store for relevant past iterations. If any retrieved iterations have associated lessons, those lessons are prepended to the agent’s context window before it begins work. The agent doesn’t receive the lesson as a command — it receives it as context, the same way a human might read a case study before starting a similar project.</p>
+        <div style="font-family:monospace;font-size:11px;color:#444;margin-top:10px;line-height:1.9;background:rgba(0,0,0,.2);padding:10px;border-radius:6px">
+          new_task_context = [<br>
+            relevant_past_traces,<br>
+            associated_lessons,<br>
+            current_task_instructions<br>
+          ]<br>
+          agent.run(context=new_task_context)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SB: Benchmark Reality -->
+<section class="slide" id="sb">
+  <div class="slide-label">The Benchmark Reality</div>
+  <h2>Where Current Systems<br>Actually Stand</h2>
+  <p class="subtitle">LOCOMO benchmark (ECAI 2025) — the most comprehensive head-to-head comparison of AI memory approaches published to date. 10 systems tested. Here’s what it found, and what it doesn’t measure.</p>
+  <canvas class="viz-canvas" id="csb"></canvas>
+  <div class="step-strip">
+    <div class="step-item"><div class="step-n" style="color:#44ff88">72.9%</div><h4>Full-Context</h4><p>Most accurate — but 9.87s latency, 26,000 tokens per conversation. Categorically unusable at production scale.</p></div>
+    <div class="step-item"><div class="step-n" style="color:#4fc8ff">68.4%</div><h4>Mem0 + Graph</h4><p>Best selective memory. 1.09s latency, 1,800 tokens. Stores outcomes, not causal chains. No retroactive learning.</p></div>
+    <div class="step-item"><div class="step-n" style="color:#4f8eff">66.9%</div><h4>Mem0</h4><p>Vector-only. Fast. No temporal reasoning. No retroactive learning. No conflicting feedback reconciliation.</p></div>
+    <div class="step-item"><div class="step-n" style="color:#ff8844">61.0%</div><h4>RAG</h4><p>Keyword + semantic retrieval. No memory persistence. No learning. Retrieves facts, not reasoning patterns.</p></div>
+    <div class="step-item"><div class="step-n" style="color:#ff4444">52.9%</div><h4>OpenAI Memory</h4><p>Lowest score of all approaches tested. User preference storage. Already shipped. Already underperforms.</p></div>
+  </div>
+  <p style="text-align:center;color:#444;font-size:14px;margin-top:20px;max-width:900px">LoCoMo-Plus (Feb 2026) published specifically because existing benchmarks don’t capture cognitive memory. Paper: “cognitive memory remains challenging and reveals failures not captured by existing benchmarks.”</p>
+</section>
+
+<!-- SC: Retroactive Learning -->
+<section class="slide" id="sc">
+  <div class="slide-label">The Breakthrough Mechanism</div>
+  <h2>Retroactive Learning:<br>How It Actually Works</h2>
+  <p class="subtitle">When the system receives new feedback, it doesn’t just update future behavior. It finds every past experience where the same causal chain led to the same conclusion — and revises them all.</p>
+  <canvas class="viz-canvas" id="csc"></canvas>
+  <div class="arch-flow">
+    <div class="arch-step"><div class="arch-num">01</div><div class="arch-content"><h4>Feedback Received</h4><p>Partner gives 4 sentences of feedback on prior art methodology. Full contextual guidance — not a scalar reward. The system knows what to change and why.</p></div></div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-step"><div class="arch-num">02</div><div class="arch-content"><h4>Causal Pattern Search</h4><p>System searches all four vector dimensions for past trajectories with the same causal pattern — same reasoning approach, same action sequence, same environmental context.</p></div></div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-step"><div class="arch-num">03</div><div class="arch-content"><h4>Backward Propagation</h4><p>Agent revisits every matching past experience. “Here’s how I should have approached this filing. Here’s the decision branch I should have taken.” Reasoning revised retroactively.</p></div></div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-step"><div class="arch-num">04</div><div class="arch-content"><h4>Compounding Knowledge Base</h4><p>All future work starts with the background of every revised past experience. The agent doesn’t just learn — it re-learns everything it’s ever done through the lens of new understanding.</p></div></div>
+  </div>
+</section>
+
+<!-- SD: Conflicting Feedback -->
+<section class="slide" id="sd">
+  <div class="slide-label">Organizational Intelligence</div>
+  <h2>Reconciling Conflicting<br>Organizational Feedback</h2>
+  <p class="subtitle">Every organization has people who see the same problem differently. Standard systems fail here — they get conflicting directives and either average them or oscillate unpredictably. We store the context of where feedback came from.</p>
+  <div class="memory-compare">
+    <div class="memory-side old">
+      <h3>Standard Agent Systems</h3>
+      <div class="label">The failure mode</div>
+      <div class="memory-item">Head attorney says: “Read my book. This is how to approach patent law.” Agent stores this as a directive.</div>
+      <div class="memory-item">Junior patent lawyer says: “I know what the book says, but here’s how I actually approach it in practice.” Agent stores this as a conflicting directive.</div>
+      <div class="memory-item">Result: conflicting directives the agent must balance. It either averages them, picks one, or oscillates between them unpredictably depending on which was stored most recently.</div>
+      <div class="memory-item">No way to understand why two people see the same thing differently. No context for which approach applies in which situation.</div>
+    </div>
+    <div class="memory-side new">
+      <h3>Trajectory-Based Memory</h3>
+      <div class="label">The LLABS approach</div>
+      <div class="memory-item">Head attorney’s feedback stored with full context: what work led to it, what the agent was doing, what the attorney’s reasoning was, what task type it applied to.</div>
+      <div class="memory-item">Junior lawyer’s feedback stored with its own context: different task type, different complexity level, different application domain, different constraints.</div>
+      <div class="memory-item">Result: agent understands both perspectives and the context in which each applies. Not conflicting directives — complementary expertise for different situations.</div>
+      <div class="memory-item">When a new task arrives, the agent retrieves the most relevant causal pattern and applies the appropriate perspective. Context-aware, not rule-based.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SE: Context Window vs Memory -->
+<section class="slide" id="se">
+  <div class="slide-label">The Context Window Question</div>
+  <h2>Why 1M Token Context Windows<br>Don’t Solve This</h2>
+  <p class="subtitle">Models now support 1 million token context windows. This is genuinely useful for single-session tasks. It doesn’t replace organizational memory — it’s a fundamentally different problem.</p>
+  <canvas class="viz-canvas" id="cse"></canvas>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h3>Context Window</h3>
+      <div class="tag">Temporary Working Space</div>
+      <ul>
+        <li><span class="icon-x">✕</span> Resets after every inference call</li>
+        <li><span class="icon-x">✕</span> ~$6 per 1M tokens (Claude Sonnet 4)</li>
+        <li><span class="icon-x">✕</span> ~60 seconds to fill a 1M token context</li>
+        <li><span class="icon-x">✕</span> 15GB KV cache per concurrent session</li>
+        <li><span class="icon-x">✕</span> “Context rot” — performance degrades at scale</li>
+        <li><span class="icon-x">✕</span> “Lost in the middle” — attention degrades for long contexts</li>
+      </ul>
+    </div>
+    <div class="compare-card">
+      <h3>Organizational Memory</h3>
+      <div class="tag">What Enterprises Actually Need</div>
+      <ul>
+        <li><span class="icon-x">✕</span> Months of organizational work history</li>
+        <li><span class="icon-x">✕</span> Conflicting feedback from different team members</li>
+        <li><span class="icon-x">✕</span> Causal chains across hundreds of tasks</li>
+        <li><span class="icon-x">✕</span> Retroactive revision of past reasoning</li>
+        <li><span class="icon-x">✕</span> Tribal intelligence that compounds over time</li>
+        <li><span class="icon-x">✕</span> Cross-session, cross-agent knowledge sharing</li>
+      </ul>
+    </div>
+    <div class="compare-card highlight">
+      <h3>Trajectory Memory</h3>
+      <div class="tag">LLABS — Both Problems Solved</div>
+      <ul>
+        <li><span class="icon-check">✓</span> Persists across sessions, days, agents</li>
+        <li><span class="icon-check">✓</span> Efficient: retrieves only relevant trajectories</li>
+        <li><span class="icon-check">✓</span> Scales to years of organizational experience</li>
+        <li><span class="icon-check">✓</span> Retroactive learning across all past work</li>
+        <li><span class="icon-check">✓</span> Tribal intelligence that compounds</li>
+        <li><span class="icon-check">✓</span> Model-agnostic — works with any LLM</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SF: Competitive Landscape -->
+<section class="slide" id="sf">
+  <div class="slide-label">Competitive Landscape</div>
+  <h2>What Every System Can<br>and Cannot Do</h2>
+  <p class="subtitle">April 2026. Based on published benchmarks (LOCOMO, LongMemEval) and documented capabilities.</p>
+  <div style="max-width:1200px;width:100%;overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:15px">
+      <thead>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.1)">
+          <th style="text-align:left;padding:14px 16px;color:#666;font-weight:500">System</th>
+          <th style="text-align:center;padding:14px 10px;color:#666;font-weight:500">Benchmark</th>
+          <th style="text-align:center;padding:14px 10px;color:#666;font-weight:500">Causal Chain</th>
+          <th style="text-align:center;padding:14px 10px;color:#666;font-weight:500">Retroactive</th>
+          <th style="text-align:center;padding:14px 10px;color:#666;font-weight:500">Conflicting Feedback</th>
+          <th style="text-align:center;padding:14px 10px;color:#666;font-weight:500">Cross-Session</th>
+          <th style="text-align:center;padding:14px 10px;color:#666;font-weight:500">Model Agnostic</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:14px 16px;color:#999">Full-Context</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">72.9%</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:14px 16px;color:#999">Mem0 (graph)</td>
+          <td style="text-align:center;padding:14px 10px;color:#4fc8ff">68.4%</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff8844">~</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:14px 16px;color:#999">Zep / Graphiti</td>
+          <td style="text-align:center;padding:14px 10px;color:#4f8eff">63.8%†</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:14px 16px;color:#999">OpenAI Memory</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">52.9%</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:14px 16px;color:#999">GitHub Copilot Memory</td>
+          <td style="text-align:center;padding:14px 10px;color:#666">N/A</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff8844">~</td>
+          <td style="text-align:center;padding:14px 10px;color:#ff4444">✕</td>
+        </tr>
+        <tr style="background:rgba(79,142,255,.06);border-top:1px solid rgba(79,142,255,.3);border-bottom:1px solid rgba(79,142,255,.3)">
+          <td style="padding:14px 16px;color:#fff;font-weight:600">LLABS Trajectory Memory</td>
+          <td style="text-align:center;padding:14px 10px;color:#4f8eff">—‡</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+          <td style="text-align:center;padding:14px 10px;color:#44ff88">✓</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="color:#444;font-size:13px;margin-top:14px">† LongMemEval benchmark (temporal reasoning).   ‡ LOCOMO measures factual recall; trajectory memory measures causal chain retrieval — different problem, different benchmark needed. Patent pending.</p>
+  </div>
+</section>
+
 <!-- S8: Results -->
 <section class="slide" id="s8">
   <div class="slide-label">Proof Points</div>
@@ -300,449 +683,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <div class="key-hint">Use &uarr;&darr; arrow keys or scroll to navigate</div>
 
-<script>
-// === CANVAS SETUP ===
-function IC(id) {
-  const c = document.getElementById(id);
-  if (!c) return null;
-  const dpr = window.devicePixelRatio || 1;
-  const r = c.getBoundingClientRect();
-  c.width = r.width * dpr; c.height = r.height * dpr;
-  const ctx = c.getContext('2d');
-  ctx.scale(dpr, dpr);
-  return { c, ctx, w: r.width, h: r.height };
-}
 
-// === PARTICLE NETWORK (S0 background) ===
-function initNetwork(w, h) {
-  const pts = [];
-  for (let i = 0; i < 50; i++) pts.push({ x: Math.random()*w, y: Math.random()*h, vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3 });
-  return pts;
-}
-function drawNetwork(ctx, w, h, pts) {
-  ctx.clearRect(0, 0, w, h);
-  for (const p of pts) { p.x += p.vx; p.y += p.vy; if (p.x<0||p.x>w) p.vx*=-1; if (p.y<0||p.y>h) p.vy*=-1; }
-  for (let i = 0; i < pts.length; i++) for (let j = i+1; j < pts.length; j++) {
-    const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy);
-    if (d < 150) { ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y); ctx.strokeStyle=`rgba(79,142,255,${.12*(1-d/150)})`; ctx.lineWidth=.5; ctx.stroke(); }
-  }
-  for (const p of pts) { ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fillStyle='rgba(79,142,255,.5)'; ctx.fill(); }
-}
-
-// === MEMORY COMPARISON (S2) ===
-function drawRAG(ctx, w, h, t) {
-  ctx.clearRect(0, 0, w, h);
-  const docs = [[.15,.25],[.7,.18],[.4,.55],[.82,.65],[.25,.78],[.6,.38],[.12,.5],[.88,.45],[.5,.2],[.35,.7]];
-  for (const d of docs) { ctx.fillStyle='rgba(255,255,255,.06)'; ctx.fillRect(d[0]*w-14,d[1]*h-9,28,18); ctx.strokeStyle='rgba(255,255,255,.1)'; ctx.lineWidth=1.5; ctx.strokeRect(d[0]*w-14,d[1]*h-9,28,18); }
-  const qx=.5*w, qy=.42*h;
-  ctx.beginPath(); ctx.arc(qx,qy,6,0,Math.PI*2); ctx.fillStyle='rgba(255,80,80,.5)'; ctx.fill();
-  for (let i=0;i<3;i++) { ctx.beginPath(); ctx.moveTo(qx,qy); ctx.lineTo(docs[i][0]*w,docs[i][1]*h); ctx.strokeStyle='rgba(255,80,80,.12)'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]); ctx.stroke(); ctx.setLineDash([]); }
-  ctx.font='12px system-ui'; ctx.fillStyle='rgba(255,80,80,.5)'; ctx.textAlign='center';
-  ctx.fillText('query', qx, qy-10);
-  ctx.fillStyle='rgba(255,255,255,.3)'; ctx.fillText('flat documents, no structure', w/2, h-6);
-}
-function drawEpMini(ctx, w, h, t) {
-  ctx.clearRect(0, 0, w, h);
-  const n=[[.5,.12],[.25,.35],[.75,.35],[.12,.6],[.38,.6],[.62,.6],[.88,.6],[.08,.85],[.18,.85],[.32,.85],[.44,.85],[.56,.85],[.68,.85],[.82,.85],[.92,.85]];
-  const e=[[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[3,7],[3,8],[4,9],[4,10],[5,11],[5,12],[6,13],[6,14]];
-  for (const[a,b] of e) { ctx.beginPath(); ctx.moveTo(n[a][0]*w,n[a][1]*h); ctx.lineTo(n[b][0]*w,n[b][1]*h); ctx.strokeStyle='rgba(79,142,255,.25)'; ctx.lineWidth=1.5; ctx.stroke(); }
-  const pulse=Math.sin(t/1000)*.2+.8;
-  for (let i=0;i<n.length;i++) {
-    const r=i<1?8:i<3?5.5:i<7?4:3, col=i<3?'#4f8eff':i<7?'#3db8e8':'#44ff88';
-    ctx.beginPath(); ctx.arc(n[i][0]*w,n[i][1]*h,r*2.2,0,Math.PI*2); ctx.fillStyle=col+'18'; ctx.fill();
-    ctx.beginPath(); ctx.arc(n[i][0]*w,n[i][1]*h,r,0,Math.PI*2); ctx.fillStyle=col; ctx.globalAlpha=pulse; ctx.fill(); ctx.globalAlpha=1;
-  }
-  // Labels
-  ctx.globalAlpha=1; ctx.font='12px system-ui'; ctx.fillStyle='rgba(255,255,255,.3)'; ctx.textAlign='center';
-  ctx.fillText('structured hierarchy', w/2, h-6);
-}
-
-// === HIERARCHY TREE (S3) ===
-const TN = [
-  [.5,.13,18,-1,'#4f8eff'],[.2,.36,12,0,'#4f8eff'],[.5,.36,12,0,'#4f8eff'],[.8,.36,12,0,'#4f8eff'],
-  [.12,.59,7,1,'#3db8e8'],[.28,.59,7,1,'#3db8e8'],[.42,.59,7,2,'#3db8e8'],[.58,.59,7,2,'#3db8e8'],[.72,.59,7,3,'#3db8e8'],[.88,.59,7,3,'#3db8e8'],
-  [.08,.82,4,4,'#44ff88'],[.16,.82,4,4,'#44ff88'],[.24,.82,4,5,'#44ff88'],[.32,.82,4,5,'#44ff88'],[.38,.82,4,6,'#44ff88'],[.46,.82,4,6,'#44ff88'],
-  [.54,.82,4,7,'#44ff88'],[.62,.82,4,7,'#44ff88'],[.68,.82,4,8,'#44ff88'],[.76,.82,4,8,'#44ff88'],[.84,.82,4,9,'#44ff88'],[.92,.82,4,9,'#44ff88']
-];
-function getTreePaths() {
-  const paths = [];
-  for (let i=0;i<TN.length;i++) { if (TN.some(n=>n[3]===i)) continue; if (TN[i][3]<0) continue; const p=[]; let idx=i; while(idx>=0){p.unshift(idx);idx=TN[idx][3];} paths.push(p); }
-  return paths;
-}
-function initTreeParts(paths) { return Array.from({length:10},()=>({path:paths[Math.floor(Math.random()*paths.length)],prog:Math.random()*3,spd:.008+Math.random()*.008})); }
-function drawTree(ctx, w, h, parts, t) {
-  ctx.clearRect(0, 0, w, h);
-  // Edges
-  for (const n of TN) { if(n[3]<0) continue; const p=TN[n[3]]; ctx.beginPath(); ctx.moveTo(p[0]*w,p[1]*h); const my=(p[1]+n[1])/2*h; ctx.quadraticCurveTo(p[0]*w,my,n[0]*w,n[1]*h); ctx.strokeStyle='rgba(79,142,255,.15)'; ctx.lineWidth=1.5; ctx.stroke(); }
-  // Level labels
-  ctx.font='14px system-ui'; ctx.textAlign='left'; ctx.fillStyle='rgba(255,255,255,.3)';
-  const labels=['Episode','Session','Iteration','Action'];
-  const labelY=[.03,.22,.45,.68]; // labels positioned ABOVE the node rows
-  const examples=[
-    'Patient onboarding workflow \u2014 Longevity Clinic',
-    '"Review labs and treatment plan for patient #4721"',
-    'analyze lipid panel \u2192 check drug interactions \u2192 draft plan update',
-    'query_emr({patient: 4721, panel: "lipid"}) \u2192 12 results'
-  ];
-  for (let i=0;i<4;i++) {
-    ctx.textAlign='left'; ctx.font='bold 15px system-ui'; ctx.fillStyle='rgba(255,255,255,.55)';
-    ctx.fillText(labels[i], 8, labelY[i]*h);
-    ctx.font='12px system-ui'; ctx.fillStyle='rgba(79,142,255,.55)';
-    ctx.fillText(examples[i], 8, labelY[i]*h+16);
-  }
-  // Nodes
-  for (const n of TN) {
-    const x=n[0]*w,y=n[1]*h,r=n[2];
-    ctx.beginPath(); ctx.arc(x,y,r*2.5,0,Math.PI*2);
-    const g=ctx.createRadialGradient(x,y,0,x,y,r*2.5); g.addColorStop(0,n[4]+'25'); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.fill();
-    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle=n[4]; ctx.fill();
-  }
-  // Particles
-  for (const p of parts) {
-    p.prog += p.spd; if (p.prog >= p.path.length-1) { p.prog=0; p.path=treePaths[Math.floor(Math.random()*treePaths.length)]; }
-    const seg=Math.floor(p.prog), fr=p.prog-seg;
-    const n1=TN[p.path[seg]], n2=TN[p.path[Math.min(seg+1,p.path.length-1)]];
-    const px=(n1[0]+(n2[0]-n1[0])*fr)*w, py=(n1[1]+(n2[1]-n1[1])*fr)*h;
-    ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,.8)'; ctx.fill();
-    ctx.beginPath(); ctx.arc(px,py,12,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,.1)'; ctx.fill();
-  }
-}
-
-// === VECTOR SPACE (S4) ===
-// Trajectory data for combined/reasoning (vertical, 4 nodes, well-spaced)
-const CMAIN = [[.1,.1],[.13,.37],[.08,.63],[.12,.9]];
-const CMATCHES = [
-  [[.36,.1],[.39,.37],[.34,.63],[.37,.9]],
-  [[.58,.1],[.62,.37],[.56,.63],[.6,.9]],
-  [[.82,.1],[.86,.37],[.8,.63],[.84,.9]]
-];
-// Connection maps: which query node connects to which match node (non-uniform)
-// [queryNodeIdx, matchNodeIdx] pairs per match — shows distributed learning
-const CLINKS = [
-  [[0,0],[1,1],[2,3],[3,2]], // match 0: nodes mostly align but 2<->3 swap
-  [[0,1],[1,2],[2,0],[3,3]], // match 1: reasoning steps mapped across different positions
-  [[1,0],[2,2],[3,1]]        // match 2: only 3 connections (partial match)
-];
-const RCLUSTERS = [
-  {col:'#4f8eff', trajs:[[[.08,.1],[.11,.37],[.06,.63],[.1,.9]],[[.2,.1],[.23,.37],[.18,.63],[.22,.9]]]},
-  {col:'#3db8e8', trajs:[[[.4,.1],[.43,.37],[.38,.63],[.42,.9]],[[.52,.1],[.55,.37],[.5,.63],[.54,.9]]]},
-  {col:'#a855f7', trajs:[[[.72,.1],[.75,.37],[.7,.63],[.74,.9]],[[.84,.1],[.87,.37],[.82,.63],[.86,.9]]]}
-];
-
-const VS = [.15,.72,.38,.91,.53,.24,.67,.81,.46,.33,.59,.88,.11,.76,.42];
-function genDots(type) {
-  const dots = [];
-  for (let i=0;i<15;i++) {
-    const grp=i%3, out=i<8?1:0; let x,y;
-    if (type==='outcome') { x=.1+(.8*i/14); y=.2+VS[(i+5)%15]*.6+Math.sin(i*1.2)*.08; }
-    else { x=.1+VS[i]*.8; y=.1+VS[(i+7)%15]*.8; }
-    dots.push({x,y,grp,out,ox:x,oy:y});
-  }
-  return dots;
-}
-
-function _drawPath(ctx, pts, w, h, color, lw, alpha) {
-  ctx.beginPath(); ctx.moveTo(pts[0][0]*w, pts[0][1]*h);
-  for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0]*w, pts[i][1]*h);
-  ctx.strokeStyle=color; ctx.globalAlpha=alpha; ctx.lineWidth=lw; ctx.stroke(); ctx.globalAlpha=1;
-}
-function _drawDots(ctx, pts, w, h, color, r, alpha) {
-  for (const p of pts) {
-    ctx.beginPath(); ctx.arc(p[0]*w, p[1]*h, r*1.8, 0, Math.PI*2);
-    ctx.fillStyle=color; ctx.globalAlpha=alpha*.25; ctx.fill();
-    ctx.beginPath(); ctx.arc(p[0]*w, p[1]*h, r, 0, Math.PI*2);
-    ctx.fillStyle=color; ctx.globalAlpha=alpha; ctx.fill();
-  }
-  ctx.globalAlpha=1;
-}
-
-function drawVec(ctx, w, h, dots, type, t) {
-  ctx.clearRect(0, 0, w, h);
-  const cols=['#4f8eff','#3db8e8','#a855f7'];
-
-  // === COMBINED: connections spawn as pulse passes each node ===
-  if (type==='combined') {
-    const cycle=3500; // ms per full sweep
-    const prog=(t/cycle)%1; // 0=top, 1=bottom+pause
-    const sweep=Math.min(prog/.75,1); // pulse reaches bottom at 75% of cycle, last 25% = hold+fade
-    const holdFade=prog>.75?1-(prog-.75)/.25:1; // fade everything out in final 25%
-
-    // Matched trajectories: draw paths dim (always visible as scaffolding)
-    const matchAlphas=[.6,.4,.25];
-    for (let mi=0;mi<3;mi++) {
-      _drawPath(ctx, CMATCHES[mi], w, h, '#4f8eff', 1.5, matchAlphas[mi]*.3);
-      // Dim dots always
-      for (const p of CMATCHES[mi]) {
-        ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,3,0,Math.PI*2);
-        ctx.fillStyle='#4f8eff'; ctx.globalAlpha=matchAlphas[mi]*.2; ctx.fill(); ctx.globalAlpha=1;
-      }
-    }
-
-    // Query trajectory (always bright)
-    _drawPath(ctx, CMAIN, w, h, '#4f8eff', 3.5, .9);
-    _drawDots(ctx, CMAIN, w, h, '#4f8eff', 6, 1);
-
-    // Traveling pulse on query
-    if (sweep<1) {
-      const seg=Math.floor(sweep*3), fr=sweep*3-seg;
-      const a=CMAIN[seg], b=CMAIN[Math.min(seg+1,3)];
-      const px=(a[0]+(b[0]-a[0])*fr)*w, py=(a[1]+(b[1]-a[1])*fr)*h;
-      ctx.beginPath(); ctx.arc(px,py,16,0,Math.PI*2); ctx.fillStyle='rgba(79,142,255,.1)'; ctx.fill();
-      ctx.beginPath(); ctx.arc(px,py,5,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
-    }
-
-    // Connections spawn as pulse passes each query node — links are non-uniform
-    for (let mi=0;mi<3;mi++) {
-      const links=CLINKS[mi], ma0=matchAlphas[mi];
-      for (const [qi,mi2] of links) {
-        const nodeT=qi/3;
-        const elapsed=sweep-nodeT;
-        if (elapsed<=0) continue;
-        const fadeIn=Math.min(1,elapsed*6);
-        const a=fadeIn*holdFade*ma0;
-        const qp=CMAIN[qi], mp=CMATCHES[mi][mi2];
-        // Connection line
-        ctx.beginPath(); ctx.moveTo(qp[0]*w,qp[1]*h); ctx.lineTo(mp[0]*w,mp[1]*h);
-        ctx.strokeStyle=`rgba(255,200,50,${a*.4})`; ctx.lineWidth=1.5; ctx.setLineDash([3,4]); ctx.stroke(); ctx.setLineDash([]);
-        // Matched node glow
-        ctx.beginPath(); ctx.arc(mp[0]*w,mp[1]*h,10,0,Math.PI*2);
-        ctx.fillStyle=`rgba(79,142,255,${a*.15})`; ctx.fill();
-        ctx.beginPath(); ctx.arc(mp[0]*w,mp[1]*h,4.5,0,Math.PI*2);
-        ctx.fillStyle='#4f8eff'; ctx.globalAlpha=a; ctx.fill(); ctx.globalAlpha=1;
-        // Query node ring
-        ctx.beginPath(); ctx.arc(qp[0]*w,qp[1]*h,9,0,Math.PI*2);
-        ctx.strokeStyle=`rgba(255,200,50,${a*.3})`; ctx.lineWidth=1.5; ctx.stroke();
-      }
-    }
-    return;
-  }
-
-  // === REASONING: connections spawn as dots travel down each cluster ===
-  if (type==='reasoning') {
-    const cycle=3200;
-    for (let ci=0;ci<RCLUSTERS.length;ci++) {
-      const cl=RCLUSTERS[ci];
-      const prog=((t/cycle)+ci*.33)%1;
-      const sweep=Math.min(prog/.75,1);
-      const holdFade=prog>.75?1-(prog-.75)/.25:1;
-
-      // Draw trajectory paths (always visible, dim)
-      for (const tr of cl.trajs) { _drawPath(ctx, tr, w, h, cl.col, 2, .35); _drawDots(ctx, tr, w, h, cl.col, 4, .3); }
-
-      // Traveling dot on first trajectory
-      if (sweep<1) {
-        const seg=Math.floor(sweep*3), fr=sweep*3-seg;
-        const a=cl.trajs[0][seg], b=cl.trajs[0][Math.min(seg+1,3)];
-        const px=(a[0]+(b[0]-a[0])*fr)*w, py=(a[1]+(b[1]-a[1])*fr)*h;
-        ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.globalAlpha=.7; ctx.fill(); ctx.globalAlpha=1;
-      }
-
-      // Connections spawn between cluster siblings as dot passes each node
-      for (let pi=0;pi<4;pi++) {
-        const nodeT=pi/3;
-        const elapsed=sweep-nodeT;
-        if (elapsed<=0) continue;
-        const a=Math.min(1,elapsed*6)*holdFade;
-        const p0=cl.trajs[0][pi], p1=cl.trajs[1][pi];
-        // Connection line
-        ctx.beginPath(); ctx.moveTo(p0[0]*w,p0[1]*h); ctx.lineTo(p1[0]*w,p1[1]*h);
-        ctx.strokeStyle=cl.col; ctx.globalAlpha=a*.3; ctx.lineWidth=1.5; ctx.setLineDash([2,3]); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1;
-        // Both nodes light up
-        for (const p of [p0,p1]) {
-          ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,8,0,Math.PI*2);
-          ctx.fillStyle=cl.col; ctx.globalAlpha=a*.12; ctx.fill();
-          ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,4.5,0,Math.PI*2);
-          ctx.fillStyle=cl.col; ctx.globalAlpha=a*.7; ctx.fill(); ctx.globalAlpha=1;
-        }
-      }
-    }
-    return;
-  }
-
-  // === OUTCOME / CONTEXT: existing dot-based visualization ===
-  if (type==='context') { for(let i=0;i<dots.length;i++) for(let j=i+1;j<dots.length;j++) if(dots[i].grp===dots[j].grp) { ctx.beginPath(); ctx.moveTo(dots[i].x*w,dots[i].y*h); ctx.lineTo(dots[j].x*w,dots[j].y*h); ctx.strokeStyle='rgba(79,142,255,.18)'; ctx.lineWidth=1.5; ctx.stroke(); } }
-  for (const d of dots) {
-    d.x=d.ox+Math.sin(t/2000+d.ox*10)*.015; d.y=d.oy+Math.cos(t/2500+d.oy*10)*.015;
-    let col;
-    if (type==='outcome') {
-      const ratio = (d.ox - .1) / .8;
-      const r = Math.round(255 * (1 - ratio));
-      const g = Math.round(80 + 175 * ratio);
-      const b = Math.round(68 * ratio);
-      col = `rgb(${r},${g},${b})`;
-    } else { col = cols[d.grp]; }
-    ctx.beginPath(); ctx.arc(d.x*w,d.y*h,12,0,Math.PI*2);
-    ctx.fillStyle = type==='outcome' ? col.replace('rgb','rgba').replace(')',',0.12)') : col+'20';
-    ctx.fill();
-    ctx.beginPath(); ctx.arc(d.x*w,d.y*h,6,0,Math.PI*2); ctx.fillStyle=col; ctx.fill();
-  }
-  if (type==='outcome') {
-    const grd=ctx.createLinearGradient(14,0,w-14,0);
-    grd.addColorStop(0,'rgba(255,80,68,.3)'); grd.addColorStop(.5,'rgba(255,180,50,.3)'); grd.addColorStop(1,'rgba(68,255,136,.3)');
-    ctx.fillStyle=grd; ctx.fillRect(14,h-20,w-28,5); ctx.fillStyle='rgba(255,80,68,.6)';
-    ctx.font='12px system-ui'; ctx.textAlign='left'; ctx.fillText('Missed references', 14, h-26);
-    ctx.fillStyle='rgba(255,180,50,.6)'; ctx.textAlign='center'; ctx.fillText('Partial / rework', w/2, h-26);
-    ctx.fillStyle='rgba(68,255,136,.6)'; ctx.textAlign='right'; ctx.fillText('Valid argument', w-14, h-26);
-  }
-  else if (type==='context') { ctx.textAlign='center'; ctx.fillStyle='rgba(255,255,255,.35)'; ctx.font='12px system-ui'; ctx.fillText('Lines = iterations from same patent engagement', w/2, h-8); }
-}
-
-// === RECURSIVE LEARNING (S5) ===
-const TRAJ = [
-  [[.08,.15],[.25,.18],[.45,.12],[.65,.2],[.85,.16]],
-  [[.08,.32],[.28,.36],[.48,.3],[.68,.38],[.88,.34]],
-  [[.08,.48],[.22,.52],[.42,.46],[.58,.53],[.78,.48]],
-  [[.08,.64],[.3,.68],[.5,.62],[.72,.68],[.92,.65]],
-  [[.1,.82],[.3,.85],[.5,.78],[.72,.84],[.9,.8]]
-];
-function drawRecursive(ctx, w, h, t) {
-  ctx.clearRect(0, 0, w, h);
-  const pulse = Math.sin(t/800)*.3+.7;
-  // Past trajectories
-  for (let ti=0;ti<4;ti++) {
-    const path=TRAJ[ti], sim=(ti===1||ti===2), alpha=sim?.35*pulse:.12;
-    ctx.beginPath(); ctx.moveTo(path[0][0]*w,path[0][1]*h);
-    for(let i=1;i<path.length;i++) ctx.lineTo(path[i][0]*w,path[i][1]*h);
-    ctx.strokeStyle=`rgba(79,142,255,${alpha})`; ctx.lineWidth=3; ctx.stroke();
-    for(const p of path) { ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,sim?6:4,0,Math.PI*2); ctx.fillStyle=`rgba(79,142,255,${alpha+.15})`; ctx.fill(); }
-    if (sim) { for(let i=0;i<path.length;i++) { const cp=TRAJ[4][i]; ctx.beginPath(); ctx.moveTo(path[i][0]*w,path[i][1]*h); ctx.lineTo(cp[0]*w,cp[1]*h); ctx.strokeStyle=`rgba(255,200,50,${.12*pulse})`; ctx.lineWidth=1.5; ctx.setLineDash([5,5]); ctx.stroke(); ctx.setLineDash([]); } }
-  }
-  // Current trajectory
-  const curr=TRAJ[4];
-  ctx.beginPath(); ctx.moveTo(curr[0][0]*w,curr[0][1]*h);
-  for(let i=1;i<curr.length;i++) ctx.lineTo(curr[i][0]*w,curr[i][1]*h);
-  ctx.strokeStyle='#4f8eff'; ctx.lineWidth=4; ctx.stroke();
-  for(const p of curr) {
-    ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,16,0,Math.PI*2); ctx.fillStyle='rgba(79,142,255,.12)'; ctx.fill();
-    ctx.beginPath(); ctx.arc(p[0]*w,p[1]*h,7,0,Math.PI*2); ctx.fillStyle='#4f8eff'; ctx.fill();
-  }
-  // Knowledge node
-  const kx=.5*w, ky=.95*h;
-  ctx.beginPath(); ctx.arc(kx,ky,14*pulse,0,Math.PI*2); ctx.fillStyle=`rgba(68,255,136,${.18*pulse})`; ctx.fill();
-  ctx.beginPath(); ctx.arc(kx,ky,7,0,Math.PI*2); ctx.fillStyle='#44ff88'; ctx.fill();
-  // Trajectory labels (patent law scenario)
-  ctx.font='13px system-ui'; ctx.textAlign='left';
-  const tLabels=[
-    'Past: Claim construction \u2014 US 10,892,xxx',
-    'Past: Prior art analysis \u2014 US 11,234,xxx (missed dependent claims)',
-    'Past: Prior art analysis \u2014 US 10,447,xxx (found key ref late)',
-    'Past: Obviousness argument \u2014 EP 3,891,xxx',
-    'Current: Prior art analysis \u2014 US 11,891,xxx'
-  ];
-  for(let ti=0;ti<5;ti++) {
-    const isSim=(ti===1||ti===2), isCurr=(ti===4);
-    const path=TRAJ[ti];
-    ctx.fillStyle=isCurr?'rgba(79,142,255,.7)':isSim?'rgba(255,200,50,.55)':'rgba(255,255,255,.3)';
-    ctx.fillText(tLabels[ti], path[0][0]*w+16, path[0][1]*h-6);
-  }
-  // Knowledge label
-  ctx.textAlign='center'; ctx.fillStyle='rgba(68,255,136,.6)'; ctx.font='bold 13px system-ui';
-  ctx.fillText('Extracted: "Always analyze dependent claims before narrowing prior art scope"', kx, ky-20);
-  // Retrieval markers with similarity scores
-  ctx.fillStyle='rgba(255,200,50,.55)'; ctx.font='12px system-ui'; ctx.textAlign='right';
-  ctx.fillText('cos=0.91 (prior art, same claim type)', TRAJ[1][4][0]*w-4, TRAJ[1][4][1]*h+16);
-  ctx.fillText('cos=0.84 (prior art, similar patent class)', TRAJ[2][4][0]*w-4, TRAJ[2][4][1]*h+16);
-}
-
-// === STACK FLOW (S6) ===
-function initStackParts() {
-  return Array.from({length:25},()=>({x:Math.random(),y:-Math.random()*.3,spd:.0015+Math.random()*.002,stuck:false,sy:0,col:'#4f8eff'}));
-}
-function drawStack(ctx, w, h, parts, t) {
-  ctx.clearRect(0, 0, w, h);
-  const layers=[
-    {y:0,hh:.25,col:'rgba(79,142,255,.05)',lbl:'Trajectory Capture',detail:'patient encounters, lab reviews, treatment decisions \u2192 4 named vectors per reasoning step'},
-    {y:.25,hh:.25,col:'rgba(61,184,232,.05)',lbl:'Persistent Knowledge',detail:'drug interaction patterns, diagnostic procedures, treatment protocols, contraindication chains'},
-    {y:.5,hh:.25,col:'rgba(79,200,255,.05)',lbl:'Proactive Cognition',detail:'similar patient cases + past treatment outcomes surfaced before each clinical reasoning step'},
-    {y:.75,hh:.25,col:'rgba(68,255,136,.05)',lbl:'Self-Improvement',detail:'treatment outcome tracking \u2192 protocol refinement \u2192 contraindication extraction \u2192 procedure distillation'}
-  ];
-  for(const l of layers) {
-    ctx.fillStyle=l.col; ctx.fillRect(0,l.y*h,w,l.hh*h);
-    ctx.beginPath(); ctx.moveTo(0,(l.y+l.hh)*h); ctx.lineTo(w,(l.y+l.hh)*h); ctx.strokeStyle='rgba(255,255,255,.04)'; ctx.lineWidth=1; ctx.stroke();
-    ctx.font='bold 16px system-ui'; ctx.fillStyle='rgba(255,255,255,.6)'; ctx.textAlign='left'; ctx.fillText(l.lbl,16,l.y*h+24);
-    ctx.font='13px system-ui'; ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fillText(l.detail,16,l.y*h+42);
-  }
-  const pulse=Math.sin(t/1000)*.3+.7;
-  for(const p of parts) {
-    if(p.stuck) { ctx.beginPath(); ctx.arc(p.x*w,p.sy*h,4.5,0,Math.PI*2); ctx.fillStyle=`rgba(68,255,136,${.45*pulse})`; ctx.fill(); continue; }
-    p.y+=p.spd;
-    if(p.y<.25) p.col='#4f8eff'; else if(p.y<.5) p.col='#3db8e8'; else if(p.y<.75) p.col='#4fc8ff'; else p.col='#44ff88';
-    if(p.y>.33&&p.y<.42&&Math.random()<.003) { p.stuck=true; p.sy=p.y; }
-    if(p.y>1.05) { p.y=-Math.random()*.15; p.x=Math.random(); }
-    ctx.beginPath(); ctx.arc(p.x*w,p.y*h,4,0,Math.PI*2); ctx.fillStyle=p.col; ctx.globalAlpha=.65; ctx.fill(); ctx.globalAlpha=1;
-  }
-}
-
-// === LIFECYCLE ===
-let treePaths, treeParts, netPts, stackParts;
-const vecData = {};
-const vizMap = {}; // slideId -> array of draw fns
-const canvasMap = {}; // slideId -> array of {ctx,w,h}
-const activeSlides = new Set();
-let rafId;
-
-function initAll() {
-  // S0: Network
-  const s0 = IC('c0');
-  if (s0) { netPts = initNetwork(s0.w, s0.h); vizMap['s0'] = [(t) => drawNetwork(s0.ctx,s0.w,s0.h,netPts)]; }
-  // S2: Memory compare
-  const s2a = IC('c2a'), s2b = IC('c2b');
-  if (s2a && s2b) { vizMap['s2'] = [(t) => { drawRAG(s2a.ctx,s2a.w,s2a.h,t); drawEpMini(s2b.ctx,s2b.w,s2b.h,t); }]; }
-  // S3: Hierarchy
-  const s3 = IC('c3');
-  if (s3) { treePaths = getTreePaths(); treeParts = initTreeParts(treePaths); vizMap['s3'] = [(t) => drawTree(s3.ctx,s3.w,s3.h,treeParts,t)]; }
-  // S4: Vectors
-  const types = [['c4a','combined'],['c4b','reasoning'],['c4c','outcome'],['c4d','context']];
-  const vecFns = [];
-  for (const [id, type] of types) {
-    const cv = IC(id);
-    if (cv) { vecData[type] = genDots(type); vecFns.push((t) => drawVec(cv.ctx,cv.w,cv.h,vecData[type],type,t)); }
-  }
-  if (vecFns.length) vizMap['s4'] = vecFns;
-  // S5: Recursive
-  const s5 = IC('c5');
-  if (s5) { vizMap['s5'] = [(t) => drawRecursive(s5.ctx,s5.w,s5.h,t)]; }
-  // S6: Stack
-  const s6 = IC('c6');
-  if (s6) { stackParts = initStackParts(); vizMap['s6'] = [(t) => drawStack(s6.ctx,s6.w,s6.h,stackParts,t)]; }
-}
-
-function tick(t) {
-  for (const sid of activeSlides) { const fns = vizMap[sid]; if (fns) for (const fn of fns) fn(t); }
-  if (activeSlides.size) rafId = requestAnimationFrame(tick);
-}
-
-function startSlide(id) {
-  if (!vizMap[id]) return;
-  activeSlides.add(id);
-  if (!rafId) rafId = requestAnimationFrame(tick);
-}
-function stopSlide(id) {
-  activeSlides.delete(id);
-  if (!activeSlides.size) { cancelAnimationFrame(rafId); rafId = 0; }
-}
-
-// === NAV + OBSERVER ===
-const slides = document.querySelectorAll('.slide');
-const navDots = document.getElementById('navDots');
-let currentSlide = 0;
-slides.forEach((_, i) => { const d = document.createElement('div'); d.className = 'nav-dot' + (i === 0 ? ' active' : ''); d.onclick = () => goToSlide(i); navDots.appendChild(d); });
-function goToSlide(i) { currentSlide = i; slides[i].scrollIntoView({ behavior: 'smooth' }); updateDots(); }
-function updateDots() { document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide)); }
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    const id = e.target.id;
-    if (e.isIntersecting) { e.target.classList.add('visible'); currentSlide = Array.from(slides).indexOf(e.target); updateDots(); startSlide(id); }
-    else { stopSlide(id); }
-  });
-}, { threshold: 0.3 });
-slides.forEach(s => obs.observe(s));
-document.addEventListener('keydown', e => { if (e.key==='ArrowDown'||e.key==='ArrowRight') { e.preventDefault(); if (currentSlide<slides.length-1) goToSlide(currentSlide+1); } else if (e.key==='ArrowUp'||e.key==='ArrowLeft') { e.preventDefault(); if (currentSlide>0) goToSlide(currentSlide-1); } });
-slides[0].classList.add('visible');
-
-// Init after layout
-window.addEventListener('load', () => { initAll(); startSlide('s0'); });
-window.addEventListener('resize', () => { cancelAnimationFrame(rafId); rafId=0; activeSlides.clear(); initAll(); startSlide(slides[currentSlide].id); });
-</script>
 </body>
 </html>
